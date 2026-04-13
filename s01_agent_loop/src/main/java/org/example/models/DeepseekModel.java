@@ -1,4 +1,4 @@
-package org.example.s01_agent_loop.models;
+package org.example.models;
 
 import com.alibaba.fastjson2.JSONObject;
 

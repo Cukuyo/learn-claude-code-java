@@ -1,9 +1,9 @@
-package org.example.s01_agent_loop;
+package org.example;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import org.example.s01_agent_loop.models.DeepseekModel;
-import org.example.s01_agent_loop.utils.CommandUtil;
+import org.example.models.DeepseekModel;
+import org.example.utils.CommandUtil;
 
 import java.io.IOException;
 import java.util.Scanner;

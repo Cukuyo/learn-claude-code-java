@@ -15,6 +15,7 @@
 
     <modules>
         <module>s01_agent_loop</module>
+        <module>s02_tool_use</module>
     </modules>
 
     <properties>

@@ -1,8 +1,8 @@
-package org.example.s01_agent_loop.models;
+package org.example.models;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import org.example.s01_agent_loop.utils.HttpClientUtil;
+import org.example.utils.HttpClientUtil;
 
 import java.io.IOException;
 

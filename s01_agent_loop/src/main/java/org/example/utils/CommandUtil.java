@@ -1,4 +1,4 @@
-package org.example.s01_agent_loop.utils;
+package org.example.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
