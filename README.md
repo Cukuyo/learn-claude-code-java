@@ -1,2 +1,3 @@
 # learn-claude-code-java
-java version. from https://github.com/shareAI-lab/learn-claude-code
+java sdk 25 version. 
+from https://github.com/shareAI-lab/learn-claude-code
