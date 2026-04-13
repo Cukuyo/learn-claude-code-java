@@ -1,5 +1,9 @@
 package org.example.s01_agent_loop.models;
 
+import com.alibaba.fastjson2.JSONObject;
+
+import java.io.IOException;
+
 /**
  * Deepseek客户端
  */
@@ -19,6 +23,11 @@ public class DeepseekModel extends AbstractModel {
         super(model);
         this.url = url;
         this.apiKey = "Bearer " + apiKey;
+    }
+
+    @Override
+    public JSONObject chat() throws IOException, InterruptedException {
+        return super.chat().getJSONArray("choices").getJSONObject(0);
     }
 
     @Override

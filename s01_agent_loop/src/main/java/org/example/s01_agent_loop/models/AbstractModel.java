@@ -38,6 +38,7 @@ public abstract class AbstractModel {
     public JSONObject chat() throws IOException, InterruptedException {
         JSONObject result = HttpClientUtil.send(getUrl(), getApiKey(), curReq);
 
+        System.out.println(result);
         JSONObject usage = result.getJSONObject("usage");
         System.out.printf("请求url:%s, 模型:%s, 提示词token数:%d, 补全token数:%d, 总token数:%d %s",
                 getUrl(), model,
@@ -114,16 +115,38 @@ public abstract class AbstractModel {
      * 构造用户提示词
      *
      * @param content content
-     * @return 用户提示词
      */
     public void addUserMessage(String content) {
         ((JSONArray) curReq.get("messages")).add(message(content, "user"));
     }
 
+    /**
+     * 构造工具提示词
+     *
+     * @param content content
+     */
+    public void addToolMessages(String content, String toolCallId) {
+        ((JSONArray) curReq.get("messages")).add(message(content, "tool", toolCallId));
+    }
+
+    /**
+     * 传入模型返回的助手提示词
+     *
+     * @param content content
+     */
+    public void addAssistantMessages(JSONObject content) {
+        ((JSONArray) curReq.get("messages")).add(content);
+    }
+
     private JSONObject message(String content, String role) {
+        return message(content, role, null);
+    }
+
+    private JSONObject message(String content, String role, String toolCallId) {
         JSONObject msg = new JSONObject();
         msg.put("role", role);
         msg.put("content", content);
+        msg.put("tool_call_id", toolCallId);
         return msg;
     }
 }

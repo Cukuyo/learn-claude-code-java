@@ -38,7 +38,7 @@ public class HttpClientUtil {
         HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
 
         System.out.printf("请求url:%s, 状态码:%s, 请求耗时:%dms %s",
-                url, response.statusCode(), (System.currentTimeMillis() - start) / 1000, System.lineSeparator());
+                url, response.statusCode(), (System.currentTimeMillis() - start), System.lineSeparator());
 
         return JSONObject.parseObject(response.body());
     }

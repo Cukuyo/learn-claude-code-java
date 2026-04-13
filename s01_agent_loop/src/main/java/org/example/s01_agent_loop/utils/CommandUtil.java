@@ -43,6 +43,10 @@ public class CommandUtil {
      * @return 执行结果
      */
     public static String execute(String command, long timeout, TimeUnit timeUnit) {
+        if (!CommandSecurityChecker.isSafeCommand(command)) {
+            return "禁止执行高危命令：" + command + "！";
+        }
+
         ProcessBuilder pb = new ProcessBuilder(RUN_ENGINE[0], RUN_ENGINE[1], command);
         pb.redirectErrorStream(true);
 
