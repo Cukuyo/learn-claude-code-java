@@ -2,9 +2,16 @@ package org.example.models;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+
+import org.example.tool.ToolExcuter;
+import org.example.tool.ToolResolve;
+import org.example.tool.ToolResolveResult;
 import org.example.utils.HttpClientUtil;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * model抽象父类，提供公共方法
@@ -12,6 +19,7 @@ import java.io.IOException;
 public abstract class AbstractModel {
     private final JSONObject curReq = new JSONObject();
     private final String model;
+    private final Map<String,ToolExcuter> toolHandlers=new HashMap<>();
 
     public AbstractModel(String model) {
         this.model = model;
@@ -48,6 +56,20 @@ public abstract class AbstractModel {
         return result;
     }
 
+
+    public void registryTool(Object obj){
+        List<ToolResolveResult> toolResolveResults = ToolResolve.resolve(obj);
+        for (ToolResolveResult toolResolveResult : toolResolveResults) {
+            toolHandlers.put(toolResolveResult.name(),toolResolveResult.toolHandler() );
+            addTool(toolResolveResult.name(), toolResolveResult.description(), toolResolveResult.properties());
+        }
+    }
+
+    
+    public String execTool(String toolName,JSONObject params){
+        return toolHandlers.get(toolName).execute(params);
+    }
+
     /**
      * 添加方法
      * "name": "get_weather",
@@ -67,7 +89,7 @@ public abstract class AbstractModel {
      * @param desc       描述
      * @param properties properties。0-变量名，1-类型，2-描述，3-是否必填
      */
-    public void addTool(String name, String desc, String[][] properties) {
+    private void addTool(String name, String desc, String[][] properties) {
         JSONObject tool = new JSONObject();
         tool.put("type", "function");
         tool.put("function", buildFunction(name, desc, properties));
@@ -124,9 +146,12 @@ public abstract class AbstractModel {
      * 构造工具提示词
      *
      * @param content content
+     * @param toolCallId toolCallId
      */
     public void addToolMessages(String content, String toolCallId) {
-        ((JSONArray) curReq.get("messages")).add(message(content, "tool", toolCallId));
+        JSONObject msg = message(content, "tool");
+        msg.put("tool_call_id", toolCallId);
+        ((JSONArray) curReq.get("messages")).add(msg);
     }
 
     /**
@@ -139,14 +164,9 @@ public abstract class AbstractModel {
     }
 
     private JSONObject message(String content, String role) {
-        return message(content, role, null);
-    }
-
-    private JSONObject message(String content, String role, String toolCallId) {
         JSONObject msg = new JSONObject();
         msg.put("role", role);
         msg.put("content", content);
-        msg.put("tool_call_id", toolCallId);
         return msg;
     }
 }

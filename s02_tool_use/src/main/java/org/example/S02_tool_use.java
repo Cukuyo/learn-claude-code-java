@@ -53,9 +53,9 @@ public class S02_tool_use {
                 JSONObject arguments = JSONObject.parse(function.getString("arguments"));
 
                 System.out.printf("开始执行tool, id:%s, func:%s, args:%s %s", id, name, arguments, System.lineSeparator());
-                String commandRsp = CommandUtil.execute(arguments.getString("command"));
-                System.out.printf("结束执行tool, id:%s, func:%s, args:%s , result:%s %s", id, name, arguments, commandRsp, System.lineSeparator());
-                MODEL.addToolMessages(commandRsp, id);
+                String toolRsp = MODEL.execTool(name,arguments);
+                System.out.printf("结束执行tool, id:%s, func:%s, args:%s , result:%s %s", id, name, arguments, toolRsp, System.lineSeparator());
+                MODEL.addToolMessages(toolRsp, id);
             }
         }
     }
