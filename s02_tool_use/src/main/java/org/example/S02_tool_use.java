@@ -3,21 +3,28 @@ package org.example;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.example.models.DeepseekModel;
+import org.example.tool.ToolExecuter;
+import org.example.tool.ToolResolve;
+import org.example.utils.AgentFileUtils;
 import org.example.utils.CommandUtil;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class S02_tool_use {
     private static final DeepseekModel MODEL = new DeepseekModel(System.getenv("api_key"));
+    private static final Map<String, ToolExecuter> TOOL_HANDLERS = new HashMap<>();
 
     static void main() throws IOException, InterruptedException {
         MODEL.addSystemMessages("你是一个纯情的小猫娘，会帮助主人解决各种技术问题");
-        MODEL.addTool("bash", "Run a shell command in the current workspace.",
-                new String[][]{{"command", "string", "shell command", "true"}});
+        registryTool(CommandUtil.class);
+        registryTool(AgentFileUtils.class);
 
         Scanner scanner = new Scanner(System.in);
-        System.out.print("#>");
+        System.out.print("#>>>");
         while (scanner.hasNextLine()) {
             String cmd = scanner.nextLine();
             if (cmd.equals("q")) {
@@ -25,21 +32,22 @@ public class S02_tool_use {
             }
 
             MODEL.addUserMessage(cmd);
-            System.out.printf("你的纯情猫娘>%s%s", agentLoop(), System.lineSeparator());
-            System.out.print("#>");
+            agentLoop();
+            System.out.print("#>>>");
         }
     }
 
-    static String agentLoop() throws IOException, InterruptedException {
+    private static void agentLoop() throws IOException, InterruptedException {
         while (true) {
             // 每次都需要记录LLM的响应
             JSONObject chatRsp = MODEL.chat();
             JSONObject message = chatRsp.getJSONObject("message");
             MODEL.addAssistantMessages(message);
+            System.out.printf("你的纯情猫娘>>>%s%s", message.getString("content"), System.lineSeparator());
 
             // 非工具调用即刻返回
             if (!chatRsp.getString("finish_reason").equals("tool_calls")) {
-                return message.getString("content");
+                return;
             }
 
             // 依次调用tools
@@ -48,15 +56,29 @@ public class S02_tool_use {
                 JSONObject toolCall = (JSONObject) obj;
                 JSONObject function = toolCall.getJSONObject("function");
 
+                // tool参数
                 String id = toolCall.getString("id");
                 String name = function.getString("name");
                 JSONObject arguments = JSONObject.parse(function.getString("arguments"));
 
                 System.out.printf("开始执行tool, id:%s, func:%s, args:%s %s", id, name, arguments, System.lineSeparator());
-                String toolRsp = MODEL.execTool(name,arguments);
+                String toolRsp = TOOL_HANDLERS.get(name).execute(arguments);
                 System.out.printf("结束执行tool, id:%s, func:%s, args:%s , result:%s %s", id, name, arguments, toolRsp, System.lineSeparator());
                 MODEL.addToolMessages(toolRsp, id);
             }
+        }
+    }
+
+    /**
+     * 注册类里面的tools
+     *
+     * @param toolObj tool工具类
+     */
+    private static void registryTool(Class<?> toolObj) {
+        List<ToolResolve.ToolResolveResult> toolResolveResults = ToolResolve.resolve(toolObj);
+        for (ToolResolve.ToolResolveResult toolResolveResult : toolResolveResults) {
+            TOOL_HANDLERS.put(toolResolveResult.name(), toolResolveResult.toolHandler());
+            MODEL.addTool(toolResolveResult.name(), toolResolveResult.description(), toolResolveResult.properties());
         }
     }
 }

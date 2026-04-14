@@ -1,5 +1,8 @@
 package org.example.utils;
 
+import org.example.tool.ToolMethod;
+import org.example.tool.ToolParam;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,7 +33,8 @@ public class CommandUtil {
      * @param command 命令
      * @return 执行结果
      */
-    public static String execute(String command) {
+    @ToolMethod(description = "Run a shell command in the current workspace.")
+    public static String execute(@ToolParam(description = "shell command") String command) {
         return execute(command, DEFAULT_TIMEOUT, TimeUnit.SECONDS);
     }
 

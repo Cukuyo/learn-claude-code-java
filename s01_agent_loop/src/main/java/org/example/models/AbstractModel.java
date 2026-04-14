@@ -78,7 +78,7 @@ public abstract class AbstractModel {
         JSONObject function = new JSONObject();
         function.put("name", name);
         function.put("description", desc);
-        function.put("buildParameters", buildParameters(properties));
+        function.put("parameters", buildParameters(properties));
         return function;
     }
 

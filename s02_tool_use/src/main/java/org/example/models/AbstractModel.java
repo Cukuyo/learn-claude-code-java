@@ -3,9 +3,8 @@ package org.example.models;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 
-import org.example.tool.ToolExcuter;
+import org.example.tool.ToolExecuter;
 import org.example.tool.ToolResolve;
-import org.example.tool.ToolResolveResult;
 import org.example.utils.HttpClientUtil;
 
 import java.io.IOException;
@@ -19,7 +18,6 @@ import java.util.Map;
 public abstract class AbstractModel {
     private final JSONObject curReq = new JSONObject();
     private final String model;
-    private final Map<String,ToolExcuter> toolHandlers=new HashMap<>();
 
     public AbstractModel(String model) {
         this.model = model;
@@ -56,20 +54,6 @@ public abstract class AbstractModel {
         return result;
     }
 
-
-    public void registryTool(Object obj){
-        List<ToolResolveResult> toolResolveResults = ToolResolve.resolve(obj);
-        for (ToolResolveResult toolResolveResult : toolResolveResults) {
-            toolHandlers.put(toolResolveResult.name(),toolResolveResult.toolHandler() );
-            addTool(toolResolveResult.name(), toolResolveResult.description(), toolResolveResult.properties());
-        }
-    }
-
-    
-    public String execTool(String toolName,JSONObject params){
-        return toolHandlers.get(toolName).execute(params);
-    }
-
     /**
      * 添加方法
      * "name": "get_weather",
@@ -89,7 +73,7 @@ public abstract class AbstractModel {
      * @param desc       描述
      * @param properties properties。0-变量名，1-类型，2-描述，3-是否必填
      */
-    private void addTool(String name, String desc, String[][] properties) {
+    public void addTool(String name, String desc, String[][] properties) {
         JSONObject tool = new JSONObject();
         tool.put("type", "function");
         tool.put("function", buildFunction(name, desc, properties));
@@ -100,7 +84,7 @@ public abstract class AbstractModel {
         JSONObject function = new JSONObject();
         function.put("name", name);
         function.put("description", desc);
-        function.put("buildParameters", buildParameters(properties));
+        function.put("parameters", buildParameters(properties));
         return function;
     }
 
@@ -145,7 +129,7 @@ public abstract class AbstractModel {
     /**
      * 构造工具提示词
      *
-     * @param content content
+     * @param content    content
      * @param toolCallId toolCallId
      */
     public void addToolMessages(String content, String toolCallId) {
