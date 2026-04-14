@@ -42,7 +42,7 @@ public class S02_tool_use {
                 return message.getString("content");
             }
 
-            // 依次调用tool
+            // 依次调用tools
             JSONArray toolCalls = message.getJSONArray("tool_calls");
             for (Object obj : toolCalls) {
                 JSONObject toolCall = (JSONObject) obj;
