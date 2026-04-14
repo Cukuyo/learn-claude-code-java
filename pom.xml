@@ -16,6 +16,7 @@
     <modules>
         <module>s01_agent_loop</module>
         <module>s02_tool_use</module>
+        <module>s03_todo_write</module>
     </modules>
 
     <properties>
