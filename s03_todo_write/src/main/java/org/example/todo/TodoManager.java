@@ -29,13 +29,24 @@ public class TodoManager {
     private final List<PlanItem> cache = new ArrayList<>();
     private int rounds_since_update = 0;
 
+    /**
+     * 更新任务项
+     *
+     * @param planItems 任务项数组
+     * @return 友好的视图
+     */
     @ToolMethod(description = "Rewrite the current session plan for multi-step work.")
-    public String update(@ToolParam(description = "任务项数组") String[] planItems) {
+    public String updateTasks(@ToolParam(description = "任务项数组") PlanItem[] planItems) {
         cache.clear();
-//        Collections.addAll(cache, planItems);
+        Collections.addAll(cache, planItems);
         return render();
     }
 
+    /**
+     * 组装友好的视图
+     *
+     * @return 视图
+     */
     public String render() {
         if (cache.isEmpty()) {
             return "No session plan yet.";
@@ -49,6 +60,11 @@ public class TodoManager {
         return builder.toString();
     }
 
+    /**
+     * 提醒
+     *
+     * @return 提醒
+     */
     public String reminder() {
         if (cache.isEmpty()) {
             return "";
@@ -59,6 +75,9 @@ public class TodoManager {
         return "<reminder>Refresh your current plan before continuing.</reminder>";
     }
 
+    /**
+     * 增加未刷新的次数
+     */
     public void note_round_without_update() {
         rounds_since_update++;
     }

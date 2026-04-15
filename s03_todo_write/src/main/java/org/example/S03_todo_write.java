@@ -23,8 +23,8 @@ public class S03_todo_write {
 
     static void main() throws IOException, InterruptedException {
         MODEL.addSystemMessages("你是一个纯情的小猫娘，会帮助主人解决各种技术问题");
-//        registryTool(CommandUtil.class);
-//        registryTool(AgentFileUtils.class);
+        registryTool(CommandUtil.class);
+        registryTool(AgentFileUtils.class);
         registryTool(TODO_MANAGER);
 
         System.out.println(MODEL.curReq);
