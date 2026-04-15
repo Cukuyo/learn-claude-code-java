@@ -1,9 +1,5 @@
 package org.example.tool;
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
-
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -12,6 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * tool解析工具类，支持静态和动态对象方法
+ */
 public class ToolResolve {
     /**
      * 解析后tool的参数信息
@@ -64,7 +63,7 @@ public class ToolResolve {
         String desc = method.getAnnotation(ToolMethod.class).description();
         List<ToolResolveItem> properties = Stream.of(method.getParameters()).map(ToolResolve::getToolResolveItem).toList();
 
-        return new ToolResolveResult(name, desc, properties, buildToolExecuter(invokeObj, method));
+        return new ToolResolveResult(name, desc, properties, ToolExecuterBuildUtil.buildToolExecuter(invokeObj, method));
     }
 
     private static ToolResolveItem getToolResolveItem(Parameter parameter) {
@@ -155,94 +154,5 @@ public class ToolResolve {
 
     private static boolean checkFields(Field field) {
         return field.getAnnotation(ToolParam.class) != null;
-    }
-
-    private static ToolExecuter buildToolExecuter(Object invokeObj, Method method) {
-        return args -> {
-            try {
-                method.setAccessible(true);
-
-                Parameter[] params = method.getParameters();
-                Object[] invokeArgs = new Object[params.length];
-
-                for (int i = 0; i < params.length; i++) {
-                    Parameter param = params[i];
-                    String paramName = param.getName();
-                    Object value = args.get(paramName);
-
-                    // 判断必须参数是否赋值
-                    ToolParam paramAnno = param.getAnnotation(ToolParam.class);
-                    if (paramAnno.required() && value == null) {
-                        return "缺失必选参数：" + paramName;
-                    }
-
-                    // 转换为java tool定义的类型
-                    invokeArgs[i] = convert(value, param.getType());
-                }
-
-                return (String) method.invoke(invokeObj, invokeArgs);
-            } catch (Exception e) {
-                return "执行失败：" + e.getMessage();
-            }
-        };
-    }
-
-    /**
-     * 类型转换：将 LLM 传入的参数值 转为 Java 方法需要的类型
-     *
-     * @param value      待转换值
-     * @param targetType 目标类型
-     * @return 转换后值
-     */
-    private static Object convert(Object value, Class<?> targetType) {
-        // 1. null 直接返回
-        if (value == null) {
-            return null;
-        }
-
-        // 2. 类型已经匹配，直接返回
-        if (targetType.isInstance(value)) {
-            return value;
-        }
-
-        // 3. 字符串
-        if (targetType == String.class) {
-            return value.toString();
-        }
-
-        // 4. int / Integer
-        if (targetType == int.class || targetType == Integer.class) {
-            return ((Number) value).intValue();
-        }
-
-        // 5. boolean / Boolean
-        if (targetType == boolean.class || targetType == Boolean.class) {
-            return Boolean.valueOf(value.toString());
-        }
-
-        // 枚举转换
-        if (targetType.isEnum()) {
-            return Enum.valueOf((Class<? extends Enum>) targetType, value.toString());
-        }
-
-        // 数组转换
-        if (targetType.isArray()) {
-            Class<?> componentType = targetType.getComponentType();
-            JSONArray jsonArray = (JSONArray) value;
-
-            Object array = Array.newInstance(componentType, jsonArray.size());
-            for (int i = 0; i < jsonArray.size(); i++) {
-                Array.set(array, i, convert(jsonArray.get(i), componentType));
-            }
-            return array;
-        }
-
-        // 普通对象转换
-        if (!targetType.isPrimitive()) {
-            return ((JSONObject) value).toJavaObject(targetType);
-        }
-
-        // 不支持的类型
-        throw new IllegalArgumentException("无法将 " + value.getClass().getSimpleName() + " 转为 " + targetType.getSimpleName());
     }
 }
