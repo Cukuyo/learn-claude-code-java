@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * tool函数参数声明
  */
-@Target(ElementType.PARAMETER)
+@Target(value = {ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ToolParam {
     /**
@@ -20,4 +20,9 @@ public @interface ToolParam {
      * @return 是否必选
      */
     boolean required() default true;
+
+    /**
+     * @return 是否是基础类型
+     */
+    boolean baseClass() default true;
 }

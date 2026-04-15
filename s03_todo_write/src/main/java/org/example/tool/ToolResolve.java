@@ -1,11 +1,31 @@
 package org.example.tool;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
+
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 
 public class ToolResolve {
+    /**
+     * 解析后tool的参数信息
+     *
+     * @param name        tool参数名
+     * @param type        tool参数类型
+     * @param enums        tool参数如果是enum，该值为枚举可能的值
+     * @param description 描述
+     * @param required  tool参数是否为必选
+     * @param properties tool参数如果不是基础类型，会继续往下迭代
+     */
+    public record ToolResolveItem(String name, String type, Object[] enums, String description, boolean required, List<ToolResolveItem> properties) {
+    }
+
     /**
      * 解析后tool的信息
      *
@@ -14,8 +34,7 @@ public class ToolResolve {
      * @param properties  参数属性
      * @param toolHandler 执行体
      */
-    public record ToolResolveResult(String name, String description, String[][] properties,
-                                    ToolExecuter toolHandler) {
+    public record ToolResolveResult(String name, String description, List<ToolResolveItem> properties, ToolExecuter toolHandler) {
     }
 
     /**
@@ -41,26 +60,35 @@ public class ToolResolve {
     private static ToolResolveResult getToolResolveResult(Object invokeObj, Method method) {
         String name = method.getName();
         String desc = method.getAnnotation(ToolMethod.class).description();
-
-        Parameter[] params = method.getParameters();
-        String[][] properties = new String[params.length][];
-        for (int i = 0; i < params.length; i++) {
-            String[] property = new String[4];
-
-            // 解析固有属性
-            Parameter param = params[i];
-            property[0] = param.getName();
-            property[1] = param.getType().getSimpleName().toLowerCase();
-
-            // 解析注解属性
-            ToolParam paramAnno = param.getAnnotation(ToolParam.class);
-            property[2] = paramAnno.description();
-            property[3] = String.valueOf(paramAnno.required());
-
-            properties[i] = property;
-        }
+        List<ToolResolveItem> properties = Stream.of( method.getParameters()).map(p->getToolResolveItem(p)).toList();
 
         return new ToolResolveResult(name, desc, properties, buildToolExecuter(invokeObj, method));
+    }
+
+    private static ToolResolveItem getToolResolveItem(Parameter parameter){
+        String name = parameter.getName();
+        String type = parameter.getType().getSimpleName().toLowerCase();
+        Object[] enums = parameter.getType().isEnum()?parameter.getType().getEnumConstants():null;
+
+        ToolParam paramAnno = parameter.getAnnotation(ToolParam.class);
+        String description = paramAnno.description();
+        boolean required = paramAnno.required();
+        List<ToolResolveItem> properties = paramAnno.baseClass()?null:getAnnotatedFields(parameter.getClass()).stream().map(f->getToolResolveItem(f)).toList();
+        
+        return new ToolResolveItem(name, type, enums, description, required, properties);
+    }
+
+    private static ToolResolveItem getToolResolveItem(Field parameter){
+        String name = parameter.getName();
+        String type = parameter.getType().getSimpleName().toLowerCase();
+        Object[] enums = parameter.getType().isEnum()?parameter.getType().getEnumConstants():null;
+
+        ToolParam paramAnno = parameter.getAnnotation(ToolParam.class);
+        String description = paramAnno.description();
+        boolean required = paramAnno.required();
+        List<ToolResolveItem> properties = paramAnno.baseClass()?null:getAnnotatedFields(parameter.getClass()).stream().map(f->getToolResolveItem(f)).toList();
+        
+        return new ToolResolveItem(name, type, enums, description, required, properties);
     }
 
     private static List<Method> getAnnotatedMethods(Class<?> obj) {
@@ -69,6 +97,14 @@ public class ToolResolve {
 
     private static boolean checkMethod(Method method) {
         return method.getAnnotation(ToolMethod.class) != null;
+    }
+
+    private static List<Field> getAnnotatedFields(Class<?> obj) {
+        return Arrays.stream(obj.getDeclaredFields()).filter(ToolResolve::checkFields).toList();
+    }
+
+    private static boolean checkFields(Field field) {
+        return field.getAnnotation(ToolParam.class) != null;
     }
 
     private static ToolExecuter buildToolExecuter(Object invokeObj, Method method) {
@@ -109,51 +145,54 @@ public class ToolResolve {
      * @return 转换后值
      */
     private static Object convert(Object value, Class<?> targetType) {
-        // 值为 null 直接返回
+        // 1. null 直接返回
         if (value == null) {
             return null;
         }
 
-        // 类型本来就匹配，直接返回
+        // 2. 类型已经匹配，直接返回
         if (targetType.isInstance(value)) {
             return value;
         }
 
-        String str = value.toString().trim();
-
-        // 字符串类型
+        // 3. 字符串
         if (targetType == String.class) {
-            return str;
+            return value.toString();
         }
 
-        // 整数 int
+        // 4. int / Integer
         if (targetType == int.class || targetType == Integer.class) {
-            return str.isEmpty() ? 0 : Integer.parseInt(str);
+            return ((Number) value).intValue();
         }
 
-        // 长整型 long
-        if (targetType == long.class || targetType == Long.class) {
-            return str.isEmpty() ? 0L : Long.parseLong(str);
-        }
-
-        // 双精度浮点 double
-        if (targetType == double.class || targetType == Double.class) {
-            return str.isEmpty() ? 0.0d : Double.parseDouble(str);
-        }
-
-        // 布尔 boolean
+        // 5. boolean / Boolean
         if (targetType == boolean.class || targetType == Boolean.class) {
-            return "true".equalsIgnoreCase(str) || "1".equals(str);
+            return (Boolean) value;
         }
 
-        // 浮点 float（极少用）
-        if (targetType == float.class || targetType == Float.class) {
-            return str.isEmpty() ? 0.0f : Float.parseFloat(str);
+        // 枚举转换
+        if (targetType.isEnum()) {
+            return Enum.valueOf((Class<? extends Enum>) targetType, value.toString());
         }
 
-        // 无法转换
-        throw new IllegalArgumentException(
-                "不支持的参数类型转换: 无法将 " + value.getClass().getName() + " 转为 " + targetType.getName()
-        );
+        // 数组转换
+        if (targetType.isArray()) {
+            Class<?> componentType = targetType.getComponentType();
+            JSONArray jsonArray = (JSONArray) value;
+
+            Object array = Array.newInstance(componentType, jsonArray.size());
+            for (int i = 0; i < jsonArray.size(); i++) {
+                Array.set(array, i, convert(jsonArray.get(i), componentType));
+            }
+            return array;
+        }   
+
+        // 普通对象转换
+        if (!targetType.isPrimitive()) {
+            return ((JSONObject) value).toJavaObject(targetType);
+        }
+
+        // 不支持的类型
+        throw new IllegalArgumentException("无法将 " + value.getClass().getSimpleName() +" 转为 " + targetType.getSimpleName());
     }
 }

@@ -3,14 +3,9 @@ package org.example.models;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 
-import org.example.tool.ToolExecuter;
-import org.example.tool.ToolResolve;
 import org.example.utils.HttpClientUtil;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * model抽象父类，提供公共方法
@@ -34,6 +29,16 @@ public abstract class AbstractModel {
 
     abstract String getApiKey();
 
+    abstract JSONObject buildTool(String name, String desc, JSONObject parameters);
+
+    abstract JSONObject buildToolFunction(String name, String desc, JSONObject parameters);
+
+    abstract JSONObject buildToolParameters(JSONObject properties, String[] required);
+
+    abstract JSONObject buildToolParameter(String type, String description, Object[] enums);
+
+    abstract JSONObject buildToolParameterArray(String type, String description, JSONObject items);
+
     /**
      * 使用当前提示词请求一次
      *
@@ -55,57 +60,12 @@ public abstract class AbstractModel {
     }
 
     /**
-     * 添加方法
-     * "name": "get_weather",
-     * "description": "Get weather of a location, the user should supply a location first.",
-     * "parameters": {
-     * "type": "object",
-     * "properties": {
-     * "location": {
-     * "type": "string",
-     * "description": "The city and state, e.g. San Francisco, CA",
-     * }
-     * },
-     * "required": ["location"]
-     * }
+     * 添加tool
      *
-     * @param name       函数名
-     * @param desc       描述
-     * @param properties properties。0-变量名，1-类型，2-描述，3-是否必填
+     * @param tool       tool
      */
-    public void addTool(String name, String desc, String[][] properties) {
-        JSONObject tool = new JSONObject();
-        tool.put("type", "function");
-        tool.put("function", buildFunction(name, desc, properties));
+    public void addTool(JSONObject tool) {
         ((JSONArray) curReq.get("tools")).add(tool);
-    }
-
-    private JSONObject buildFunction(String name, String desc, String[][] properties) {
-        JSONObject function = new JSONObject();
-        function.put("name", name);
-        function.put("description", desc);
-        function.put("parameters", buildParameters(properties));
-        return function;
-    }
-
-    private JSONObject buildParameters(String[][] properties) {
-        JSONObject propertiesJson = new JSONObject();
-        JSONArray requiredJson = new JSONArray();
-        for (String[] property : properties) {
-            JSONObject propertyJson = new JSONObject();
-            propertyJson.put("type", property[1]);
-            propertyJson.put("description", property[2]);
-            propertiesJson.put(property[0], propertyJson);
-            if (property[3].equals("true")) {
-                requiredJson.add(property[0]);
-            }
-        }
-
-        JSONObject parameters = new JSONObject();
-        parameters.put("type", "object");
-        parameters.put("properties", propertiesJson);
-        parameters.put("required", requiredJson);
-        return parameters;
     }
 
     /**
