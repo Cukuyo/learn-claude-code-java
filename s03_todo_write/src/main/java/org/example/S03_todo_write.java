@@ -3,10 +3,12 @@ package org.example;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.example.models.DeepseekModel;
+import org.example.todo.TodoManager;
 import org.example.tool.ToolExecuter;
 import org.example.tool.ToolResolve;
 import org.example.utils.AgentFileUtils;
 import org.example.utils.CommandUtil;
+import org.example.utils.ToolToModelTransformUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,12 +19,15 @@ import java.util.Scanner;
 public class S03_todo_write {
     private static final DeepseekModel MODEL = new DeepseekModel(System.getenv("api_key"));
     private static final Map<String, ToolExecuter> TOOL_HANDLERS = new HashMap<>();
+    private static final TodoManager TODO_MANAGER = new TodoManager();
 
     static void main() throws IOException, InterruptedException {
         MODEL.addSystemMessages("你是一个纯情的小猫娘，会帮助主人解决各种技术问题");
-        registryTool(CommandUtil.class);
-        registryTool(AgentFileUtils.class);
+//        registryTool(CommandUtil.class);
+//        registryTool(AgentFileUtils.class);
+        registryTool(TODO_MANAGER);
 
+        System.out.println(MODEL.curReq);
         Scanner scanner = new Scanner(System.in);
         System.out.print("#>>>");
         while (scanner.hasNextLine()) {
@@ -74,11 +79,23 @@ public class S03_todo_write {
      *
      * @param toolObj tool工具类
      */
+    private static void registryTool(Object toolObj) {
+        registryTool(ToolResolve.resolve(toolObj));
+    }
+
+    /**
+     * 注册类里面的tools
+     *
+     * @param toolObj tool工具类
+     */
     private static void registryTool(Class<?> toolObj) {
-        List<ToolResolve.ToolResolveResult> toolResolveResults = ToolResolve.resolve(toolObj);
+        registryTool(ToolResolve.resolve(toolObj));
+    }
+
+    private static void registryTool(List<ToolResolve.ToolResolveResult> toolResolveResults) {
         for (ToolResolve.ToolResolveResult toolResolveResult : toolResolveResults) {
             TOOL_HANDLERS.put(toolResolveResult.name(), toolResolveResult.toolHandler());
-            MODEL.addTool(toolResolveResult.name(), toolResolveResult.description(), toolResolveResult.properties());
+            MODEL.addTool(ToolToModelTransformUtil.transform(toolResolveResult, MODEL));
         }
     }
 }

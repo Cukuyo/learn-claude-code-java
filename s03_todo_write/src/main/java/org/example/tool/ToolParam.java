@@ -20,9 +20,4 @@ public @interface ToolParam {
      * @return 是否必选
      */
     boolean required() default true;
-
-    /**
-     * @return 是否是基础类型
-     */
-    boolean baseClass() default true;
 }

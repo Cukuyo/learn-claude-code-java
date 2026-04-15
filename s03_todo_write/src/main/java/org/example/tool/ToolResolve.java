@@ -1,5 +1,8 @@
 package org.example.tool;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -9,21 +12,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
-
 public class ToolResolve {
     /**
      * 解析后tool的参数信息
      *
      * @param name        tool参数名
      * @param type        tool参数类型
-     * @param enums        tool参数如果是enum，该值为枚举可能的值
+     * @param enums       tool参数如果是enum，该值为枚举可能的值
      * @param description 描述
-     * @param required  tool参数是否为必选
-     * @param properties tool参数如果不是基础类型，会继续往下迭代
+     * @param required    tool参数是否为必选
+     * @param properties  tool参数如果不是基础类型，会继续往下迭代
      */
-    public record ToolResolveItem(String name, String type, Object[] enums, String description, boolean required, List<ToolResolveItem> properties) {
+    public record ToolResolveItem(String name, String type, Object[] enums, String description, boolean required,
+                                  List<ToolResolveItem> properties) {
     }
 
     /**
@@ -34,7 +35,8 @@ public class ToolResolve {
      * @param properties  参数属性
      * @param toolHandler 执行体
      */
-    public record ToolResolveResult(String name, String description, List<ToolResolveItem> properties, ToolExecuter toolHandler) {
+    public record ToolResolveResult(String name, String description, List<ToolResolveItem> properties,
+                                    ToolExecuter toolHandler) {
     }
 
     /**
@@ -60,34 +62,82 @@ public class ToolResolve {
     private static ToolResolveResult getToolResolveResult(Object invokeObj, Method method) {
         String name = method.getName();
         String desc = method.getAnnotation(ToolMethod.class).description();
-        List<ToolResolveItem> properties = Stream.of( method.getParameters()).map(p->getToolResolveItem(p)).toList();
+        List<ToolResolveItem> properties = Stream.of(method.getParameters()).map(ToolResolve::getToolResolveItem).toList();
 
         return new ToolResolveResult(name, desc, properties, buildToolExecuter(invokeObj, method));
     }
 
-    private static ToolResolveItem getToolResolveItem(Parameter parameter){
+    private static ToolResolveItem getToolResolveItem(Parameter parameter) {
         String name = parameter.getName();
-        String type = parameter.getType().getSimpleName().toLowerCase();
-        Object[] enums = parameter.getType().isEnum()?parameter.getType().getEnumConstants():null;
-
+        Class<?> parameterType = parameter.getType();
         ToolParam paramAnno = parameter.getAnnotation(ToolParam.class);
+
+        String type = parameterType.isArray() ? "array" : parameterType.getSimpleName().toLowerCase();
+        Object[] enums = parameterType.isEnum() ? parameterType.getEnumConstants() : new Object[0];
+
         String description = paramAnno.description();
         boolean required = paramAnno.required();
-        List<ToolResolveItem> properties = paramAnno.baseClass()?null:getAnnotatedFields(parameter.getClass()).stream().map(f->getToolResolveItem(f)).toList();
-        
+
+        List<ToolResolveItem> properties = new ArrayList<>();
+        // 如果是非基础对象，就要迭代
+        if (!parameterType.isPrimitive()) {
+            // 非基础对象，又是数组
+            if (parameterType.isArray()) {
+                Class<?> componentType = parameterType.getComponentType();
+                // 数组封装的又是基础对象
+                if (componentType.isPrimitive() || componentType.equals(String.class)) {
+                    // 构造一个特殊item，在构造json时判断
+                    properties.add(new ToolResolveItem("",
+                            componentType.getSimpleName().toLowerCase(),
+                            componentType.isEnum() ? componentType.getEnumConstants() : new Object[0],
+                            "", true, new ArrayList<>()));
+                } else {
+                    // 非基础对象，又是数组，数组封装的又是封装对象
+                    properties.addAll(getAnnotatedFields(componentType).stream().map(ToolResolve::getToolResolveItem).toList());
+                }
+            } else {
+                // 非基础对象，又不是数组，那就是单纯的封装对象
+                properties.addAll(getAnnotatedFields(parameterType).stream().map(ToolResolve::getToolResolveItem).toList());
+            }
+        }
+
         return new ToolResolveItem(name, type, enums, description, required, properties);
     }
 
-    private static ToolResolveItem getToolResolveItem(Field parameter){
+    private static ToolResolveItem getToolResolveItem(Field parameter) {
         String name = parameter.getName();
-        String type = parameter.getType().getSimpleName().toLowerCase();
-        Object[] enums = parameter.getType().isEnum()?parameter.getType().getEnumConstants():null;
-
+        Class<?> parameterType = parameter.getType();
         ToolParam paramAnno = parameter.getAnnotation(ToolParam.class);
+
+        String type = parameterType.isArray() ? "array" : parameterType.getSimpleName().toLowerCase();
+        Object[] enums = parameterType.isEnum() ? parameterType.getEnumConstants() : new Object[0];
+
         String description = paramAnno.description();
         boolean required = paramAnno.required();
-        List<ToolResolveItem> properties = paramAnno.baseClass()?null:getAnnotatedFields(parameter.getClass()).stream().map(f->getToolResolveItem(f)).toList();
-        
+
+        List<ToolResolveItem> properties = new ArrayList<>();
+        // 如果是非基础对象，就要迭代
+        if (!parameterType.isPrimitive()) {
+            // 非基础对象，又是数组
+            if (parameterType.isArray()) {
+                Class<?> componentType = parameterType.getComponentType();
+                // 数组封装的又是基础对象
+                if (componentType.isPrimitive() || componentType.equals(String.class)) {
+                    // 构造一个特殊item，在构造json时判断
+                    properties.add(new ToolResolveItem("",
+                            componentType.getSimpleName().toLowerCase(),
+                            componentType.isEnum() ? componentType.getEnumConstants() : new Object[0],
+                            "", true, new ArrayList<>()));
+                } else {
+                    // 非基础对象，又是数组，数组封装的又是封装对象
+                    properties.addAll(getAnnotatedFields(componentType).stream().map(ToolResolve::getToolResolveItem).toList());
+                }
+            } else {
+                // 非基础对象，又不是数组，那就是单纯的封装对象
+                properties.addAll(getAnnotatedFields(parameterType).stream().map(ToolResolve::getToolResolveItem).toList());
+            }
+        }
+
         return new ToolResolveItem(name, type, enums, description, required, properties);
     }
 
@@ -167,7 +217,7 @@ public class ToolResolve {
 
         // 5. boolean / Boolean
         if (targetType == boolean.class || targetType == Boolean.class) {
-            return (Boolean) value;
+            return Boolean.valueOf(value.toString());
         }
 
         // 枚举转换
@@ -185,7 +235,7 @@ public class ToolResolve {
                 Array.set(array, i, convert(jsonArray.get(i), componentType));
             }
             return array;
-        }   
+        }
 
         // 普通对象转换
         if (!targetType.isPrimitive()) {
@@ -193,6 +243,6 @@ public class ToolResolve {
         }
 
         // 不支持的类型
-        throw new IllegalArgumentException("无法将 " + value.getClass().getSimpleName() +" 转为 " + targetType.getSimpleName());
+        throw new IllegalArgumentException("无法将 " + value.getClass().getSimpleName() + " 转为 " + targetType.getSimpleName());
     }
 }

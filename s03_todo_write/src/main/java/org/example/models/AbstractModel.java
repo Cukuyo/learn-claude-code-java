@@ -2,42 +2,37 @@ package org.example.models;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-
 import org.example.utils.HttpClientUtil;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * model抽象父类，提供公共方法
  */
 public abstract class AbstractModel {
-    private final JSONObject curReq = new JSONObject();
-    private final String model;
+    public final JSONObject curReq = new JSONObject();
 
-    public AbstractModel(String model) {
-        this.model = model;
-        curReq.put("model", model);
+    public AbstractModel() {
         curReq.put("messages", new JSONArray());
-        curReq.put("frequency_penalty", 0);
-        curReq.put("max_tokens", 4096);
-        curReq.put("presence_penalty", 0);
-        curReq.put("top_p", 1);
         curReq.put("tools", new JSONArray());
     }
 
-    abstract String getUrl();
+    public abstract String getUrl();
 
-    abstract String getApiKey();
+    public abstract String getApiKey();
 
-    abstract JSONObject buildTool(String name, String desc, JSONObject parameters);
+    public abstract String getModel();
 
-    abstract JSONObject buildToolFunction(String name, String desc, JSONObject parameters);
+    public abstract JSONObject buildTool(JSONObject function);
 
-    abstract JSONObject buildToolParameters(JSONObject properties, String[] required);
+    public abstract JSONObject buildToolFunction(String name, String desc, JSONObject parameters);
 
-    abstract JSONObject buildToolParameter(String type, String description, Object[] enums);
+    public abstract JSONObject buildToolParameters(JSONObject properties, String[] required);
 
-    abstract JSONObject buildToolParameterArray(String type, String description, JSONObject items);
+    public abstract JSONObject buildToolProperties(Map<String, JSONObject> properties);
+
+    public abstract JSONObject buildToolProperty(String type, String description, Object[] enums, JSONObject items);
 
     /**
      * 使用当前提示词请求一次
@@ -51,10 +46,7 @@ public abstract class AbstractModel {
 
         System.out.println(result);
         JSONObject usage = result.getJSONObject("usage");
-        System.out.printf("请求url:%s, 模型:%s, 提示词token数:%d, 补全token数:%d, 总token数:%d %s",
-                getUrl(), model,
-                usage.getInteger("prompt_tokens"), usage.getInteger("completion_tokens"), usage.getInteger("total_tokens"),
-                System.lineSeparator());
+        System.out.printf("请求url:%s, 模型:%s, 提示词token数:%d, 补全token数:%d, 总token数:%d %s", getUrl(), getModel(), usage.getInteger("prompt_tokens"), usage.getInteger("completion_tokens"), usage.getInteger("total_tokens"), System.lineSeparator());
 
         return result;
     }
@@ -62,7 +54,7 @@ public abstract class AbstractModel {
     /**
      * 添加tool
      *
-     * @param tool       tool
+     * @param tool tool
      */
     public void addTool(JSONObject tool) {
         ((JSONArray) curReq.get("tools")).add(tool);
