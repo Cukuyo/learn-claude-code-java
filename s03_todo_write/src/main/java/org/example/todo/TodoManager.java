@@ -78,7 +78,14 @@ public class TodoManager {
     /**
      * 增加未刷新的次数
      */
-    public void note_round_without_update() {
+    public void noteRoundWithoutUpdate() {
         rounds_since_update++;
+    }
+
+    /**
+     * 重置未刷新的次数
+     */
+    public void noteRoundReset() {
+        rounds_since_update = 0;
     }
 }

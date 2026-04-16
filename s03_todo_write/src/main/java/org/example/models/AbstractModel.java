@@ -44,7 +44,6 @@ public abstract class AbstractModel {
     public JSONObject chat() throws IOException, InterruptedException {
         JSONObject result = HttpClientUtil.send(getUrl(), getApiKey(), curReq);
 
-        System.out.println(result);
         JSONObject usage = result.getJSONObject("usage");
         System.out.printf("请求url:%s, 模型:%s, 提示词token数:%d, 补全token数:%d, 总token数:%d %s", getUrl(), getModel(), usage.getInteger("prompt_tokens"), usage.getInteger("completion_tokens"), usage.getInteger("total_tokens"), System.lineSeparator());
 

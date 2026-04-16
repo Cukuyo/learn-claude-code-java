@@ -43,16 +43,13 @@ public class DeepseekModel extends AbstractModel {
      * "description": "Five keywords of the article, sorted by importance",
      * "items": {
      * "type": "string",
-     * "description": "A concise and accurate keyword or phrase."
-     * }
-     * }
-     * },
+     * "description": "A concise and accurate keyword or phrase."}}},
      * "required": ["keywords"],
      * "additionalProperties": false
      * }
      *
      * @param function function
-     * @return tool json
+     * @return tool JSON
      */
     @Override
     public JSONObject buildTool(JSONObject function) {

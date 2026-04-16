@@ -27,7 +27,6 @@ public class S03_todo_write {
         registryTool(AgentFileUtils.class);
         registryTool(TODO_MANAGER);
 
-        System.out.println(MODEL.curReq);
         Scanner scanner = new Scanner(System.in);
         System.out.print("#>>>");
         while (scanner.hasNextLine()) {
@@ -55,6 +54,9 @@ public class S03_todo_write {
                 return;
             }
 
+            // 记录todo的使用
+            boolean useTodo = false;
+
             // 依次调用tools
             JSONArray toolCalls = message.getJSONArray("tool_calls");
             for (Object obj : toolCalls) {
@@ -70,24 +72,33 @@ public class S03_todo_write {
                 String toolRsp = TOOL_HANDLERS.get(name).execute(arguments);
                 System.out.printf("结束执行tool, id:%s, func:%s, args:%s , result:%s %s", id, name, arguments, toolRsp, System.lineSeparator());
                 MODEL.addToolMessages(toolRsp, id);
+
+                if (name.equals("updateTasks")) {
+                    useTodo = true;
+                }
+            }
+
+            // 更新任务项
+            updateTasks(useTodo);
+        }
+    }
+
+    private static void updateTasks(boolean useTodo) {
+        if (useTodo) {
+            TODO_MANAGER.noteRoundReset();
+        } else {
+            TODO_MANAGER.noteRoundWithoutUpdate();
+            String reminder = TODO_MANAGER.reminder();
+            if (!reminder.isEmpty()) {
+                MODEL.addUserMessage(reminder);
             }
         }
     }
 
-    /**
-     * 注册类里面的tools
-     *
-     * @param toolObj tool工具类
-     */
     private static void registryTool(Object toolObj) {
         registryTool(ToolResolve.resolve(toolObj));
     }
 
-    /**
-     * 注册类里面的tools
-     *
-     * @param toolObj tool工具类
-     */
     private static void registryTool(Class<?> toolObj) {
         registryTool(ToolResolve.resolve(toolObj));
     }
