@@ -84,7 +84,7 @@ public abstract class AbstractAgent implements IAgent {
      * @param arguments tool args
      */
     public void callBeforeToolUse(String id, String name, JSONObject arguments) {
-        System.out.printf("%s 开始执行tool, id:%s, func:%s, args:%s %s", agentName, id, name, arguments, System.lineSeparator());
+        System.out.printf("<%s> 开始执行tool, id:%s, func:%s, args:%s %s", agentName, id, name, arguments, System.lineSeparator());
     }
 
     /**
@@ -96,7 +96,7 @@ public abstract class AbstractAgent implements IAgent {
      * @param toolRsp
      */
     public void callAfterToolUse(String id, String name, JSONObject arguments, String toolRsp) {
-        System.out.printf("%s 结束执行tool, id:%s, func:%s, args:%s , result:%s %s", agentName, id, name, arguments, toolRsp, System.lineSeparator());
+        System.out.printf("<%s> 结束执行tool, id:%s, func:%s, args:%s , result:%s %s", agentName, id, name, arguments, toolRsp, System.lineSeparator());
     }
 
     /**
