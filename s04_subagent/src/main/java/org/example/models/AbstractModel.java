@@ -11,7 +11,7 @@ import java.util.Map;
  * model抽象父类，提供公共方法
  */
 public abstract class AbstractModel {
-    public final JSONObject curReq = new JSONObject();
+    public JSONObject curReq = new JSONObject();
 
     public AbstractModel() {
         curReq.put("messages", new JSONArray());
@@ -33,6 +33,20 @@ public abstract class AbstractModel {
     public abstract JSONObject buildToolProperties(Map<String, JSONObject> properties);
 
     public abstract JSONObject buildToolProperty(String type, String description, Object[] enums, JSONObject items);
+
+    /**
+     * 带全部历史信息的克隆
+     *
+     * @return AbstractModel
+     */
+    public abstract AbstractModel cloneWithAll();
+
+    /**
+     * 仅带系统提示词的克隆
+     *
+     * @return AbstractModel
+     */
+    public abstract AbstractModel cloneWithSystemMessages();
 
     /**
      * 使用当前提示词请求一次

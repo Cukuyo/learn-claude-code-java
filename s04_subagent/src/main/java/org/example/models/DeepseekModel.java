@@ -1,5 +1,6 @@
 package org.example.models;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class DeepseekModel extends AbstractModel {
     public DeepseekModel(String model, String url, String apiKey) {
         super();
         this.url = url;
-        this.apiKey = "Bearer " + apiKey;
+        this.apiKey = apiKey;
         this.model = model;
         curReq.put("model", model);
         curReq.put("frequency_penalty", 0);
@@ -93,6 +94,29 @@ public class DeepseekModel extends AbstractModel {
     }
 
     @Override
+    public AbstractModel cloneWithAll() {
+        DeepseekModel cloneModel = new DeepseekModel(model, url, apiKey);
+        cloneModel.curReq = this.curReq.clone();
+        return cloneModel;
+    }
+
+    @Override
+    public AbstractModel cloneWithSystemMessages() {
+        DeepseekModel cloneModel = new DeepseekModel(model, url, apiKey);
+        JSONArray cloneMessages = cloneModel.curReq.getJSONArray("messages");
+
+        JSONArray thisMessages = this.curReq.getJSONArray("messages");
+        for (Object message : thisMessages) {
+            JSONObject jsonObject = (JSONObject) message;
+            if (jsonObject.getString("role").equals("system")) {
+                cloneMessages.add(jsonObject);
+            }
+        }
+
+        return cloneModel;
+    }
+
+    @Override
     public JSONObject chat() throws IOException, InterruptedException {
         return super.chat().getJSONArray("choices").getJSONObject(0);
     }
@@ -111,5 +135,4 @@ public class DeepseekModel extends AbstractModel {
     public String getModel() {
         return model;
     }
-
 }

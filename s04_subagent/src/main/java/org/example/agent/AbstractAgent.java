@@ -16,8 +16,8 @@ import java.util.Map;
  */
 public abstract class AbstractAgent implements IAgent {
     protected final Map<String, ToolExecuter> toolHandlers = new HashMap<>();
-    protected final AbstractModel model;
-    protected final String agentName;
+    public final AbstractModel model;
+    public final String agentName;
 
     public AbstractAgent(AbstractModel model, String agentName) {
         this.model = model;
@@ -69,23 +69,11 @@ public abstract class AbstractAgent implements IAgent {
         // 工具使用前回调
         callBeforeToolUse(id, name, arguments);
 
-        System.out.printf("开始执行tool, id:%s, func:%s, args:%s %s", id, name, arguments, System.lineSeparator());
         String toolRsp = toolHandlers.get(name).execute(arguments);
-        System.out.printf("结束执行tool, id:%s, func:%s, args:%s , result:%s %s", id, name, arguments, toolRsp, System.lineSeparator());
         model.addToolMessages(toolRsp, id);
 
         // 工具使用后回调
-        callAfterToolUse(id, name, arguments);
-    }
-
-    /**
-     * 单个工具使用前回调
-     *
-     * @param id        tool id
-     * @param name      tool name
-     * @param arguments tool args
-     */
-    public void callAfterToolUse(String id, String name, JSONObject arguments) {
+        callAfterToolUse(id, name, arguments, toolRsp);
     }
 
     /**
@@ -96,6 +84,19 @@ public abstract class AbstractAgent implements IAgent {
      * @param arguments tool args
      */
     public void callBeforeToolUse(String id, String name, JSONObject arguments) {
+        System.out.printf("%s 开始执行tool, id:%s, func:%s, args:%s %s", agentName, id, name, arguments, System.lineSeparator());
+    }
+
+    /**
+     * 单个工具使用前回调
+     *
+     * @param id        tool id
+     * @param name      tool name
+     * @param arguments tool args
+     * @param toolRsp
+     */
+    public void callAfterToolUse(String id, String name, JSONObject arguments, String toolRsp) {
+        System.out.printf("%s 结束执行tool, id:%s, func:%s, args:%s , result:%s %s", agentName, id, name, arguments, toolRsp, System.lineSeparator());
     }
 
     /**
