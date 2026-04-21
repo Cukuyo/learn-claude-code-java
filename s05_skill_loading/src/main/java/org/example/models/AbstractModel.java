@@ -5,13 +5,17 @@ import com.alibaba.fastjson2.JSONObject;
 import org.example.utils.HttpClientUtil;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * model抽象父类，提供公共方法
  */
 public abstract class AbstractModel {
-    public JSONObject curReq = new JSONObject();
+    protected JSONObject curReq = new JSONObject();
+    protected Set<String> toolsSet = new HashSet<>();
 
     public AbstractModel() {
         curReq.put("messages", new JSONArray());
@@ -23,6 +27,8 @@ public abstract class AbstractModel {
     public abstract String getApiKey();
 
     public abstract String getModel();
+
+    public abstract String extractToolName(JSONObject tool);
 
     public abstract JSONObject buildTool(JSONObject function);
 
@@ -36,15 +42,11 @@ public abstract class AbstractModel {
 
     /**
      * 带全部历史信息的克隆
-     *
-     * @return AbstractModel
      */
-    public abstract AbstractModel cloneWithAll();
+    public abstract AbstractModel cloneWithHistory();
 
     /**
      * 仅带系统提示词的克隆
-     *
-     * @return AbstractModel
      */
     public abstract AbstractModel cloneWithSystemMessages();
 
@@ -65,12 +67,44 @@ public abstract class AbstractModel {
     }
 
     /**
+     * 带全部历史信息的克隆
+     *
+     * @return AbstractModel
+     */
+    protected AbstractModel cloneWithHistory(AbstractModel model){
+        model.curReq = this.curReq.clone();
+        model.toolsSet.addAll(this.toolsSet);
+        return model;
+    }
+
+    /**
+     * 仅带系统提示词的克隆
+     *
+     * @return AbstractModel
+     */
+    protected AbstractModel cloneWithSystemMessages(AbstractModel model){
+        model = cloneWithHistory(model);
+        model.curReq.getJSONArray("messages").removeIf(new Predicate<Object>() {
+            @Override
+            public boolean test(Object message) {
+                return !((JSONObject) message).getString("role").equals("system");
+            }
+        });
+
+        return model;
+    }
+
+    /**
      * 添加tool
      *
      * @param tool tool
      */
     public void addTool(JSONObject tool) {
-        ((JSONArray) curReq.get("tools")).add(tool);
+        String toolName = extractToolName(tool);
+        if (!toolsSet.contains(toolName)) {
+            ((JSONArray) curReq.get("tools")).add(tool);
+            toolsSet.add(toolName);
+        }
     }
 
     /**

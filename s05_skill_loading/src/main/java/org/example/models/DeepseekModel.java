@@ -1,9 +1,9 @@
 package org.example.models;
 
-import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -13,6 +13,8 @@ public class DeepseekModel extends AbstractModel {
     private final String url;
     private final String apiKey;
     private final String model;
+
+    private final Map<String,JSONObject> toolsMap = new HashMap<>();
 
     public DeepseekModel(String apiKey) {
         this("https://api.deepseek.com/chat/completions", apiKey);
@@ -94,29 +96,6 @@ public class DeepseekModel extends AbstractModel {
     }
 
     @Override
-    public AbstractModel cloneWithAll() {
-        DeepseekModel cloneModel = new DeepseekModel(model, url, apiKey);
-        cloneModel.curReq = this.curReq.clone();
-        return cloneModel;
-    }
-
-    @Override
-    public AbstractModel cloneWithSystemMessages() {
-        DeepseekModel cloneModel = new DeepseekModel(model, url, apiKey);
-        JSONArray cloneMessages = cloneModel.curReq.getJSONArray("messages");
-
-        JSONArray thisMessages = this.curReq.getJSONArray("messages");
-        for (Object message : thisMessages) {
-            JSONObject jsonObject = (JSONObject) message;
-            if (jsonObject.getString("role").equals("system")) {
-                cloneMessages.add(jsonObject);
-            }
-        }
-
-        return cloneModel;
-    }
-
-    @Override
     public JSONObject chat() throws IOException, InterruptedException {
         return super.chat().getJSONArray("choices").getJSONObject(0);
     }
@@ -134,5 +113,22 @@ public class DeepseekModel extends AbstractModel {
     @Override
     public String getModel() {
         return model;
+    }
+
+    @Override
+    public String extractToolName(JSONObject tool) {
+        return tool.getJSONObject("function").getString("name");
+    }
+
+    @Override
+    public AbstractModel cloneWithHistory() {
+        DeepseekModel cloneModel = new DeepseekModel(model,url,apiKey);
+        return cloneWithHistory(cloneModel);
+    }
+
+    @Override
+    public AbstractModel cloneWithSystemMessages() {
+        DeepseekModel cloneModel = new DeepseekModel(model,url,apiKey);
+        return cloneWithSystemMessages(cloneModel);
     }
 }
