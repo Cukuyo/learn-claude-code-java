@@ -3,20 +3,20 @@ package org.example.utils;
 import org.example.tool.ToolMethod;
 import org.example.tool.ToolParam;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * 操作系统命令行工具类
  */
 public class CommandUtil {
+    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+
     /**
-     * 默认超时时间，3S
+     * 默认超时时间，10S
      */
-    private static final long DEFAULT_TIMEOUT = 3;
+    private static final long DEFAULT_TIMEOUT = 10;
 
     /**
      * 响应格式，可采用record进行更标准的替代
@@ -55,42 +55,40 @@ public class CommandUtil {
         pb.redirectErrorStream(true);
 
         Process process = null;
-        StringBuilder result = new StringBuilder();
+        CommandAsyncReader commandAsyncReader = null;
+        Future<String> commandFuture;
 
         try {
             process = pb.start();
 
+            // 异步接收返回
+            commandAsyncReader = new CommandAsyncReader(process.getInputStream(), OS_CHARSET);
+            commandFuture = EXECUTOR.submit(commandAsyncReader);
+
             // 尝试等待执行完成
             if (!process.waitFor(timeout, timeUnit)) {
-                destroyProcess(process);
-                return String.format(RESULT_FORMAT, "超时", "\\", result.toString().trim());
+                destroyProcess(process, commandAsyncReader);
+                return String.format(RESULT_FORMAT, "超时", "\\", commandFuture.get());
+            } else {
+                int exitCode = process.exitValue();
+                return String.format(RESULT_FORMAT, exitCode == 0 ? "成功" : "失败", exitCode, commandFuture.get());
             }
-
-            // 尝试读取已有输出
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), OS_CHARSET))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    result.append(line).append(System.lineSeparator());
-                }
-            }
-
-            int exitCode = process.exitValue();
-            return String.format(RESULT_FORMAT, exitCode == 0 ? "成功" : "失败", exitCode, result.toString().trim());
-        } catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException | ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
-            return String.format(RESULT_FORMAT, "IO异常", "\\", result.toString().trim());
-        } catch (InterruptedException e) {
-            return String.format(RESULT_FORMAT, "线程中断", "\\", result.toString().trim());
+            return String.format(RESULT_FORMAT, "IO异常", "\\", "");
         } finally {
-            destroyProcess(process);
+            destroyProcess(process, commandAsyncReader);
         }
     }
 
     /**
      * 安全销毁进程
      */
-    private static void destroyProcess(Process process) {
+    private static void destroyProcess(Process process, CommandAsyncReader commandAsyncReader) {
+        if (commandAsyncReader != null) {
+            commandAsyncReader.stop();
+        }
         if (process != null) {
             process.destroy();
         }
