@@ -35,7 +35,7 @@ public class TodoManager {
      * @param planItems 任务项数组
      * @return 友好的视图
      */
-    @ToolMethod(description = "Rewrite the current session plan for multi-step work.")
+    @ToolMethod(description = "保存多步骤任务的任务项，若当前执行的任务包含多个步骤，为防止执行出现偏差，需保存待执行的任务项，同时注意每个任务项执行完后刷新状态")
     public String updateTasks(@ToolParam(description = "任务项数组") PlanItem[] planItems) {
         cache.clear();
         Collections.addAll(cache, planItems);

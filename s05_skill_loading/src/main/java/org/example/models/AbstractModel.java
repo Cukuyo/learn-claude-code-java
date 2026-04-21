@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * model抽象父类，提供公共方法
@@ -71,7 +70,7 @@ public abstract class AbstractModel {
      *
      * @return AbstractModel
      */
-    protected AbstractModel cloneWithHistory(AbstractModel model){
+    protected AbstractModel cloneWithHistory(AbstractModel model) {
         model.curReq = this.curReq.clone();
         model.toolsSet.addAll(this.toolsSet);
         return model;
@@ -82,14 +81,9 @@ public abstract class AbstractModel {
      *
      * @return AbstractModel
      */
-    protected AbstractModel cloneWithSystemMessages(AbstractModel model){
+    protected AbstractModel cloneWithSystemMessages(AbstractModel model) {
         model = cloneWithHistory(model);
-        model.curReq.getJSONArray("messages").removeIf(new Predicate<Object>() {
-            @Override
-            public boolean test(Object message) {
-                return !((JSONObject) message).getString("role").equals("system");
-            }
-        });
+        model.curReq.getJSONArray("messages").removeIf(message -> !((JSONObject) message).getString("role").equals("system"));
 
         return model;
     }

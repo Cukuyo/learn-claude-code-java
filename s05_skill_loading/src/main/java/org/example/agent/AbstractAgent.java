@@ -3,18 +3,15 @@ package org.example.agent;
 import com.alibaba.fastjson2.JSONObject;
 import org.example.models.AbstractModel;
 import org.example.skill.SkillManifest;
+import org.example.skill.SkillReadUtil;
 import org.example.skill.SkillResolvUtil;
-import org.example.tool.ToolExecuter;
-import org.example.tool.ToolResolveUtil;
-import org.example.tool.ToolTransformUtil;
+import org.example.tool.*;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 /**
  * agent抽象父类，提供公共方法，定义架构
@@ -132,12 +129,20 @@ public abstract class AbstractAgent implements IAgent {
         System.out.printf("%s>>>%s%s", agentName, message.getString("content"), System.lineSeparator());
     }
 
-    @Override
+    /**
+     * 工具注册
+     *
+     * @param toolObj 实例类型tool
+     */
     public void registryTool(Object toolObj) {
         registryTool(ToolResolveUtil.resolve(toolObj));
     }
 
-    @Override
+    /**
+     * 工具注册
+     *
+     * @param toolObj 静态方法类型tool
+     */
     public void registryTool(Class<?> toolObj) {
         registryTool(ToolResolveUtil.resolve(toolObj));
     }
@@ -149,17 +154,44 @@ public abstract class AbstractAgent implements IAgent {
         }
     }
 
-    @Override
-    public void registrySkills(String path) throws IOException{
-        List<SkillManifest> list = SkillResolvUtil.resolve(path);
-        for (SkillManifest list2 : list) {
-            skillManifestMap.put(list2.name(), list2);
+    /**
+     * skills注册
+     *
+     * @param path skill目录
+     * @throws IOException IOException
+     */
+    public void registrySkills(String path) throws IOException {
+        List<SkillManifest> skillManifests = SkillResolvUtil.resolveDir(Paths.get(path));
+        for (SkillManifest skillManifest : skillManifests) {
+            skillManifestMap.put(skillManifest.name(), skillManifest);
         }
-        
+
+        model.addSystemMessages(renderSkills());
     }
 
-    public void registrySkills(SkillManifest skill){
-        List<SkillManifest> list = SkillResolvUtil.resolve(path);
-        
+    private String renderSkills() {
+        StringBuilder builder = new StringBuilder(skillManifestMap.size() * 128);
+        builder.append("当行动前需要特定指令时，使用<loadSkill>工具加载技能.").append(System.lineSeparator());
+        builder.append("技能如下:").append(System.lineSeparator());
+
+        if (skillManifestMap.isEmpty()) {
+            builder.append("当前无可用技能").append(System.lineSeparator());
+        }
+
+        for (SkillManifest skillManifest : skillManifestMap.values()) {
+            builder.append("- {").append(skillManifest.name()).append(":").append(skillManifest.description()).append("}").append(System.lineSeparator());
+        }
+        return builder.toString();
+    }
+
+    @ToolMethod(description = "本function用于根据指定的skill名称，将SKILL.md全部内容加载到当前会话")
+    public String loadSkill(@ToolParam(description = "指定的skill名称") String skillName) throws IOException {
+        return SkillReadUtil.readSkillMDBody(skillManifestMap.get(skillName).dirPath());
+    }
+
+    @ToolMethod(description = "本function用于根据指定的skill名称，将SKILL.md内声明的其他文件全部内容加载到当前会话")
+    public String loadSkill(@ToolParam(description = "指定的skill名称") String skillName,
+                            @ToolParam(description = "SKILL.md内声明的其他文件名称") String fileName) throws IOException {
+        return SkillReadUtil.readSkillFileBody(skillManifestMap.get(skillName).dirPath(), fileName);
     }
 }

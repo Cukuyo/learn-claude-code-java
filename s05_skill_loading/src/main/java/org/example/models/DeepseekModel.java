@@ -122,13 +122,11 @@ public class DeepseekModel extends AbstractModel {
 
     @Override
     public AbstractModel cloneWithHistory() {
-        DeepseekModel cloneModel = new DeepseekModel(model,url,apiKey);
-        return cloneWithHistory(cloneModel);
+        return cloneWithHistory(new DeepseekModel(model,url,apiKey));
     }
 
     @Override
     public AbstractModel cloneWithSystemMessages() {
-        DeepseekModel cloneModel = new DeepseekModel(model,url,apiKey);
-        return cloneWithSystemMessages(cloneModel);
+        return cloneWithSystemMessages(new DeepseekModel(model,url,apiKey));
     }
 }

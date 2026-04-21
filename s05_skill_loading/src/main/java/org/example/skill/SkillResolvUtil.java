@@ -1,34 +1,54 @@
 package org.example.skill;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
+/**
+ * skill 解析工具类
+ */
 public class SkillResolvUtil {
+    /**
+     * 起始分隔符
+     */
     private static final String SEPARATOR = "---";
 
-    public static List<SkillManifest> resolve(String path) throws IOException{
-        List<SkillManifest> list = new ArrayList<>();
-
-        Files.walk(Paths.get(path))
-                 .filter(Files::isRegularFile)
-                 .filter(file -> "skill.md".equalsIgnoreCase(file.getFileName().toString()))
-                 .forEach(file -> list.add(resolve(file)));
-
-        return list;
+    /**
+     * 解析skill目录下所有的skills
+     *
+     * @param dirPath skill目录
+     * @return 该路径下所有的skills信息
+     * @throws IOException IOException
+     */
+    public static List<SkillManifest> resolveDir(Path dirPath) throws IOException {
+        try (Stream<Path> paths = Files.walk(dirPath)) {
+            return paths.filter(Files::isRegularFile)
+                    .filter(path -> "SKILL.md".equalsIgnoreCase(path.getFileName().toString()))
+                    .map(path -> {
+                        try {
+                            return resolveFile(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).toList();
+        }
     }
 
-    private static SkillManifest resolve(Path path) throws IOException{
-        List<String> allLines = Files.readAllLines(path);
+    /**
+     * 接下skill文件的信息
+     *
+     * @param path skill.md文件
+     * @return 该路径下所有的skills信息
+     * @throws IOException IOException
+     */
+    private static SkillManifest resolveFile(Path path) throws IOException {
+        Map<String, String> meta = new HashMap<>();
         int separatorNum = 0;
-        Map<String,String> meta =new HashMap<>();
-        for (String line : allLines) {
+        for (String line : Files.readAllLines(path)) {
             if (line.isEmpty()) {
                 continue;
             }
@@ -42,6 +62,6 @@ public class SkillResolvUtil {
             meta.put(arr[0].trim(), arr[1].trim());
         }
 
-        return new SkillManifest(meta.get("name"),meta.get("description"), path.toFile().getParentFile().toPath());
+        return new SkillManifest(meta.get("name"), meta.get("description"), path.toFile().getParentFile().toPath());
     }
 }

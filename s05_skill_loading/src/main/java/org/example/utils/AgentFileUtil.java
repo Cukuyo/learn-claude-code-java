@@ -37,7 +37,7 @@ public class AgentFileUtil {
      * @param pathStr 文件路径
      * @return 文件内容
      */
-    @ToolMethod(description = "读取文件")
+    @ToolMethod(description = "读取指定路径的文件")
     public static String readFile(@ToolParam(description = "文件路径，支持绝对路径和相对路径") String pathStr) {
         try {
             return Files.readString(safePath(pathStr));
@@ -53,7 +53,7 @@ public class AgentFileUtil {
      * @param content 文件内容
      * @return 写入结果
      */
-    @ToolMethod(description = "写入文件，会自动创建父目录，若存在原文件则覆盖")
+    @ToolMethod(description = "向指定路径的文件写入内容，会自动创建父目录，若存在原文件则覆盖")
     public static String writeFile(@ToolParam(description = "文件路径，支持绝对路径和相对路径") String pathStr,
                                    @ToolParam(description = "待写入的文本") String content) {
         try {
@@ -76,9 +76,9 @@ public class AgentFileUtil {
      * @param newText 新文本
      * @return 编辑结果
      */
-    @ToolMethod(description = "编辑文件，将第一个匹配的旧文本替换为新文本")
+    @ToolMethod(description = "编辑指定路径的文件，将所有匹配的旧文本替换为新文本")
     public static String editFile(@ToolParam(description = "文件路径，支持绝对路径和相对路径") String pathStr,
-                                  @ToolParam(description = "待替换的旧文本") String oldText,
+                                  @ToolParam(description = "待替换的旧文本，支持正则表达式") String oldText,
                                   @ToolParam(description = "待替换的新文本") String newText) {
         try {
             Path path = safePath(pathStr);
@@ -90,7 +90,7 @@ public class AgentFileUtil {
             }
 
             // 替换第一个匹配的旧文本
-            String newContent = content.replaceFirst(oldText, newText);
+            String newContent = content.replaceAll(oldText, newText);
             Files.writeString(path, newContent);
             return "编辑成功： " + pathStr;
         } catch (Exception e) {
