@@ -1,7 +1,7 @@
 package org.example.agent;
 
 import org.example.models.AbstractModel;
-import org.example.utils.AgentFileUtils;
+import org.example.utils.AgentFileUtil;
 import org.example.utils.CommandUtil;
 
 /**
@@ -12,6 +12,6 @@ public class SubAgent extends AbstractAgent {
     public SubAgent(AbstractModel model, String agentName) {
         super(model, agentName);
         registryTool(CommandUtil.class);
-        registryTool(AgentFileUtils.class);
+        registryTool(AgentFileUtil.class);
     }
 }

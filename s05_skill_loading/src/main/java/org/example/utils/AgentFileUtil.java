@@ -12,7 +12,7 @@ import java.nio.file.StandardOpenOption;
  * 对应Python工具类的文件操作封装
  * 实现safe_path、read、write、edit核心逻辑
  */
-public class AgentFileUtils {
+public class AgentFileUtil {
     /**
      * 工作目录（对应Python中的WORKDIR）
      */
