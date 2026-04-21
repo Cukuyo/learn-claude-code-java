@@ -18,6 +18,7 @@
         <module>s02_tool_use</module>
         <module>s03_todo_write</module>
         <module>s04_subagent</module>
+        <module>s05_skill_loading</module>
     </modules>
 
     <properties>
