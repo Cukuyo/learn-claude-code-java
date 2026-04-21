@@ -160,7 +160,7 @@ public abstract class AbstractAgent implements IAgent {
      * @param path skill目录
      * @throws IOException IOException
      */
-    public void registrySkills(String path) throws IOException {
+    public void registrySkills(String path) {
         List<SkillManifest> skillManifests = SkillResolvUtil.resolveDir(Paths.get(path));
         for (SkillManifest skillManifest : skillManifests) {
             skillManifestMap.put(skillManifest.name(), skillManifest);
@@ -190,8 +190,8 @@ public abstract class AbstractAgent implements IAgent {
     }
 
     @ToolMethod(description = "本function用于根据指定的skill名称，将SKILL.md内声明的其他文件全部内容加载到当前会话")
-    public String loadSkill(@ToolParam(description = "指定的skill名称") String skillName,
-                            @ToolParam(description = "SKILL.md内声明的其他文件名称") String fileName) throws IOException {
+    public String loadSkillFile(@ToolParam(description = "指定的skill名称") String skillName,
+                                @ToolParam(description = "SKILL.md内声明的其他文件名称") String fileName) throws IOException {
         return SkillReadUtil.readSkillFileBody(skillManifestMap.get(skillName).dirPath(), fileName);
     }
 }

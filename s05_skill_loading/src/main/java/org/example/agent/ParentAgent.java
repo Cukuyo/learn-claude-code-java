@@ -19,7 +19,6 @@ public class ParentAgent extends SubAgent {
 
     public ParentAgent(AbstractModel model, String agentName) {
         super(model, agentName);
-        registryTool(SubAgent.class);
         registryTool(todoManager);
         registryTool(this);
     }

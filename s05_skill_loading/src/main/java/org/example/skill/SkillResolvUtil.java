@@ -22,9 +22,8 @@ public class SkillResolvUtil {
      *
      * @param dirPath skill目录
      * @return 该路径下所有的skills信息
-     * @throws IOException IOException
      */
-    public static List<SkillManifest> resolveDir(Path dirPath) throws IOException {
+    public static List<SkillManifest> resolveDir(Path dirPath) {
         try (Stream<Path> paths = Files.walk(dirPath)) {
             return paths.filter(Files::isRegularFile)
                     .filter(path -> "SKILL.md".equalsIgnoreCase(path.getFileName().toString()))
@@ -35,6 +34,8 @@ public class SkillResolvUtil {
                             throw new RuntimeException(e);
                         }
                     }).toList();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -54,6 +55,7 @@ public class SkillResolvUtil {
             }
             if (line.startsWith(SEPARATOR)) {
                 separatorNum++;
+                continue;
             }
             if (separatorNum == 2) {
                 break;

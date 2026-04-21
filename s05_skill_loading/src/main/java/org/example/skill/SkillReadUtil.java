@@ -18,7 +18,7 @@ public class SkillReadUtil {
      * @throws IOException IOException
      */
     public static String readSkillMDBody(Path dirPath) throws IOException {
-        return readSkillFileBody(dirPath, "SKILL.md").replaceFirst("^---\\n(.*?)\\n---\\n(.*)", "");
+        return readSkillFileBody(dirPath, "SKILL.md").replaceFirst("(?s)---.*?---", "");
     }
 
     /**

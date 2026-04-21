@@ -14,8 +14,6 @@ public class DeepseekModel extends AbstractModel {
     private final String apiKey;
     private final String model;
 
-    private final Map<String,JSONObject> toolsMap = new HashMap<>();
-
     public DeepseekModel(String apiKey) {
         this("https://api.deepseek.com/chat/completions", apiKey);
     }

@@ -141,7 +141,7 @@ public class ToolResolveUtil {
     }
 
     private static List<Method> getAnnotatedMethods(Class<?> obj) {
-        return Arrays.stream(obj.getDeclaredMethods()).filter(ToolResolveUtil::checkMethod).toList();
+        return Arrays.stream(obj.getMethods()).filter(ToolResolveUtil::checkMethod).toList();
     }
 
     private static boolean checkMethod(Method method) {
