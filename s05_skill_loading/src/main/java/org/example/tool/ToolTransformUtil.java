@@ -1,8 +1,7 @@
-package org.example.utils;
+package org.example.tool;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.example.models.AbstractModel;
-import org.example.tool.ToolResolve;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +11,7 @@ import java.util.Map;
 /**
  * 将tool工具解析转换为model需要格式的工具类
  */
-public class ToolToModelTransformUtil {
+public class ToolTransformUtil {
     /**
      * tool工具解析转换为model需要的json格式
      *
@@ -20,11 +19,11 @@ public class ToolToModelTransformUtil {
      * @param model             模型
      * @return 模型所需的json格式
      */
-    public static JSONObject transform(ToolResolve.ToolResolveResult toolResolveResult, AbstractModel model) {
+    public static JSONObject transform(ToolResolveUtil.ToolResolveResult toolResolveResult, AbstractModel model) {
         // 迭代解析字段
         Map<String, JSONObject> map = new HashMap<>();
         List<String> required = new ArrayList<>();
-        for (ToolResolve.ToolResolveItem toolResolveItem : toolResolveResult.properties()) {
+        for (ToolResolveUtil.ToolResolveItem toolResolveItem : toolResolveResult.properties()) {
             map.put(toolResolveResult.name(), buildToolProperty(toolResolveItem, model));
             if (toolResolveItem.required()) {
                 required.add(toolResolveItem.name());
@@ -38,17 +37,17 @@ public class ToolToModelTransformUtil {
         return model.buildTool(function);
     }
 
-    private static JSONObject buildToolProperty(ToolResolve.ToolResolveItem toolResolveItem, AbstractModel model) {
+    private static JSONObject buildToolProperty(ToolResolveUtil.ToolResolveItem toolResolveItem, AbstractModel model) {
         // 迭代解析字段
         Map<String, JSONObject> map = new HashMap<>();
-        for (ToolResolve.ToolResolveItem item : toolResolveItem.properties()) {
+        for (ToolResolveUtil.ToolResolveItem item : toolResolveItem.properties()) {
             map.put(item.name(), buildToolProperty(item, model));
         }
 
         JSONObject properties;
         // 原逻辑不好处理基础类型数组的组装，相当于特例了，于是在次进行单独判断
         if (toolResolveItem.type().equals("array") && toolResolveItem.properties().getFirst().name().isEmpty()) {
-            ToolResolve.ToolResolveItem first = toolResolveItem.properties().getFirst();
+            ToolResolveUtil.ToolResolveItem first = toolResolveItem.properties().getFirst();
             properties = model.buildToolProperty(first.type(), first.description(), toolResolveItem.enums(), null);
         } else {
             properties = model.buildToolProperties(map);

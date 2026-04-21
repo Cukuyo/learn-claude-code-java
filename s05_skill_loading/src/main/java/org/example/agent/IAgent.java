@@ -15,4 +15,25 @@ public interface IAgent {
      * @throws InterruptedException 等待被中断
      */
     String chatOrCommand(String content) throws IOException, InterruptedException;
+
+    /**
+     * 工具注册
+     *
+     * @param toolObj 实例类型tool
+     */
+    public void registryTool(Object toolObj);
+
+    /**
+     * 工具注册
+     *
+     * @param toolObj 静态方法类型tool
+     */
+    public void registryTool(Class<?> toolObj);
+
+    /**
+     * skills注册
+     *
+     * @param toolObj 静态方法类型tool
+     */
+    public void registrySkills(String path) throws IOException;
 }

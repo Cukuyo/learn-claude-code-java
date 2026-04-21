@@ -2,20 +2,26 @@ package org.example.agent;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.example.models.AbstractModel;
+import org.example.skill.SkillManifest;
+import org.example.skill.SkillResolvUtil;
 import org.example.tool.ToolExecuter;
-import org.example.tool.ToolResolve;
-import org.example.utils.ToolToModelTransformUtil;
+import org.example.tool.ToolResolveUtil;
+import org.example.tool.ToolTransformUtil;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * agent抽象父类，提供公共方法，定义架构
  */
 public abstract class AbstractAgent implements IAgent {
     protected final Map<String, ToolExecuter> toolHandlers = new HashMap<>();
+    protected final Map<String, SkillManifest> skillManifestMap = new HashMap<>();
     public final AbstractModel model;
     public final String agentName;
 
@@ -83,7 +89,7 @@ public abstract class AbstractAgent implements IAgent {
      * @param name      tool name
      * @param arguments tool args
      */
-    public void callBeforeToolUse(String id, String name, JSONObject arguments) {
+    protected void callBeforeToolUse(String id, String name, JSONObject arguments) {
         System.out.printf("<%s> 开始执行tool, id:%s, func:%s, args:%s %s", agentName, id, name, arguments, System.lineSeparator());
     }
 
@@ -95,26 +101,26 @@ public abstract class AbstractAgent implements IAgent {
      * @param arguments tool args
      * @param toolRsp
      */
-    public void callAfterToolUse(String id, String name, JSONObject arguments, String toolRsp) {
+    protected void callAfterToolUse(String id, String name, JSONObject arguments, String toolRsp) {
         System.out.printf("<%s> 结束执行tool, id:%s, func:%s, args:%s , result:%s %s", agentName, id, name, arguments, toolRsp, System.lineSeparator());
     }
 
     /**
      * tools使用前回调
      */
-    public void callBeforeToolsUse() {
+    protected void callBeforeToolsUse() {
     }
 
     /**
      * tools使用后回调
      */
-    public void callAfterToolsUse() {
+    protected void callAfterToolsUse() {
     }
 
     /**
      * llm chat前回调
      */
-    public void callBeforeChat() {
+    protected void callBeforeChat() {
     }
 
     /**
@@ -122,32 +128,38 @@ public abstract class AbstractAgent implements IAgent {
      *
      * @param message llm响应
      */
-    public void callAfterChat(JSONObject message) {
+    protected void callAfterChat(JSONObject message) {
         System.out.printf("%s>>>%s%s", agentName, message.getString("content"), System.lineSeparator());
     }
 
-    /**
-     * 工具注册
-     *
-     * @param toolObj 实例类型tool
-     */
+    @Override
     public void registryTool(Object toolObj) {
-        registryTool(ToolResolve.resolve(toolObj));
+        registryTool(ToolResolveUtil.resolve(toolObj));
     }
 
-    /**
-     * 工具注册
-     *
-     * @param toolObj 静态方法类型tool
-     */
+    @Override
     public void registryTool(Class<?> toolObj) {
-        registryTool(ToolResolve.resolve(toolObj));
+        registryTool(ToolResolveUtil.resolve(toolObj));
     }
 
-    private void registryTool(List<ToolResolve.ToolResolveResult> toolResolveResults) {
-        for (ToolResolve.ToolResolveResult toolResolveResult : toolResolveResults) {
+    private void registryTool(List<ToolResolveUtil.ToolResolveResult> toolResolveResults) {
+        for (ToolResolveUtil.ToolResolveResult toolResolveResult : toolResolveResults) {
             toolHandlers.put(toolResolveResult.name(), toolResolveResult.toolHandler());
-            model.addTool(ToolToModelTransformUtil.transform(toolResolveResult, model));
+            model.addTool(ToolTransformUtil.transform(toolResolveResult, model));
         }
+    }
+
+    @Override
+    public void registrySkills(String path) throws IOException{
+        List<SkillManifest> list = SkillResolvUtil.resolve(path);
+        for (SkillManifest list2 : list) {
+            skillManifestMap.put(list2.name(), list2);
+        }
+        
+    }
+
+    public void registrySkills(SkillManifest skill){
+        List<SkillManifest> list = SkillResolvUtil.resolve(path);
+        
     }
 }

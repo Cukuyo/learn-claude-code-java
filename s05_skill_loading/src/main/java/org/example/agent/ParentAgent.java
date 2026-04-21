@@ -38,13 +38,13 @@ public class ParentAgent extends SubAgent {
     }
 
     @Override
-    public void callBeforeToolsUse() {
+    protected void callBeforeToolsUse() {
         super.callBeforeToolsUse();
         useTodo = false;
     }
 
     @Override
-    public void callAfterToolUse(String id, String name, JSONObject arguments, String toolRsp) {
+    protected void callAfterToolUse(String id, String name, JSONObject arguments, String toolRsp) {
         super.callAfterToolUse(id, name, arguments, toolRsp);
         if (name.equals("updateTasks")) {
             useTodo = true;
@@ -52,7 +52,7 @@ public class ParentAgent extends SubAgent {
     }
 
     @Override
-    public void callAfterToolsUse() {
+    protected void callAfterToolsUse() {
         super.callAfterToolsUse();
         if (useTodo) {
             todoManager.noteRoundReset();

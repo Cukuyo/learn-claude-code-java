@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * tool解析工具类，支持静态和动态对象方法
  */
-public class ToolResolve {
+public class ToolResolveUtil {
     /**
      * 解析后tool的参数信息
      *
@@ -61,7 +61,7 @@ public class ToolResolve {
     private static ToolResolveResult getToolResolveResult(Object invokeObj, Method method) {
         String name = method.getName();
         String desc = method.getAnnotation(ToolMethod.class).description();
-        List<ToolResolveItem> properties = Stream.of(method.getParameters()).map(ToolResolve::getToolResolveItem).toList();
+        List<ToolResolveItem> properties = Stream.of(method.getParameters()).map(ToolResolveUtil::getToolResolveItem).toList();
 
         return new ToolResolveResult(name, desc, properties, ToolExecuterBuildUtil.buildToolExecuter(invokeObj, method));
     }
@@ -92,11 +92,11 @@ public class ToolResolve {
                             "", true, new ArrayList<>()));
                 } else {
                     // 非基础对象，又是数组，数组封装的又是封装对象
-                    properties.addAll(getAnnotatedFields(componentType).stream().map(ToolResolve::getToolResolveItem).toList());
+                    properties.addAll(getAnnotatedFields(componentType).stream().map(ToolResolveUtil::getToolResolveItem).toList());
                 }
             } else {
                 // 非基础对象，又不是数组，那就是单纯的封装对象
-                properties.addAll(getAnnotatedFields(parameterType).stream().map(ToolResolve::getToolResolveItem).toList());
+                properties.addAll(getAnnotatedFields(parameterType).stream().map(ToolResolveUtil::getToolResolveItem).toList());
             }
         }
 
@@ -129,11 +129,11 @@ public class ToolResolve {
                             "", true, new ArrayList<>()));
                 } else {
                     // 非基础对象，又是数组，数组封装的又是封装对象
-                    properties.addAll(getAnnotatedFields(componentType).stream().map(ToolResolve::getToolResolveItem).toList());
+                    properties.addAll(getAnnotatedFields(componentType).stream().map(ToolResolveUtil::getToolResolveItem).toList());
                 }
             } else {
                 // 非基础对象，又不是数组，那就是单纯的封装对象
-                properties.addAll(getAnnotatedFields(parameterType).stream().map(ToolResolve::getToolResolveItem).toList());
+                properties.addAll(getAnnotatedFields(parameterType).stream().map(ToolResolveUtil::getToolResolveItem).toList());
             }
         }
 
@@ -141,7 +141,7 @@ public class ToolResolve {
     }
 
     private static List<Method> getAnnotatedMethods(Class<?> obj) {
-        return Arrays.stream(obj.getDeclaredMethods()).filter(ToolResolve::checkMethod).toList();
+        return Arrays.stream(obj.getDeclaredMethods()).filter(ToolResolveUtil::checkMethod).toList();
     }
 
     private static boolean checkMethod(Method method) {
@@ -149,7 +149,7 @@ public class ToolResolve {
     }
 
     private static List<Field> getAnnotatedFields(Class<?> obj) {
-        return Arrays.stream(obj.getDeclaredFields()).filter(ToolResolve::checkFields).toList();
+        return Arrays.stream(obj.getDeclaredFields()).filter(ToolResolveUtil::checkFields).toList();
     }
 
     private static boolean checkFields(Field field) {
