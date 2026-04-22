@@ -19,11 +19,11 @@
         <module>s03_todo_write</module>
         <module>s04_subagent</module>
         <module>s05_skill_loading</module>
+        <module>s06_context_compact</module>
     </modules>
 
     <properties>
         <java.version>25</java.version>
-        <gson.version>2.10.1</gson.version>
     </properties>
 
     <dependencies>
