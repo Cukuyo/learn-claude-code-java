@@ -1,4 +1,4 @@
-package org.example.agent;
+package org.example.agent.common;
 
 import java.io.IOException;
 

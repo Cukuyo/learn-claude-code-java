@@ -28,7 +28,7 @@ public class SkillReadUtil {
      * @return 指定文件名的内容
      * @throws IOException IOException
      */
-    public static String readSkillFileBody(Path dirPath, String fileName) throws IOException {
+    private static String readSkillFileBody(Path dirPath, String fileName) throws IOException {
         try (Stream<Path> paths = Files.walk(dirPath)) {
             Optional<Path> skillMDOptional = paths.filter(Files::isRegularFile)
                     .filter(path -> fileName.equalsIgnoreCase(path.getFileName().toString())).findFirst();

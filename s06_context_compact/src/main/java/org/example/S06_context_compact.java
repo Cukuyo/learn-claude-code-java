@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.agent.IAgent;
+import org.example.agent.common.IAgent;
 import org.example.agent.ParentAgent;
 import org.example.models.AbstractModel;
 import org.example.models.DeepseekModel;

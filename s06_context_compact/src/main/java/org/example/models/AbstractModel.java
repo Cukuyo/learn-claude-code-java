@@ -106,8 +106,10 @@ public abstract class AbstractModel {
      *
      * @param content content
      */
-    public void addSystemMessages(String content) {
-        ((JSONArray) curReq.get("messages")).add(message(content, "system"));
+    public JSONObject addSystemMessages(String content) {
+        JSONObject msg = message(content, "system");
+        ((JSONArray) curReq.get("messages")).add(msg);
+        return msg;
     }
 
     /**
@@ -125,10 +127,11 @@ public abstract class AbstractModel {
      * @param content    content
      * @param toolCallId toolCallId
      */
-    public void addToolMessages(String content, String toolCallId) {
+    public JSONObject addToolMessages(String content, String toolCallId) {
         JSONObject msg = message(content, "tool");
         msg.put("tool_call_id", toolCallId);
         ((JSONArray) curReq.get("messages")).add(msg);
+        return msg;
     }
 
     /**

@@ -1,14 +1,12 @@
-package org.example.agent;
+package org.example.agent.common;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.example.models.AbstractModel;
-import org.example.skill.SkillManifest;
-import org.example.skill.SkillReadUtil;
-import org.example.skill.SkillResolvUtil;
-import org.example.tool.*;
+import org.example.tool.ToolExecuter;
+import org.example.tool.ToolResolveUtil;
+import org.example.tool.ToolTransformUtil;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,15 +14,17 @@ import java.util.Map;
 /**
  * agent抽象父类，提供公共方法，定义架构
  */
-public abstract class AbstractAgent implements IAgent {
-    protected final Map<String, ToolExecuter> toolHandlers = new HashMap<>();
-    protected final Map<String, SkillManifest> skillManifestMap = new HashMap<>();
+public class ToolUseAgent implements IAgent {
     public final AbstractModel model;
     public final String agentName;
 
-    public AbstractAgent(AbstractModel model, String agentName) {
+    protected final Map<String, ToolExecuter> toolHandlers = new HashMap<>();
+
+    public ToolUseAgent(AbstractModel model, String agentName) {
         this.model = model;
         this.agentName = agentName;
+
+        model.addSystemMessages("你当前的工作目录是<" + System.getProperty("user.dir") + ">，注意不要做出范围之外的危险行为！");
     }
 
     @Override
@@ -96,7 +96,7 @@ public abstract class AbstractAgent implements IAgent {
      * @param id        tool id
      * @param name      tool name
      * @param arguments tool args
-     * @param toolRsp
+     * @param toolRsp   toolRsp
      */
     protected void callAfterToolUse(String id, String name, JSONObject arguments, String toolRsp) {
         System.out.printf("<%s> 结束执行tool, id:%s, func:%s, args:%s , result:%s %s", agentName, id, name, arguments, toolRsp, System.lineSeparator());
@@ -152,46 +152,5 @@ public abstract class AbstractAgent implements IAgent {
             toolHandlers.put(toolResolveResult.name(), toolResolveResult.toolHandler());
             model.addTool(ToolTransformUtil.transform(toolResolveResult, model));
         }
-    }
-
-    /**
-     * skills注册
-     *
-     * @param path skill目录
-     * @throws IOException IOException
-     */
-    public void registrySkills(String path) {
-        List<SkillManifest> skillManifests = SkillResolvUtil.resolveDir(Paths.get(path));
-        for (SkillManifest skillManifest : skillManifests) {
-            skillManifestMap.put(skillManifest.name(), skillManifest);
-        }
-
-        model.addSystemMessages(renderSkills());
-    }
-
-    private String renderSkills() {
-        StringBuilder builder = new StringBuilder(skillManifestMap.size() * 128);
-        builder.append("当行动前需要特定指令时，使用<loadSkill>工具加载技能.").append(System.lineSeparator());
-        builder.append("技能如下:").append(System.lineSeparator());
-
-        if (skillManifestMap.isEmpty()) {
-            builder.append("当前无可用技能").append(System.lineSeparator());
-        }
-
-        for (SkillManifest skillManifest : skillManifestMap.values()) {
-            builder.append("- {").append(skillManifest.name()).append(":").append(skillManifest.description()).append("}").append(System.lineSeparator());
-        }
-        return builder.toString();
-    }
-
-    @ToolMethod(description = "本function用于根据指定的skill名称，将SKILL.md全部内容加载到当前会话")
-    public String loadSkill(@ToolParam(description = "指定的skill名称") String skillName) throws IOException {
-        return SkillReadUtil.readSkillMDBody(skillManifestMap.get(skillName).dirPath());
-    }
-
-    @ToolMethod(description = "本function用于根据指定的skill名称，将SKILL.md内声明的其他文件全部内容加载到当前会话")
-    public String loadSkillFile(@ToolParam(description = "指定的skill名称") String skillName,
-                                @ToolParam(description = "SKILL.md内声明的其他文件名称") String fileName) throws IOException {
-        return SkillReadUtil.readSkillFileBody(skillManifestMap.get(skillName).dirPath(), fileName);
     }
 }
