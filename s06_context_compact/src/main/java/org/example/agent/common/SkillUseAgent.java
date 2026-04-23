@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * agent抽象父类，提供公共方法，定义架构
  */
-public class SkillUseAgent extends ToolUseAgent {
+public class SkillUseAgent extends TodoUseAgent {
     protected final Map<String, SkillManifest> skillManifestMap = new HashMap<>();
     protected JSONObject skillMessage;
 
