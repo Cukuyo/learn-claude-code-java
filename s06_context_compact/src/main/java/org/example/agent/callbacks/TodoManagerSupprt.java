@@ -1,44 +1,46 @@
-package org.example.agent.common;
+package org.example.agent.callbacks;
 
 import com.alibaba.fastjson2.JSONObject;
-import org.example.models.AbstractModel;
+import org.example.agent.base.IAgent;
 import org.example.todo.TodoManager;
 
 /**
  * agent抽象父类，提供公共方法，定义架构
  */
-public class TodoUseAgent extends ToolUseAgent {
+public class TodoManagerSupprt implements AgentCallback {
+    private boolean inited = false;
     private final TodoManager todoManager = new TodoManager();
     private boolean useTodo = false;
 
-    public TodoUseAgent(AbstractModel model, String agentName) {
-        super(model, agentName);
+    @Override
+    public void eachAtomicInitFirst(IAgent agent) {
+        if (!inited) {
+            agent.registryTool(todoManager);
+            inited = true;
+        }
     }
 
     @Override
-    protected void callBeforeToolsUse() {
-        super.callBeforeToolsUse();
+    public void callBeforeToolsUse(IAgent agent) {
         useTodo = false;
     }
 
     @Override
-    protected void callAfterToolUse(String id, String name, JSONObject arguments, String toolRsp) {
-        super.callAfterToolUse(id, name, arguments, toolRsp);
+    public void callBeforeToolUse(IAgent agent, String id, String name, JSONObject arguments) {
         if (name.equals("updateTasks")) {
             useTodo = true;
         }
     }
 
     @Override
-    protected void callAfterToolsUse() {
-        super.callAfterToolsUse();
+    public void callAfterToolsUse(IAgent agent) {
         if (useTodo) {
             todoManager.noteRoundReset();
         } else {
             todoManager.noteRoundWithoutUpdate();
             String reminder = todoManager.reminder();
             if (!reminder.isEmpty()) {
-                model.addUserMessage(reminder);
+                agent.getModel().addUserMessage(reminder);
             }
         }
     }

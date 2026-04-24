@@ -72,7 +72,7 @@ public class TodoManager {
         if (rounds_since_update <= 3) {
             return "";
         }
-        return "<reminder>Refresh your current plan before continuing.</reminder>";
+        return "<注意>执行下一步动作前刷新任务项</注意>";
     }
 
     /**

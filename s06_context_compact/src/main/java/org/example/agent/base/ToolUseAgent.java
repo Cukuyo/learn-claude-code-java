@@ -1,4 +1,4 @@
-package org.example.agent.common;
+package org.example.agent.base;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.example.models.AbstractModel;
@@ -11,13 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * agent抽象父类，提供公共方法，定义架构
+ * agent抽象父类:
+ * 提供toolUse的实现
  */
-public class ToolUseAgent extends BaseAgent {
+public abstract class ToolUseAgent extends BaseAgent {
     protected final Map<String, ToolExecuter> toolHandlers = new HashMap<>();
 
     public ToolUseAgent(AbstractModel model, String agentName) {
         super(model, agentName);
+        model.addSystemMessages("你当前的工作目录是<" + System.getProperty("user.dir") + ">，注意不要做出范围之外的危险行为！");
     }
 
     @Override
@@ -30,37 +32,15 @@ public class ToolUseAgent extends BaseAgent {
         JSONObject arguments = JSONObject.parse(function.getString("arguments"));
 
         // 工具使用前回调
-        callBeforeToolUse(id, name, arguments);
+        callBeforeToolUse(this, id, name, arguments);
 
         String toolRsp = toolHandlers.get(name).execute(arguments);
         model.addToolMessages(toolRsp, id);
 
         // 工具使用后回调
-        callAfterToolUse(id, name, arguments, toolRsp);
+        callAfterToolUse(this, id, name, arguments, toolRsp);
     }
 
-    /**
-     * 单个工具使用后回调
-     *
-     * @param id        tool id
-     * @param name      tool name
-     * @param arguments tool args
-     */
-    protected void callBeforeToolUse(String id, String name, JSONObject arguments) {
-        System.out.printf("<%s> 开始执行tool, id:%s, func:%s, args:%s %s", agentName, id, name, arguments, System.lineSeparator());
-    }
-
-    /**
-     * 单个工具使用前回调
-     *
-     * @param id        tool id
-     * @param name      tool name
-     * @param arguments tool args
-     * @param toolRsp   toolRsp
-     */
-    protected void callAfterToolUse(String id, String name, JSONObject arguments, String toolRsp) {
-        System.out.printf("<%s> 结束执行tool, id:%s, func:%s, args:%s , result:%s %s", agentName, id, name, arguments, toolRsp, System.lineSeparator());
-    }
 
     /**
      * 工具注册

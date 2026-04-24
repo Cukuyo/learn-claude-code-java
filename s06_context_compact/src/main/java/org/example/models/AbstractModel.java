@@ -117,8 +117,10 @@ public abstract class AbstractModel {
      *
      * @param content content
      */
-    public void addUserMessage(String content) {
-        ((JSONArray) curReq.get("messages")).add(message(content, "user"));
+    public JSONObject addUserMessage(String content) {
+        JSONObject msg = message(content, "user");
+        ((JSONArray) curReq.get("messages")).add(msg);
+        return msg;
     }
 
     /**

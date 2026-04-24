@@ -27,6 +27,6 @@ public class ParentAgent extends SubAgent {
      */
     @ToolMethod(description = "Spawn a subagent with fresh context. It shares the filesystem but not conversation history.")
     public String handOut(@ToolParam(description = "Short description of the task") String content) throws IOException, InterruptedException {
-        return new SubAgent(model.cloneWithSystemMessages(), agentName + "-subagent").chatOrCommand(content);
+        return new SubAgent(agent.getModel().cloneWithSystemMessages(), agent.getAgentName() + "-subagent").chatOrCommand(content);
     }
 }

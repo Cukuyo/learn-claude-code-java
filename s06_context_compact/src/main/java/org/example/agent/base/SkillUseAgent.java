@@ -1,4 +1,4 @@
-package org.example.agent.common;
+package org.example.agent.base;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.example.models.AbstractModel;
@@ -8,7 +8,6 @@ import org.example.skill.SkillResolvUtil;
 import org.example.tool.ToolMethod;
 import org.example.tool.ToolParam;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -16,28 +15,26 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * agent抽象父类，提供公共方法，定义架构
+ * agent父类：
+ * 提供skillUse实现
  */
-public class SkillUseAgent extends TodoUseAgent {
+public class SkillUseAgent extends ToolUseAgent {
     protected final Map<String, SkillManifest> skillManifestMap = new HashMap<>();
     protected JSONObject skillMessage;
 
     public SkillUseAgent(AbstractModel model, String agentName) {
         super(model, agentName);
 
-        model.addSystemMessages("你当前的技能加载目录是<" + System.getProperty("user.dir") + File.separator + "skills" + ">，在获取该目录下的其他文件时注意路径问题");
-        registrySkills(System.getProperty("user.dir") + File.separator + "skills");
-        // 注册loadSkill
         registryTool(this);
     }
 
     /**
      * skills注册
      *
-     * @param path skill目录
+     * @param dirPath skill目录
      */
-    public void registrySkills(String path) {
-        List<SkillManifest> skillManifests = SkillResolvUtil.resolveDir(Paths.get(path));
+    public void registrySkills(String dirPath) {
+        List<SkillManifest> skillManifests = SkillResolvUtil.resolveDir(Paths.get(dirPath));
         for (SkillManifest skillManifest : skillManifests) {
             skillManifestMap.put(skillManifest.name(), skillManifest);
         }
@@ -59,7 +56,7 @@ public class SkillUseAgent extends TodoUseAgent {
         }
 
         for (SkillManifest skillManifest : skillManifestMap.values()) {
-            builder.append("- {").append(skillManifest.name()).append(":").append(skillManifest.description()).append("}").append(System.lineSeparator());
+            builder.append("- {").append(skillManifest.name()).append(":").append(skillManifest.description()).append(":").append("所在目录路径为").append(skillManifest.dirPath().relativize(Paths.get(System.getProperty("user.dir")))).append("}").append(System.lineSeparator());
         }
         return builder.toString();
     }
