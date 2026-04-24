@@ -7,7 +7,7 @@ import org.example.todo.TodoManager;
 /**
  * agent抽象父类，提供公共方法，定义架构
  */
-public class TodoManagerSupprt implements AgentCallback {
+public class TodoManagerSupport implements AgentCallback {
     private boolean inited = false;
     private final TodoManager todoManager = new TodoManager();
     private boolean useTodo = false;
