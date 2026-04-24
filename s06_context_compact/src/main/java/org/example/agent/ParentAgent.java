@@ -25,8 +25,8 @@ public class ParentAgent extends SubAgent {
      * @throws IOException          io异常
      * @throws InterruptedException 等待中断
      */
-    @ToolMethod(description = "Spawn a subagent with fresh context. It shares the filesystem but not conversation history.")
-    public String handOut(@ToolParam(description = "Short description of the task") String content) throws IOException, InterruptedException {
+    @ToolMethod(description = "生成一个全新上下文的子智能体执行子任务，该智能体共享文件系统，但不继承会话历史")
+    public String handOut(@ToolParam(description = "子任务描述") String content) throws IOException, InterruptedException {
         return new SubAgent(agent.getModel().cloneWithSystemMessages(), agent.getAgentName() + "-subagent").chatOrCommand(content);
     }
 }

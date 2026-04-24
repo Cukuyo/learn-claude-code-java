@@ -56,7 +56,11 @@ public class SkillUseAgent extends ToolUseAgent {
         }
 
         for (SkillManifest skillManifest : skillManifestMap.values()) {
-            builder.append("- {").append(skillManifest.name()).append(":").append(skillManifest.description()).append(":").append("所在目录路径为").append(skillManifest.dirPath().relativize(Paths.get(System.getProperty("user.dir")))).append("}").append(System.lineSeparator());
+            builder.append("- {")
+                    .append(skillManifest.name())
+                    .append(":").append(skillManifest.description())
+                    .append(":").append("所在目录路径为").append(skillManifest.dirPath().relativize(Paths.get(System.getProperty("user.dir"))))
+                    .append("}").append(System.lineSeparator());
         }
         return builder.toString();
     }

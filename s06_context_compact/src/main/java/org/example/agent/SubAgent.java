@@ -14,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * 子agent，只有基础功能:
+ * 子agent，封装了SkillUseAgent，添加了:
  * 1、支持命令行工具
  * 2、支持文件编辑工具
  * 3、支持skills
