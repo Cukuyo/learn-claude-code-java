@@ -13,12 +13,12 @@ import java.util.List;
  * 提供最根本的chatOrCommand实现
  * 提供AgentCallback的回调机制
  */
-public abstract class BaseAgent implements IAgent, AgentCallback {
+public abstract class AgentLoopAgent implements IAgent, AgentCallback {
     protected final AbstractModel model;
     protected final String agentName;
     protected final List<AgentCallback> agentCallbacks = new ArrayList<>();
 
-    public BaseAgent(AbstractModel model, String agentName) {
+    public AgentLoopAgent(AbstractModel model, String agentName) {
         this.model = model;
         this.agentName = agentName;
     }
@@ -31,7 +31,8 @@ public abstract class BaseAgent implements IAgent, AgentCallback {
     }
 
     private String agentLoop(String content) throws IOException, InterruptedException {
-        model.addUserMessage(content);
+        JSONObject userMessage = model.addUserMessage(content);
+        callAfterAddUserMessage(this, userMessage);
 
         while (true) {
             // chat前回调
@@ -91,13 +92,18 @@ public abstract class BaseAgent implements IAgent, AgentCallback {
     }
 
     @Override
+    public void callAfterAddUserMessage(IAgent agent, JSONObject userMessage) {
+        agentCallbacks.forEach(cv -> cv.callAfterAddUserMessage(agent, userMessage));
+    }
+
+    @Override
     public void callBeforeChat(IAgent agent) {
         agentCallbacks.forEach(cv -> cv.callBeforeChat(agent));
     }
 
     @Override
-    public void callAfterChat(IAgent agent, JSONObject chatRsp, JSONObject message) {
-        agentCallbacks.forEach(cv -> cv.callAfterChat(agent, chatRsp, message));
+    public void callAfterChat(IAgent agent, JSONObject chatRsp, JSONObject assistantMessage) {
+        agentCallbacks.forEach(cv -> cv.callAfterChat(agent, chatRsp, assistantMessage));
     }
 
     @Override
@@ -116,7 +122,7 @@ public abstract class BaseAgent implements IAgent, AgentCallback {
     }
 
     @Override
-    public void callAfterToolUse(IAgent agent, String id, String name, JSONObject arguments, String toolRsp) {
-        agentCallbacks.forEach(cv -> cv.callAfterToolUse(agent, id, name, arguments, toolRsp));
+    public void callAfterToolUse(IAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
+        agentCallbacks.forEach(cv -> cv.callAfterToolUse(agent, id, name, arguments, toolMessage));
     }
 }

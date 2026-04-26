@@ -24,6 +24,15 @@ public interface AgentCallback {
     }
 
     /**
+     * 添加用户提示后的回调
+     *
+     * @param agent       agent
+     * @param userMessage userMessage
+     */
+    default void callAfterAddUserMessage(IAgent agent, JSONObject userMessage) {
+    }
+
+    /**
      * 模型chat回调
      *
      * @param agent agent
@@ -37,7 +46,7 @@ public interface AgentCallback {
      * @param agent   agent
      * @param chatRsp chat rsp
      */
-    default void callAfterChat(IAgent agent, JSONObject chatRsp, JSONObject message) {
+    default void callAfterChat(IAgent agent, JSONObject chatRsp, JSONObject assistantMessage) {
     }
 
     /**
@@ -70,12 +79,12 @@ public interface AgentCallback {
     /**
      * 单个工具使用回调
      *
-     * @param agent     agent
-     * @param id        tool id
-     * @param name      tool name
-     * @param arguments tool args
-     * @param toolRsp   toolRsp
+     * @param agent       agent
+     * @param id          tool id
+     * @param name        tool name
+     * @param arguments   tool args
+     * @param toolMessage toolMessage
      */
-    default void callAfterToolUse(IAgent agent, String id, String name, JSONObject arguments, String toolRsp) {
+    default void callAfterToolUse(IAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
     }
 }

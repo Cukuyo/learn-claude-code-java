@@ -14,7 +14,7 @@ import java.util.Map;
  * agent抽象父类:
  * 提供toolUse的实现
  */
-public abstract class ToolUseAgent extends BaseAgent {
+public abstract class ToolUseAgent extends AgentLoopAgent {
     protected final Map<String, ToolExecuter> toolHandlers = new HashMap<>();
 
     public ToolUseAgent(AbstractModel model, String agentName) {
@@ -35,10 +35,10 @@ public abstract class ToolUseAgent extends BaseAgent {
         callBeforeToolUse(this, id, name, arguments);
 
         String toolRsp = toolHandlers.get(name).execute(arguments);
-        model.addToolMessages(toolRsp, id);
+        JSONObject toolMessage = model.addToolMessage(toolRsp, id);
 
         // 工具使用后回调
-        callAfterToolUse(this, id, name, arguments, toolRsp);
+        callAfterToolUse(this, id, name, arguments, toolMessage);
     }
 
 
@@ -47,6 +47,7 @@ public abstract class ToolUseAgent extends BaseAgent {
      *
      * @param toolObj 实例类型tool
      */
+    @Override
     public void registryTool(Object toolObj) {
         registryTool(ToolResolveUtil.resolve(toolObj));
     }
@@ -56,6 +57,7 @@ public abstract class ToolUseAgent extends BaseAgent {
      *
      * @param toolObj 静态方法类型tool
      */
+    @Override
     public void registryTool(Class<?> toolObj) {
         registryTool(ToolResolveUtil.resolve(toolObj));
     }

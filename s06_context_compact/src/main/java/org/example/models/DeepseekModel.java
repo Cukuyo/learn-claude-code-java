@@ -3,13 +3,15 @@ package org.example.models;
 import com.alibaba.fastjson2.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Deepseek客户端
  */
 public class DeepseekModel extends AbstractModel {
+    private static final int MAX_INPUT_TOKENS = 100 * 10000;
+    private static final int MAX_OUTPUT_TOKENS = 384 * 1000;
+
     private final String url;
     private final String apiKey;
     private final String model;
@@ -19,7 +21,7 @@ public class DeepseekModel extends AbstractModel {
     }
 
     public DeepseekModel(String url, String apiKey) {
-        this("deepseek-chat", url, apiKey);
+        this("deepseek-v4-flash", url, apiKey);
     }
 
     public DeepseekModel(String model, String url, String apiKey) {
@@ -114,17 +116,27 @@ public class DeepseekModel extends AbstractModel {
     }
 
     @Override
+    public int getMaxInputTokens() {
+        return MAX_INPUT_TOKENS;
+    }
+
+    @Override
+    public int getMaxOutTokens() {
+        return MAX_OUTPUT_TOKENS;
+    }
+
+    @Override
     public String extractToolName(JSONObject tool) {
         return tool.getJSONObject("function").getString("name");
     }
 
     @Override
     public AbstractModel cloneWithHistory() {
-        return cloneWithHistory(new DeepseekModel(model,url,apiKey));
+        return cloneWithHistory(new DeepseekModel(model, url, apiKey));
     }
 
     @Override
-    public AbstractModel cloneWithSystemMessages() {
-        return cloneWithSystemMessages(new DeepseekModel(model,url,apiKey));
+    public AbstractModel cloneWithoutHistory() {
+        return cloneWithoutHistory(new DeepseekModel(model, url, apiKey));
     }
 }

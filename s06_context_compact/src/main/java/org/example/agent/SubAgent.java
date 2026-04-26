@@ -2,10 +2,7 @@ package org.example.agent;
 
 import org.example.agent.base.IAgent;
 import org.example.agent.base.SkillUseAgent;
-import org.example.agent.callbacks.AgentCallback;
-import org.example.agent.callbacks.AgentLogPrintSupport;
-import org.example.agent.callbacks.ContextCompactAgent;
-import org.example.agent.callbacks.TodoManagerSupport;
+import org.example.agent.callbacks.*;
 import org.example.models.AbstractModel;
 import org.example.utils.AgentFileUtil;
 import org.example.utils.CommandUtil;
@@ -18,6 +15,9 @@ import java.io.IOException;
  * 1、支持命令行工具
  * 2、支持文件编辑工具
  * 3、支持skills
+ * <p>
+ * 4、支持todoManager
+ * 5、支持上下文压缩
  */
 public class SubAgent implements IAgent {
     protected final IAgent agent;
@@ -31,7 +31,8 @@ public class SubAgent implements IAgent {
 
         registryAgentCallback(AgentLogPrintSupport.INSTANCE);
         registryAgentCallback(new TodoManagerSupport());
-        registryAgentCallback(new ContextCompactAgent());
+        registryAgentCallback(new ToolUseCompactSupport(10));
+        registryAgentCallback(new ContextSummarySupport(0.5d, 3));
     }
 
     @Override

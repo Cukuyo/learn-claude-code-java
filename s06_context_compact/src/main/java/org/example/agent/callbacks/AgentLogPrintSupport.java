@@ -15,12 +15,12 @@ public class AgentLogPrintSupport implements AgentCallback {
     }
 
     @Override
-    public void callAfterToolUse(IAgent agent, String id, String name, JSONObject arguments, String toolRsp) {
-        System.out.printf("<%s> 结束执行tool, id:%s, func:%s, args:%s , result:%s %s", agent.getAgentName(), id, name, arguments, toolRsp, System.lineSeparator());
+    public void callAfterToolUse(IAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
+        System.out.printf("<%s> 结束执行tool, id:%s, func:%s, args:%s , result:%s %s", agent.getAgentName(), id, name, arguments, toolMessage, System.lineSeparator());
     }
 
     @Override
-    public void callAfterChat(IAgent agent, JSONObject chatRsp, JSONObject message) {
-        System.out.printf("%s>>>%s%s", agent.getAgentName(), message.getString("content"), System.lineSeparator());
+    public void callAfterChat(IAgent agent, JSONObject chatRsp, JSONObject assistantMessage) {
+        System.out.printf("%s>>>%s%s", agent.getAgentName(), assistantMessage.getString("content"), System.lineSeparator());
     }
 }

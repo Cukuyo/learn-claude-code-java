@@ -33,6 +33,7 @@ public class SkillUseAgent extends ToolUseAgent {
      *
      * @param dirPath skill目录
      */
+    @Override
     public void registrySkills(String dirPath) {
         List<SkillManifest> skillManifests = SkillResolvUtil.resolveDir(Paths.get(dirPath));
         for (SkillManifest skillManifest : skillManifests) {
