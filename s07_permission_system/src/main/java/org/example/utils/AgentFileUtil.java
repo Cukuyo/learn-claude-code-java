@@ -76,7 +76,7 @@ public class AgentFileUtil {
      * @param newText 新文本
      * @return 编辑结果
      */
-    @ToolMethod(description = "编辑指定路径的文件，将所有匹配的旧文本替换为新文本")
+    @ToolMethod(description = "编辑指定路径的文件，将匹配的第一个旧文本替换为新文本")
     public static String editFile(@ToolParam(description = "文件路径，支持绝对路径和相对路径") String pathStr,
                                   @ToolParam(description = "待替换的旧文本，支持正则表达式") String oldText,
                                   @ToolParam(description = "待替换的新文本") String newText) {
@@ -90,7 +90,7 @@ public class AgentFileUtil {
             }
 
             // 替换第一个匹配的旧文本
-            String newContent = content.replaceAll(oldText, newText);
+            String newContent = content.replaceFirst(oldText, newText);
             Files.writeString(path, newContent);
             return "编辑成功： " + pathStr;
         } catch (Exception e) {
