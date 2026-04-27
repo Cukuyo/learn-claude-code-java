@@ -1,4 +1,4 @@
-package org.example.agent.queue;
+package org.example.queue;
 
 import com.alibaba.fastjson2.JSONObject;
 

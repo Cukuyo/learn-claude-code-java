@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.example.agent.SubAgent;
 import org.example.agent.base.IAgent;
-import org.example.agent.queue.FixedSizeConversationQueue;
+import org.example.queue.FixedSizeConversationQueue;
 
 import java.io.IOException;
 import java.util.LinkedList;

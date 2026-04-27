@@ -14,6 +14,7 @@ public class S07_permission_system {
     static void main() throws IOException, InterruptedException {
         AbstractModel model = new DeepseekModel(System.getenv("api_key"));
         model.addSystemMessages("你是一个" + AGENT_NAME + "，会帮助主人解决各种技术问题~");
+
         IAgent agent = new ParentAgent(model, AGENT_NAME);
 
         try (Scanner scanner = new Scanner(System.in);) {

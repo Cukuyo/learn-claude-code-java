@@ -1,4 +1,4 @@
-package org.example.agent.queue;
+package org.example.queue;
 
 import java.util.LinkedList;
 
