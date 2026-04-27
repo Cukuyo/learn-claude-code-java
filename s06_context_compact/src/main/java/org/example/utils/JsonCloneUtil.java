@@ -13,6 +13,9 @@ public class JsonCloneUtil {
      * 深度克隆 JSONObject，包括：
      * 1. value 完全深克隆
      * 2. key 如果是 JSONObject/JSONArray，也会深克隆
+     *
+     * @param original JSONObject
+     * @return JSONObject
      */
     public static JSONObject deepClone(JSONObject original) {
         if (original == null) {
@@ -28,26 +31,31 @@ public class JsonCloneUtil {
         return cloned;
     }
 
-    // 递归克隆任意 JSON 类型
+    /**
+     * 递归克隆任意 JSON 类型
+     *
+     * @param value val
+     * @return Object
+     */
     private static Object deepCloneValue(Object value) {
-        if (value == null) {
-            return null;
-        }
-
-        if (value instanceof JSONObject) {
-            return deepClone((JSONObject) value);
-        }
-
-        if (value instanceof JSONArray) {
-            JSONArray array = (JSONArray) value;
-            JSONArray newArray = new JSONArray(array.size());
-            for (Object item : array) {
-                newArray.add(deepCloneValue(item));
+        switch (value) {
+            case null -> {
+                return null;
             }
-            return newArray;
+            case JSONObject jsonObject -> {
+                return deepClone(jsonObject);
+            }
+            case JSONArray array -> {
+                JSONArray newArray = new JSONArray(array.size());
+                for (Object item : array) {
+                    newArray.add(deepCloneValue(item));
+                }
+                return newArray;
+            }
+            default -> {
+                // 基本类型、字符串直接返回（不可变）
+                return value;
+            }
         }
-
-        // 基本类型、字符串直接返回（不可变）
-        return value;
     }
 }

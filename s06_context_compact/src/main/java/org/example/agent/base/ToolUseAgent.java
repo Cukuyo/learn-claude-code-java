@@ -19,7 +19,7 @@ public abstract class ToolUseAgent extends AgentLoopAgent {
 
     public ToolUseAgent(AbstractModel model, String agentName) {
         super(model, agentName);
-        model.addSystemMessages("你当前的工作目录是<" + System.getProperty("user.dir") + ">，注意不要做出范围之外的危险行为！");
+        model.addSystemMessages("你当前的工作目录是<" + System.getProperty("user.dir") + ">，执行tools时注意不要做出范围之外的危险行为！");
     }
 
     @Override

@@ -61,7 +61,6 @@ public class ContextSummarySupport implements AgentCallback {
             builder.append("-").append(message).append(System.lineSeparator());
         }
 
-        //s06_context_compact下有哪些文件 看一下HttpClient 看一下AgentFileUtil
         try {
             JSONArray messages = agent.getModel().curReq.getJSONArray("messages");
             // 清空上下文

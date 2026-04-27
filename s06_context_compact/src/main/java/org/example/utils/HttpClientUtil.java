@@ -28,7 +28,6 @@ public class HttpClientUtil {
     public static JSONObject send(String url, String apiKey, JSONObject body) throws IOException, InterruptedException {
         long start = System.currentTimeMillis();
 
-        System.out.println(body.toString());
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
@@ -40,7 +39,7 @@ public class HttpClientUtil {
 
         System.out.printf("请求url:%s, 状态码:%s, 请求耗时:%dms %s",
                 url, response.statusCode(), (System.currentTimeMillis() - start), System.lineSeparator());
-        System.out.println(JSONObject.parseObject(response.body()));
+
         return JSONObject.parseObject(response.body());
     }
 }
