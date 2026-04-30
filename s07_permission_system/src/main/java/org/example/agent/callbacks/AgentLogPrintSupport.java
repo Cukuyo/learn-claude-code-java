@@ -1,7 +1,8 @@
 package org.example.agent.callbacks;
 
+import org.example.agent.IAgent;
+
 import com.alibaba.fastjson2.JSONObject;
-import org.example.agent.base.IAgent;
 
 /**
  * 日志打印回调

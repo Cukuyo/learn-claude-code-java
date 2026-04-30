@@ -1,7 +1,8 @@
 package org.example.agent.callbacks;
 
 import com.alibaba.fastjson2.JSONObject;
-import org.example.agent.base.IAgent;
+
+import org.example.agent.IAgent;
 import org.example.todo.TodoManager;
 
 /**

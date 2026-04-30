@@ -1,7 +1,10 @@
 package org.example.agent.base;
 
 import com.alibaba.fastjson2.JSONObject;
+
+import org.example.agent.IAgent;
 import org.example.agent.callbacks.AgentCallback;
+import org.example.agent.hooks.AgentHook;
 import org.example.models.AbstractModel;
 
 import java.io.IOException;
@@ -12,11 +15,14 @@ import java.util.List;
  * agent抽象父类:
  * 提供最根本的chatOrCommand实现
  * 提供AgentCallback的回调机制
+ * 提供AgentHook的hook机制
  */
 public abstract class AgentLoopAgent implements IAgent, AgentCallback {
     protected final AbstractModel model;
     protected final String agentName;
+
     protected final List<AgentCallback> agentCallbacks = new ArrayList<>();
+    protected final List<AgentHook> agentHooks = new ArrayList<>();
 
     public AgentLoopAgent(AbstractModel model, String agentName) {
         this.model = model;
@@ -31,14 +37,32 @@ public abstract class AgentLoopAgent implements IAgent, AgentCallback {
     }
 
     private String agentLoop(String content) throws IOException, InterruptedException {
-        JSONObject userMessage = model.addUserMessage(content);
+        JSONObject userMessage=null;
+        for(AgentHook agentHook:agentHooks){
+            userMessage = agentHook.hookAddUserMessage(this, content);
+            if (userMessage!=null) {
+                break;
+            }
+        }
+        if (userMessage==null) {
+            userMessage = model.addUserMessage(content);
+        }
         callAfterAddUserMessage(this, userMessage);
 
         while (true) {
             // chat前回调
             callBeforeChat(this);
-
-            JSONObject chatRsp = model.chat();
+            
+            JSONObject chatRsp=null;
+            for(AgentHook agentHook:agentHooks){
+            chatRsp = agentHook.hookChat(this);
+                if (chatRsp!=null) {
+                    break;
+                }
+            }
+            if (chatRsp==null) {
+                chatRsp = model.chat();
+            }        
             JSONObject message = chatRsp.getJSONObject("message");
             model.addAssistantMessages(message);
 

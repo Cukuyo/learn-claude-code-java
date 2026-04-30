@@ -1,6 +1,5 @@
 package org.example.agent;
 
-import org.example.agent.base.IAgent;
 import org.example.agent.base.SkillUseAgent;
 import org.example.agent.callbacks.*;
 import org.example.models.AbstractModel;

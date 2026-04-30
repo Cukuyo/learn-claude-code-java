@@ -2,8 +2,9 @@ package org.example.agent.callbacks;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+
+import org.example.agent.IAgent;
 import org.example.agent.SubAgent;
-import org.example.agent.base.IAgent;
 import org.example.queue.FixedSizeConversationQueue;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package org.example.agent.base;
+package org.example.agent;
 
 import org.example.agent.callbacks.AgentCallback;
 import org.example.models.AbstractModel;
