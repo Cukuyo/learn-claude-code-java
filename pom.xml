@@ -21,6 +21,7 @@
         <module>s05_skill_loading</module>
         <module>s06_context_compact</module>
         <module>s07_permission_system</module>
+        <module>s08_hook_system</module>
     </modules>
 
     <properties>
