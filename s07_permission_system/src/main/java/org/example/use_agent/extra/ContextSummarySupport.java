@@ -1,8 +1,10 @@
-package org.example.agent.agent_callbacks;
+package org.example.use_agent.extra;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.example.agent.IAgent;
+import org.example.agent.agent_base.AbstractAgent;
+import org.example.agent.agent_callbacks.AgentCallback;
 import org.example.queue.FixedSizeConversationQueue;
 import org.example.use_agent.SubAgent;
 
@@ -28,22 +30,22 @@ public class ContextSummarySupport implements AgentCallback {
     }
 
     @Override
-    public void callAfterAddUserMessage(IAgent agent, JSONObject userMessage) {
+    public void callAfterAddUserMessage(AbstractAgent agent, JSONObject userMessage) {
         olderThanRecentConversations.addAll(recentConversations.add(userMessage, endPredicate));
     }
 
     @Override
-    public void callAfterChat(IAgent agent, JSONObject chatRsp, JSONObject assistantMessage) {
+    public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage) {
         olderThanRecentConversations.addAll(recentConversations.add(assistantMessage, endPredicate));
     }
 
     @Override
-    public void callAfterToolUse(IAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
+    public void callAfterToolUse(AbstractAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
         olderThanRecentConversations.addAll(recentConversations.add(toolMessage, endPredicate));
     }
 
     @Override
-    public void callBeforeChat(IAgent agent) {
+    public void callBeforeChat(AbstractAgent agent) {
         long totalTokens = agent.getModel().getLastChatTotalTokens();
         double tokenThreshold = agent.getModel().getMaxInputTokens() * contextRemainRatio;
         if (totalTokens <= tokenThreshold) {
@@ -92,7 +94,6 @@ public class ContextSummarySupport implements AgentCallback {
                     对话如下：
                     %s
                 """, content);
-
-        return new SubAgent(agent.getModel().cloneWithoutHistory(), agent.getAgentName() + "-summary").chatOrCommand(prompt);
+        return SubAgent.singleChat(agent.getModel().cloneWithoutHistory(), agent.getAgentName() + "-summary", prompt);
     }
 }

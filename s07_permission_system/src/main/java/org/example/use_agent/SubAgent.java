@@ -4,15 +4,18 @@ import org.example.agent.IAgent;
 import org.example.agent.agent_base.AbstractAgent;
 import org.example.agent.agent_base.SkillUseAgent;
 import org.example.agent.agent_callbacks.AgentLogPrintSupport;
-import org.example.agent.agent_callbacks.ContextSummarySupport;
 import org.example.agent.agent_callbacks.TodoManagerSupport;
 import org.example.agent.agent_callbacks.ToolUseCompactSupport;
+import org.example.agent.agent_unions.PermissionSystem;
 import org.example.models.AbstractModel;
 import org.example.tools.cmd.AgentCommandTool;
 import org.example.tools.file.AgentFileTool;
+import org.example.use_agent.extra.ContextSummarySupport;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 /**
  * 子agent，封装了SkillUseAgent，添加了:
@@ -24,9 +27,21 @@ import java.io.IOException;
  * 5、支持上下文压缩
  */
 public class SubAgent implements IAgent {
+    /**
+     * 创建一个单独的子agent执行任务
+     *
+     * @param model         模型
+     * @param agentName     agentName
+     * @param chatOrCommand 提示词
+     * @return llm 返回
+     */
+    public static String singleChat(AbstractModel model, String agentName, String chatOrCommand) throws IOException, InterruptedException {
+        return new SubAgent(model.cloneWithoutHistory(), agentName).chatOrCommand(chatOrCommand);
+    }
+
     protected final AbstractAgent agent;
 
-    public SubAgent(AbstractModel model, String agentName) {
+    public SubAgent(AbstractModel model, String agentName) throws IOException {
         agent = new SkillUseAgent(model, agentName);
 
         agent.registryTool(AgentCommandTool.class);
@@ -39,8 +54,15 @@ public class SubAgent implements IAgent {
         agent.registryAgentCallback(new ToolUseCompactSupport(10));
         agent.registryAgentCallback(new ContextSummarySupport(0.5d, 3));
 
-        agent.registryHook();
-        agent.registryCommand();
+        PermissionSystem permissionSystem;
+        try {
+            permissionSystem = new PermissionSystem(Paths.get(getClass().getClassLoader().getResource("permission_deny.properties").toURI()));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
+        agent.registryHook(permissionSystem);
+        agent.registryCommand(permissionSystem);
     }
 
     @Override

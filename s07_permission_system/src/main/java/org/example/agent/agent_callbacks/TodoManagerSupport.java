@@ -2,6 +2,7 @@ package org.example.agent.agent_callbacks;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.example.agent.IAgent;
+import org.example.agent.agent_base.AbstractAgent;
 import org.example.tools.todo.TodoManager;
 
 /**
@@ -13,7 +14,7 @@ public class TodoManagerSupport implements AgentCallback {
     private boolean useTodo = false;
 
     @Override
-    public void eachAtomicInitFirst(IAgent agent) {
+    public void eachAtomicInitFirst(AbstractAgent agent) {
         if (!inited) {
             agent.registryTool(todoManager);
             inited = true;
@@ -21,19 +22,19 @@ public class TodoManagerSupport implements AgentCallback {
     }
 
     @Override
-    public void callBeforeToolsUse(IAgent agent) {
+    public void callBeforeToolsUse(AbstractAgent agent) {
         useTodo = false;
     }
 
     @Override
-    public void callBeforeToolUse(IAgent agent, String id, String name, JSONObject arguments) {
+    public void callBeforeToolUse(AbstractAgent agent, String id, String name, JSONObject arguments) {
         if (name.equals("updateTasks")) {
             useTodo = true;
         }
     }
 
     @Override
-    public void callAfterToolsUse(IAgent agent) {
+    public void callAfterToolsUse(AbstractAgent agent) {
         if (useTodo) {
             todoManager.noteRoundReset();
         } else {

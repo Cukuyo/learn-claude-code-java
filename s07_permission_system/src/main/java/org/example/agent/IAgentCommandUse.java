@@ -1,6 +1,6 @@
 package org.example.agent;
 
-import org.example.agent.agent_command.AgentCommand;
+import org.example.agent.agent_commands.AgentCommand;
 
 /**
  * agent应支持注册命令

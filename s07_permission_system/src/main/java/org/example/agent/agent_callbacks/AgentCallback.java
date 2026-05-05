@@ -1,8 +1,7 @@
 package org.example.agent.agent_callbacks;
 
-import org.example.agent.IAgent;
-
 import com.alibaba.fastjson2.JSONObject;
+import org.example.agent.agent_base.AbstractAgent;
 
 /**
  * agent-loop生命周期回调
@@ -13,7 +12,7 @@ public interface AgentCallback {
      *
      * @param agent agent
      */
-    default void eachAtomicInitFirst(IAgent agent) {
+    default void eachAtomicInitFirst(AbstractAgent agent) {
     }
 
     /**
@@ -21,7 +20,26 @@ public interface AgentCallback {
      *
      * @param agent agent
      */
-    default void eachCheckSecond(IAgent agent) {
+    default void eachCheckSecond(AbstractAgent agent) {
+    }
+
+    /**
+     * 添加执行命令前的回调
+     *
+     * @param agent   agent
+     * @param content command body
+     */
+    default void callBeforeCommand(AbstractAgent agent, String content) {
+    }
+
+    /**
+     * 添加执行命令后的回调
+     *
+     * @param agent      agent
+     * @param content    command body
+     * @param commandRsp command rsp
+     */
+    default void callAfterCommand(AbstractAgent agent, String content, String commandRsp) {
     }
 
     /**
@@ -30,7 +48,7 @@ public interface AgentCallback {
      * @param agent       agent
      * @param userMessage userMessage
      */
-    default void callAfterAddUserMessage(IAgent agent, JSONObject userMessage) {
+    default void callAfterAddUserMessage(AbstractAgent agent, JSONObject userMessage) {
     }
 
     /**
@@ -38,7 +56,7 @@ public interface AgentCallback {
      *
      * @param agent agent
      */
-    default void callBeforeChat(IAgent agent) {
+    default void callBeforeChat(AbstractAgent agent) {
     }
 
     /**
@@ -47,7 +65,7 @@ public interface AgentCallback {
      * @param agent   agent
      * @param chatRsp chat rsp
      */
-    default void callAfterChat(IAgent agent, JSONObject chatRsp, JSONObject assistantMessage) {
+    default void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage) {
     }
 
     /**
@@ -55,7 +73,7 @@ public interface AgentCallback {
      *
      * @param agent agent
      */
-    default void callBeforeToolsUse(IAgent agent) {
+    default void callBeforeToolsUse(AbstractAgent agent) {
     }
 
     /**
@@ -63,7 +81,7 @@ public interface AgentCallback {
      *
      * @param agent agent
      */
-    default void callAfterToolsUse(IAgent agent) {
+    default void callAfterToolsUse(AbstractAgent agent) {
     }
 
     /**
@@ -74,7 +92,7 @@ public interface AgentCallback {
      * @param name      tool name
      * @param arguments tool args
      */
-    default void callBeforeToolUse(IAgent agent, String id, String name, JSONObject arguments) {
+    default void callBeforeToolUse(AbstractAgent agent, String id, String name, JSONObject arguments) {
     }
 
     /**
@@ -86,6 +104,6 @@ public interface AgentCallback {
      * @param arguments   tool args
      * @param toolMessage toolMessage
      */
-    default void callAfterToolUse(IAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
+    default void callAfterToolUse(AbstractAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
     }
 }

@@ -3,6 +3,7 @@ package org.example.agent.agent_callbacks;
 import com.alibaba.fastjson2.JSONObject;
 
 import org.example.agent.IAgent;
+import org.example.agent.agent_base.AbstractAgent;
 import org.example.queue.FixedSizeQueue;
 
 /**
@@ -19,7 +20,7 @@ public class ToolUseCompactSupport implements AgentCallback {
     }
 
     @Override
-    public void callAfterToolUse(IAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
+    public void callAfterToolUse(AbstractAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
         JSONObject oldest = this.toolUseResult.addWithLimit(toolMessage);
         if (oldest != null && oldest.getString("content").length() > 128) {
             oldest.put("content", "[早期工具结果已压缩。如果需要完整详情，请重新运行该工具。]");

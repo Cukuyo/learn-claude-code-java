@@ -1,13 +1,10 @@
 package org.example.agent.agent_base;
 
 import com.alibaba.fastjson2.JSONObject;
-import org.example.agent.IAgent;
 import org.example.agent.agent_hooks.AgentHook;
 import org.example.models.AbstractModel;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * agent抽象父类:
@@ -16,8 +13,6 @@ import java.util.List;
  * 提供AgentHook的hook机制
  */
 public abstract class AgentLoopAgent extends AbstractAgent {
-    protected final List<AgentHook> agentHooks = new ArrayList<>();
-
     public AgentLoopAgent(AbstractModel model, String agentName) {
         super(model, agentName);
     }
@@ -86,44 +81,4 @@ public abstract class AgentLoopAgent extends AbstractAgent {
      * @param obj llm返回的tool调用rsp
      */
     protected abstract void toolUse(JSONObject obj);
-
-    @Override
-    public void registryHook(AgentHook agentHook) {
-        agentHooks.add(agentHook);
-    }
-
-    @Override
-    public void callAfterAddUserMessage(IAgent agent, JSONObject userMessage) {
-        agentCallbacks.forEach(cv -> cv.callAfterAddUserMessage(agent, userMessage));
-    }
-
-    @Override
-    public void callBeforeChat(IAgent agent) {
-        agentCallbacks.forEach(cv -> cv.callBeforeChat(agent));
-    }
-
-    @Override
-    public void callAfterChat(IAgent agent, JSONObject chatRsp, JSONObject assistantMessage) {
-        agentCallbacks.forEach(cv -> cv.callAfterChat(agent, chatRsp, assistantMessage));
-    }
-
-    @Override
-    public void callBeforeToolsUse(IAgent agent) {
-        agentCallbacks.forEach(cv -> cv.callBeforeToolsUse(agent));
-    }
-
-    @Override
-    public void callAfterToolsUse(IAgent agent) {
-        agentCallbacks.forEach(cv -> cv.callAfterToolsUse(agent));
-    }
-
-    @Override
-    public void callBeforeToolUse(IAgent agent, String id, String name, JSONObject arguments) {
-        agentCallbacks.forEach(cv -> cv.callBeforeToolUse(agent, id, name, arguments));
-    }
-
-    @Override
-    public void callAfterToolUse(IAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
-        agentCallbacks.forEach(cv -> cv.callAfterToolUse(agent, id, name, arguments, toolMessage));
-    }
 }
