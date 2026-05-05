@@ -1,4 +1,4 @@
-package org.example.utils;
+package org.example.tools.cmd;
 
 import java.util.regex.Pattern;
 

@@ -8,6 +8,8 @@ import java.util.Map;
  * 定义工具的构造
  */
 public interface ModelToolUse {
+    void addTool(JSONObject tool);
+
     String extractToolName(JSONObject tool);
 
     JSONObject buildTool(JSONObject function);

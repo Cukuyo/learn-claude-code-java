@@ -2,11 +2,11 @@ package org.example.agent.base;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.example.models.AbstractModel;
-import org.example.skill.SkillManifest;
-import org.example.skill.SkillReadUtil;
-import org.example.skill.SkillResolvUtil;
-import org.example.tool.ToolMethod;
-import org.example.tool.ToolParam;
+import org.example.use_skill.SkillManifest;
+import org.example.use_skill.SkillReadUtil;
+import org.example.use_skill.SkillResolvUtil;
+import org.example.use_tool.ToolMethod;
+import org.example.use_tool.ToolParam;
 
 import java.io.IOException;
 import java.nio.file.Paths;

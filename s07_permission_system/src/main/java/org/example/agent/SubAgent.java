@@ -4,8 +4,8 @@ import org.example.agent.base.IAgent;
 import org.example.agent.base.SkillUseAgent;
 import org.example.agent.callbacks.*;
 import org.example.models.AbstractModel;
-import org.example.utils.AgentFileUtil;
-import org.example.utils.CommandUtil;
+import org.example.tools.file.AgentFileTool;
+import org.example.tools.cmd.AgentCommandTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +25,8 @@ public class SubAgent implements IAgent {
     public SubAgent(AbstractModel model, String agentName) {
         agent = new SkillUseAgent(model, agentName);
 
-        registryTool(CommandUtil.class);
-        registryTool(AgentFileUtil.class);
+        registryTool(AgentCommandTool.class);
+        registryTool(AgentFileTool.class);
         registrySkills(System.getProperty("user.dir") + File.separator + "skills");
 
         registryAgentCallback(AgentLogPrintSupport.INSTANCE);

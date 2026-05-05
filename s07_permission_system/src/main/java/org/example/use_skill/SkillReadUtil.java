@@ -1,4 +1,4 @@
-package org.example.skill;
+package org.example.use_skill;
 
 import java.io.IOException;
 import java.nio.file.Files;

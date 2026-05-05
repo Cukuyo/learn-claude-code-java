@@ -44,7 +44,7 @@ public class ContextSummarySupport implements AgentCallback {
 
     @Override
     public void callBeforeChat(IAgent agent) {
-        long totalTokens = agent.getModel().getTotalTokens();
+        long totalTokens = agent.getModel().getLastChatTotalTokens();
         double tokenThreshold = agent.getModel().getMaxInputTokens() * contextRemainRatio;
         if (totalTokens <= tokenThreshold) {
             return;

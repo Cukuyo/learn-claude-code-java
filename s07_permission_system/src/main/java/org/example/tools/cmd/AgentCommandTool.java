@@ -1,7 +1,7 @@
-package org.example.utils;
+package org.example.tools.cmd;
 
-import org.example.tool.ToolMethod;
-import org.example.tool.ToolParam;
+import org.example.use_tool.ToolMethod;
+import org.example.use_tool.ToolParam;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 /**
  * 操作系统命令行工具类
  */
-public class CommandUtil {
+public class AgentCommandTool {
     private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
     /**
@@ -96,9 +96,9 @@ public class CommandUtil {
 
     // ==================== 测试 ====================
     public static void main(String[] args) {
-        String res = CommandUtil.execute("dir");
+        String res = AgentCommandTool.execute("dir");
         System.out.println("Windows 目录：\n" + res);
-        res = CommandUtil.execute("echo Hello Windows from Java");
+        res = AgentCommandTool.execute("echo Hello Windows from Java");
         System.out.println("\n输出：" + res);
     }
 }

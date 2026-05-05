@@ -10,7 +10,7 @@ public interface ModelClone<T> {
     T cloneWithHistory(T newT);
 
     /**
-     * 仅带系统提示词的克隆
+     * 不带全部历史信息的克隆
      */
     T cloneWithoutHistory(T newT);
 
@@ -20,7 +20,7 @@ public interface ModelClone<T> {
     T cloneWithHistory();
 
     /**
-     * 仅带系统提示词的克隆
+     * 不带全部历史信息的克隆
      */
     T cloneWithoutHistory();
 }

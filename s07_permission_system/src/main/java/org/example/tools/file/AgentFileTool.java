@@ -1,7 +1,7 @@
-package org.example.utils;
+package org.example.tools.file;
 
-import org.example.tool.ToolMethod;
-import org.example.tool.ToolParam;
+import org.example.use_tool.ToolMethod;
+import org.example.use_tool.ToolParam;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +12,7 @@ import java.nio.file.StandardOpenOption;
  * 对应Python工具类的文件操作封装
  * 实现safe_path、read、write、edit核心逻辑
  */
-public class AgentFileUtil {
+public class AgentFileTool {
     /**
      * 工作目录（对应Python中的WORKDIR）
      */

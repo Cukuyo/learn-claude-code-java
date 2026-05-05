@@ -36,6 +36,11 @@ public class DeepseekModel extends AbstractModel {
         curReq.put("top_p", 1);
     }
 
+    @Override
+    public String extractToolName(JSONObject tool) {
+        return tool.getJSONObject("function").getString("name");
+    }
+
     /**
      * 示例：
      * {
@@ -123,11 +128,6 @@ public class DeepseekModel extends AbstractModel {
     @Override
     public int getMaxOutTokens() {
         return MAX_OUTPUT_TOKENS;
-    }
-
-    @Override
-    public String extractToolName(JSONObject tool) {
-        return tool.getJSONObject("function").getString("name");
     }
 
     @Override

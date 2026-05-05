@@ -1,7 +1,7 @@
-package org.example.todo;
+package org.example.tools.todo;
 
-import org.example.tool.ToolMethod;
-import org.example.tool.ToolParam;
+import org.example.use_tool.ToolMethod;
+import org.example.use_tool.ToolParam;
 
 import java.util.*;
 

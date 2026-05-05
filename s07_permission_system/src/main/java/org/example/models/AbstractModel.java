@@ -12,14 +12,17 @@ import java.util.Set;
 /**
  * model抽象父类，提供公共方法
  */
-public abstract class AbstractModel implements ModelSetting, ModelToolUse, ModelClone<AbstractModel> {
+public abstract class AbstractModel implements IModel, ModelSetting, ModelToolUse, ModelClone<AbstractModel>, ModelMonitor {
     public JSONObject curReq = new JSONObject();
     protected Set<String> toolsSet = new HashSet<>();
 
-    /**
-     * 当前请求总token数
-     */
-    private long totalTokens = 0;
+    private long lastPromptTokens = 0;
+    private long lastCompletionTokens = 0;
+    private long lastTotalTokens = 0;
+
+    private long promptTokensSum = 0;
+    private long completionTokensSum = 0;
+    private long totalTokensSum = 0;
 
     public AbstractModel() {
         curReq.put("messages", new JSONArray());
@@ -33,30 +36,48 @@ public abstract class AbstractModel implements ModelSetting, ModelToolUse, Model
      * @throws IOException          io异常
      * @throws InterruptedException 线程等待中断
      */
+    @Override
     public JSONObject chat() throws IOException, InterruptedException {
         JSONObject result = HttpClientUtil.send(getUrl(), getApiKey(), curReq);
 
         JSONObject usage = result.getJSONObject("usage");
-        Integer promptTokens = usage.getInteger("prompt_tokens");
-        Integer completionTokens = usage.getInteger("completion_tokens");
-        Integer totalTokens = usage.getInteger("total_tokens");
+        promptTokensSum += (lastPromptTokens = usage.getInteger("prompt_tokens"));
+        completionTokensSum += (lastCompletionTokens = usage.getInteger("completion_tokens"));
+        totalTokensSum += (lastTotalTokens = usage.getInteger("total_tokens"));
 
-        this.totalTokens += totalTokens;
-
-        System.out.printf("请求url:%s, 模型:%s, 提示词token数:%d, 补全token数:%d, 总token数:%d %s",
-                getUrl(), getModel(),
-                promptTokens, completionTokens, totalTokens, System.lineSeparator());
+        System.out.printf("请求url:%s, 模型:%s, 提示词token数:%d, 补全token数:%d, 总token数:%d %s", getUrl(), getModel(), lastPromptTokens, lastCompletionTokens, lastTotalTokens, System.lineSeparator());
 
         return result;
     }
 
-    /**
-     * 获取当前token数
-     *
-     * @return 当前token数
-     */
-    public long getTotalTokens() {
-        return totalTokens;
+    @Override
+    public long getLastChatTotalTokens() {
+        return lastTotalTokens;
+    }
+
+    @Override
+    public long getLastChatPromptTokens() {
+        return lastPromptTokens;
+    }
+
+    @Override
+    public long getLastChatCompletionTokens() {
+        return lastCompletionTokens;
+    }
+
+    @Override
+    public long getTotalTokensSum() {
+        return totalTokensSum;
+    }
+
+    @Override
+    public long getPromptTokensSum() {
+        return promptTokensSum;
+    }
+
+    @Override
+    public long getCompletionTokensSum() {
+        return completionTokensSum;
     }
 
     @Override
@@ -77,6 +98,7 @@ public abstract class AbstractModel implements ModelSetting, ModelToolUse, Model
      *
      * @param tool tool
      */
+    @Override
     public void addTool(JSONObject tool) {
         String toolName = extractToolName(tool);
         if (!toolsSet.contains(toolName)) {
@@ -90,6 +112,7 @@ public abstract class AbstractModel implements ModelSetting, ModelToolUse, Model
      *
      * @param content content
      */
+    @Override
     public JSONObject addSystemMessages(String content) {
         JSONObject msg = message(content, "system");
         ((JSONArray) curReq.get("messages")).add(msg);
@@ -101,6 +124,7 @@ public abstract class AbstractModel implements ModelSetting, ModelToolUse, Model
      *
      * @param content content
      */
+    @Override
     public JSONObject addUserMessage(String content) {
         JSONObject msg = message(content, "user");
         ((JSONArray) curReq.get("messages")).add(msg);
@@ -113,6 +137,7 @@ public abstract class AbstractModel implements ModelSetting, ModelToolUse, Model
      * @param content    content
      * @param toolCallId toolCallId
      */
+    @Override
     public JSONObject addToolMessage(String content, String toolCallId) {
         JSONObject msg = message(content, "tool");
         msg.put("tool_call_id", toolCallId);
@@ -125,6 +150,7 @@ public abstract class AbstractModel implements ModelSetting, ModelToolUse, Model
      *
      * @param content content
      */
+    @Override
     public void addAssistantMessages(JSONObject content) {
         ((JSONArray) curReq.get("messages")).add(content);
     }
