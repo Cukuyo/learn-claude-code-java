@@ -14,7 +14,7 @@ import java.util.*;
  * 权限系统，为hook形式，支持命令修改
  */
 public class PermissionSystem implements AgentHook, AgentCommand {
-    private List<AgentCommand> agentCommands = new ArrayList<>();
+    private final List<AgentCommand> agentCommands = new ArrayList<>();
 
     public PermissionMode mode = PermissionMode.AUTO;
 
@@ -66,7 +66,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
     private String ask(String name, String command, PermissionRule denyRule) {
         System.out.printf("agent正在执行危险操作：%s : %s，请确认是否允许，可选输入为%s %s",
                 name, command, Arrays.toString(PermissionAskBehavior.values()), System.lineSeparator());
-        PermissionAskBehavior userRsp = PermissionAskBehavior.valueOf(new Scanner(System.in).nextLine().trim());
+        PermissionAskBehavior userRsp = PermissionAskBehavior.valueOf(new Scanner(System.in).nextLine().trim().toUpperCase());
         switch (userRsp) {
             case ALWAYS -> {
                 denyRule.update(mode, PermissionBehavior.ALLOW, "用户已确认允许执行此高危命令！");
@@ -85,7 +85,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
     private PermissionRule matchedPermissionRule(String name, String content, Map<String, List<PermissionRule>> map) {
         List<PermissionRule> ruleList = map.getOrDefault(name, new ArrayList<>());
         for (PermissionRule rule : ruleList) {
-            if (rule.pattern.matcher(content).hasMatch()) {
+            if (rule.pattern.matcher(content).find()) {
                 return rule;
             }
         }
@@ -138,7 +138,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
                         builder.append(rule.toString()).append(System.lineSeparator())));
                 return builder.toString();
             }
-            if (arr.length == 2) {
+            if (arr.length == 2 && arr[1].equals("flush")) {
                 List<PermissionRule> list = new LinkedList<>();
                 denyProps.values().forEach(list::addAll);
                 PermissionFileUtil.write(denyPath, list);
