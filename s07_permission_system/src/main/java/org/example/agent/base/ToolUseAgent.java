@@ -1,6 +1,8 @@
 package org.example.agent.base;
 
 import com.alibaba.fastjson2.JSONObject;
+
+import org.example.agent.hooks.AgentHook;
 import org.example.models.AbstractModel;
 import org.example.use_tool.ToolExecuter;
 import org.example.use_tool.ToolResolveUtil;
@@ -19,7 +21,7 @@ public abstract class ToolUseAgent extends AgentLoopAgent {
 
     public ToolUseAgent(AbstractModel model, String agentName) {
         super(model, agentName);
-        model.addSystemMessages("你当前的工作目录是<" + System.getProperty("user.dir") + ">，执行tools时注意不要做出范围之外的危险行为！");
+        model.addSystemMessages("[ToolUse]你当前的工作目录是<" + System.getProperty("user.dir") + ">，执行tools时注意不要做出范围之外的危险行为！");
     }
 
     @Override
@@ -34,7 +36,17 @@ public abstract class ToolUseAgent extends AgentLoopAgent {
         // 工具使用前回调
         callBeforeToolUse(this, id, name, arguments);
 
-        String toolRsp = toolHandlers.get(name).execute(arguments);
+        String toolRsp=null;
+        for(AgentHook agentHook:agentHooks){
+            toolRsp = agentHook.hookToolUse(this,id,name,arguments);
+                if (toolRsp!=null) {
+                    break;
+                }
+            }
+        if (toolRsp==null) {
+              toolRsp = toolHandlers.get(name).execute(arguments);
+        }  
+
         JSONObject toolMessage = model.addToolMessage(toolRsp, id);
 
         // 工具使用后回调

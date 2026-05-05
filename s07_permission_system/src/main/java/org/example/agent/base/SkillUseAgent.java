@@ -49,7 +49,7 @@ public class SkillUseAgent extends ToolUseAgent {
 
     private String renderSkills() {
         StringBuilder builder = new StringBuilder(skillManifestMap.size() * 128);
-        builder.append("当行动前需要特定指令时，使用<loadSkill>工具加载技能.").append(System.lineSeparator());
+        builder.append("[SkillUse]当行动前需要特定指令时，使用<loadSkill>工具加载技能.").append(System.lineSeparator());
         builder.append("技能如下:").append(System.lineSeparator());
 
         if (skillManifestMap.isEmpty()) {
