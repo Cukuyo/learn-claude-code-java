@@ -1,10 +1,8 @@
-package org.example.agent.base;
+package org.example.agent.agent_base;
 
 import com.alibaba.fastjson2.JSONObject;
-
 import org.example.agent.IAgent;
-import org.example.agent.callbacks.AgentCallback;
-import org.example.agent.hooks.AgentHook;
+import org.example.agent.agent_hooks.AgentHook;
 import org.example.models.AbstractModel;
 
 import java.io.IOException;
@@ -17,52 +15,23 @@ import java.util.List;
  * 提供AgentCallback的回调机制
  * 提供AgentHook的hook机制
  */
-public abstract class AgentLoopAgent implements IAgent, AgentCallback {
-    protected final AbstractModel model;
-    protected final String agentName;
-
-    protected final List<AgentCallback> agentCallbacks = new ArrayList<>();
+public abstract class AgentLoopAgent extends AbstractAgent {
     protected final List<AgentHook> agentHooks = new ArrayList<>();
 
     public AgentLoopAgent(AbstractModel model, String agentName) {
-        this.model = model;
-        this.agentName = agentName;
+        super(model, agentName);
     }
 
     @Override
-    public String chatOrCommand(String content) throws IOException, InterruptedException {
-        eachAtomicInitFirst(this);
-        eachCheckSecond(this);
-        return agentLoop(content);
-    }
-
-    private String agentLoop(String content) throws IOException, InterruptedException {
-        JSONObject userMessage=null;
-        for(AgentHook agentHook:agentHooks){
-            userMessage = agentHook.hookAddUserMessage(this, content);
-            if (userMessage!=null) {
-                break;
-            }
-        }
-        if (userMessage==null) {
-            userMessage = model.addUserMessage(content);
-        }
-        callAfterAddUserMessage(this, userMessage);
+    protected String agentLoop(String content) throws IOException, InterruptedException {
+        // 添加User提示词后回调
+        callAfterAddUserMessage(this, addUserMessageWithOptionHook(content));
 
         while (true) {
             // chat前回调
             callBeforeChat(this);
-            
-            JSONObject chatRsp=null;
-            for(AgentHook agentHook:agentHooks){
-            chatRsp = agentHook.hookChat(this);
-                if (chatRsp!=null) {
-                    break;
-                }
-            }
-            if (chatRsp==null) {
-                chatRsp = model.chat();
-            }        
+
+            JSONObject chatRsp = getChatRspWithOptionHook();
             JSONObject message = chatRsp.getJSONObject("message");
             model.addAssistantMessages(message);
 
@@ -83,6 +52,34 @@ public abstract class AgentLoopAgent implements IAgent, AgentCallback {
         }
     }
 
+    private JSONObject getChatRspWithOptionHook() throws IOException, InterruptedException {
+        JSONObject chatRsp = null;
+        for (AgentHook agentHook : agentHooks) {
+            chatRsp = agentHook.hookChat(this);
+            if (chatRsp != null) {
+                break;
+            }
+        }
+        if (chatRsp == null) {
+            chatRsp = model.chat();
+        }
+        return chatRsp;
+    }
+
+    private JSONObject addUserMessageWithOptionHook(String content) {
+        JSONObject userMessage = null;
+        for (AgentHook agentHook : agentHooks) {
+            userMessage = agentHook.hookAddUserMessage(this, content);
+            if (userMessage != null) {
+                break;
+            }
+        }
+        if (userMessage == null) {
+            userMessage = model.addUserMessage(content);
+        }
+        return userMessage;
+    }
+
     /**
      * 工具使用，交给子类实现
      *
@@ -91,28 +88,8 @@ public abstract class AgentLoopAgent implements IAgent, AgentCallback {
     protected abstract void toolUse(JSONObject obj);
 
     @Override
-    public AbstractModel getModel() {
-        return model;
-    }
-
-    @Override
-    public String getAgentName() {
-        return agentName;
-    }
-
-    @Override
-    public void registryAgentCallback(AgentCallback agentCallback) {
-        agentCallbacks.add(agentCallback);
-    }
-
-    @Override
-    public void eachAtomicInitFirst(IAgent agent) {
-        agentCallbacks.forEach(cv -> cv.eachAtomicInitFirst(agent));
-    }
-
-    @Override
-    public void eachCheckSecond(IAgent agent) {
-        agentCallbacks.forEach(cv -> cv.eachAtomicInitFirst(agent));
+    public void registryHook(AgentHook agentHook) {
+        agentHooks.add(agentHook);
     }
 
     @Override

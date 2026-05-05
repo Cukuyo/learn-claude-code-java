@@ -1,4 +1,4 @@
-package org.example.agent;
+package org.example.use_agent;
 
 import org.example.models.AbstractModel;
 import org.example.use_tool.ToolMethod;
@@ -14,7 +14,7 @@ import java.io.IOException;
 public class ParentAgent extends SubAgent {
     public ParentAgent(AbstractModel model, String agentName) {
         super(model, agentName);
-        registryTool(this);
+        agent.registryTool(this);
     }
 
     /**

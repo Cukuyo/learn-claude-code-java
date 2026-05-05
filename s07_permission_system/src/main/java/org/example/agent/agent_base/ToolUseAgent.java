@@ -1,8 +1,8 @@
-package org.example.agent.base;
+package org.example.agent.agent_base;
 
 import com.alibaba.fastjson2.JSONObject;
 
-import org.example.agent.hooks.AgentHook;
+import org.example.agent.agent_hooks.AgentHook;
 import org.example.models.AbstractModel;
 import org.example.use_tool.ToolExecuter;
 import org.example.use_tool.ToolResolveUtil;
@@ -36,21 +36,24 @@ public abstract class ToolUseAgent extends AgentLoopAgent {
         // 工具使用前回调
         callBeforeToolUse(this, id, name, arguments);
 
-        String toolRsp=null;
-        for(AgentHook agentHook:agentHooks){
-            toolRsp = agentHook.hookToolUse(this,id,name,arguments);
-                if (toolRsp!=null) {
-                    break;
-                }
-            }
-        if (toolRsp==null) {
-              toolRsp = toolHandlers.get(name).execute(arguments);
-        }  
-
-        JSONObject toolMessage = model.addToolMessage(toolRsp, id);
+        JSONObject toolMessage = model.addToolMessage(getToolRspWithOptionHook(id, name, arguments), id);
 
         // 工具使用后回调
         callAfterToolUse(this, id, name, arguments, toolMessage);
+    }
+
+    private String getToolRspWithOptionHook(String id, String name, JSONObject arguments) {
+        String toolRsp = null;
+        for (AgentHook agentHook : agentHooks) {
+            toolRsp = agentHook.hookToolUse(this, id, name, arguments);
+            if (toolRsp != null) {
+                break;
+            }
+        }
+        if (toolRsp == null) {
+            toolRsp = toolHandlers.get(name).execute(arguments);
+        }
+        return toolRsp;
     }
 
 

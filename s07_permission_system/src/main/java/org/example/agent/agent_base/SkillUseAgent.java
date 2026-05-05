@@ -1,4 +1,4 @@
-package org.example.agent.base;
+package org.example.agent.agent_base;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.example.models.AbstractModel;

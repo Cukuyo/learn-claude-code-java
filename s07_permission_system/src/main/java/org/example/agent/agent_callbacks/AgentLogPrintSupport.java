@@ -1,4 +1,4 @@
-package org.example.agent.callbacks;
+package org.example.agent.agent_callbacks;
 
 import org.example.agent.IAgent;
 
