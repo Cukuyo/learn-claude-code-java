@@ -25,6 +25,7 @@ import java.nio.file.Paths;
  * <p>
  * 4、支持todoManager
  * 5、支持上下文压缩
+ * 6、支持权限管控
  */
 public class SubAgent implements IAgent {
     /**
