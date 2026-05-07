@@ -1,4 +1,4 @@
-package org.example.define_permission;
+package org.example.systems.permission;
 
 /**
  * 权限行为

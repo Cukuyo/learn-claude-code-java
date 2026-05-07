@@ -1,11 +1,11 @@
-package org.example.agents.extra;
+package org.example.agents.systems;
 
 import com.alibaba.fastjson2.JSONObject;
 
 import org.example.define_agent.AgentCommand;
 import org.example.define_agent.AgentHook;
 import org.example.define_agent.core.AbstractAgent;
-import org.example.define_permission.*;
+import org.example.systems.permission.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
