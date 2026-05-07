@@ -4,10 +4,10 @@ import com.alibaba.fastjson2.JSONObject;
 
 import org.example.define_agent.AgentHook;
 import org.example.define_agent.core.components.SkillUseComponent;
+import org.example.define_models.AbstractModel;
 import org.example.define_tool.ToolExecuter;
 import org.example.define_tool.ToolResolveUtil;
 import org.example.define_tool.ToolTransformUtil;
-import org.example.models.AbstractModel;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,7 +16,8 @@ import java.util.Map;
 
 /**
  * agent核心类:
- * 提供agentLoop实现
+ * 提供agentLoop实现，即tool use循环
+ * 提供skillUse组件
  */
 public class AgentLoopAgent extends AbstractAgent {
     protected final Map<String, ToolExecuter> toolHandlers = new HashMap<>();
@@ -25,7 +26,8 @@ public class AgentLoopAgent extends AbstractAgent {
 
     public AgentLoopAgent(AbstractModel model, String agentName) {
         super(model, agentName);
-         model.addSystemMessages("[ToolUse]你当前的工作目录是<" + System.getProperty("user.dir") + ">，执行tools时注意不要做出范围之外的危险行为！");
+        model.addSystemMessages("[ToolUse]你当前的工作目录是<" + System.getProperty("user.dir") + ">，执行tools时注意不要做出范围之外的危险行为！");
+        
         skillUseAgent=new SkillUseComponent(this);
     }
 

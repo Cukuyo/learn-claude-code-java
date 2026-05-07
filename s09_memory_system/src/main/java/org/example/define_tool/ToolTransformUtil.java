@@ -1,12 +1,13 @@
 package org.example.define_tool;
 
 import com.alibaba.fastjson2.JSONObject;
-import org.example.models.AbstractModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.example.define_models.AbstractModel;
 
 /**
  * 将tool工具解析转换为model需要格式的工具类

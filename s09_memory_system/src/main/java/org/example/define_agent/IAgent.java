@@ -1,8 +1,8 @@
 package org.example.define_agent;
 
-import org.example.models.AbstractModel;
-
 import java.io.IOException;
+
+import org.example.define_models.AbstractModel;
 
 /**
  * agent最基础的支持

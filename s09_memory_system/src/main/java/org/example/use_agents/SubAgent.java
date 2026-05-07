@@ -2,9 +2,14 @@ package org.example.use_agents;
 
 import org.example.define_agent.IAgent;
 import org.example.define_agent.core.AbstractAgent;
+import org.example.define_agent.core.AgentLoopAgent;
 import org.example.define_agent.core.components.SkillUseComponent;
-import org.example.models.AbstractModel;
+import org.example.define_models.AbstractModel;
+import org.example.use_agents.extra.AgentLogPrintSupport;
 import org.example.use_agents.extra.ContextSummarySupport;
+import org.example.use_agents.extra.PermissionSystem;
+import org.example.use_agents.extra.TodoManagerSupport;
+import org.example.use_agents.extra.ToolUseCompactSupport;
 import org.example.use_tools.cmd.AgentCommandTool;
 import org.example.use_tools.file.AgentFileTool;
 
@@ -39,7 +44,7 @@ public class SubAgent implements IAgent {
     protected final AbstractAgent agent;
 
     public SubAgent(AbstractModel model, String agentName) throws IOException {
-        agent = new SkillUseComponent(model, agentName);
+        agent = new AgentLoopAgent(model, agentName);
 
         agent.registryTool(AgentCommandTool.class);
         agent.registryTool(AgentFileTool.class);

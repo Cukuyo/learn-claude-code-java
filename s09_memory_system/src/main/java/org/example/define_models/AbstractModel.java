@@ -1,4 +1,4 @@
-package org.example.models;
+package org.example.define_models;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;

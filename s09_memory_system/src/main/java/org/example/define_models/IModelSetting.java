@@ -1,4 +1,4 @@
-package org.example.models;
+package org.example.define_models;
 
 /**
  * 定义模型的参数配置

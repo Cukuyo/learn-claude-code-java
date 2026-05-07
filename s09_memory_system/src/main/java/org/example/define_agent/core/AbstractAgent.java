@@ -11,7 +11,7 @@ import org.example.define_agent.IAgentCommandUse;
 import org.example.define_agent.IAgentHookUse;
 import org.example.define_agent.IAgentSkillUse;
 import org.example.define_agent.IAgentToolUse;
-import org.example.models.AbstractModel;
+import org.example.define_models.AbstractModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,8 +24,8 @@ import java.util.Optional;
  * 提供AgentCallback的回调机制
  */
 public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentToolUse, IAgentSkillUse, IAgentCallBackUse, IAgentHookUse, IAgentCommandUse {
-    protected final AbstractModel model;
-    protected final String agentName;
+    public final AbstractModel model;
+    public final String agentName;
 
     protected final List<AgentCallback> agentCallbacks = new ArrayList<>();
     protected final List<AgentCommand> agentCommands = new ArrayList<>();

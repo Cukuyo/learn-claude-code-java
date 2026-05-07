@@ -1,4 +1,4 @@
-package org.example.use_agents;
+package org.example.use_agents.extra;
 
 import org.example.define_agent.AgentCallback;
 import org.example.define_agent.core.AbstractAgent;
