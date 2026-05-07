@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * model抽象父类，提供公共方法
  */
-public abstract class AbstractModel implements IModel, ModelSetting, ModelToolUse, ModelClone<AbstractModel>, ModelMonitor {
+public abstract class AbstractModel implements IModel, IModelSetting, IModelToolUse, IModelClone<AbstractModel>, IModelMonitor {
     public JSONObject curReq = new JSONObject();
     protected Set<String> toolsSet = new HashSet<>();
 

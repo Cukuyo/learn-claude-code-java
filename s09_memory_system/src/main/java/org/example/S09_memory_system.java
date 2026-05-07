@@ -1,14 +1,14 @@
 package org.example;
 
-import org.example.agent.IAgent;
+import org.example.define_agent.IAgent;
 import org.example.models.AbstractModel;
 import org.example.models.DeepseekModel;
-import org.example.use_agent.ParentAgent;
+import org.example.use_agents.ParentAgent;
 
 import java.io.IOException;
 import java.util.Scanner;
 
-public class S08_hook_system {
+public class S09_memory_system {
     private static final String AGENT_NAME = "纯情的小猫娘";
 
     static void main() throws IOException, InterruptedException {
