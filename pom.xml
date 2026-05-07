@@ -22,6 +22,7 @@
         <module>s06_context_compact</module>
         <module>s07_permission_system</module>
         <module>s08_hook_system</module>
+        <module>s09_memory_system</module>
     </modules>
 
     <properties>
