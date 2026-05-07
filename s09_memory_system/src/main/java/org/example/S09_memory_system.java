@@ -1,9 +1,9 @@
 package org.example;
 
+import org.example.agents.ParentAgent;
 import org.example.define_agent.IAgent;
 import org.example.define_models.AbstractModel;
 import org.example.define_models.DeepseekModel;
-import org.example.use_agents.ParentAgent;
 
 import java.io.IOException;
 import java.util.Scanner;

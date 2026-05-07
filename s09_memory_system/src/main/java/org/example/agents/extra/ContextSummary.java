@@ -1,13 +1,13 @@
-package org.example.use_agents.extra;
+package org.example.agents.extra;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 
+import org.example.agents.SubAgent;
 import org.example.define_agent.AgentCallback;
 import org.example.define_agent.IAgent;
 import org.example.define_agent.core.AbstractAgent;
 import org.example.queue.FixedSizeConversationQueue;
-import org.example.use_agents.SubAgent;
 
 import java.io.IOException;
 import java.util.LinkedList;

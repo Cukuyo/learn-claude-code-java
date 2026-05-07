@@ -1,17 +1,16 @@
-package org.example.use_agents;
+package org.example.agents;
 
+import org.example.agents.extra.AgentLogPrint;
+import org.example.agents.extra.ContextSummary;
+import org.example.agents.extra.MultiStepsPlan;
+import org.example.agents.extra.PermissionSystem;
+import org.example.agents.extra.ToolUseCompact;
 import org.example.define_agent.IAgent;
 import org.example.define_agent.core.AbstractAgent;
 import org.example.define_agent.core.AgentLoopAgent;
-import org.example.define_agent.core.components.SkillUseComponent;
 import org.example.define_models.AbstractModel;
-import org.example.use_agents.extra.AgentLogPrint;
-import org.example.use_agents.extra.ContextSummary;
-import org.example.use_agents.extra.PermissionSystem;
-import org.example.use_agents.extra.MultiStepsPlan;
-import org.example.use_agents.extra.ToolUseCompact;
-import org.example.use_tools.cmd.AgentCommandTool;
-import org.example.use_tools.file.AgentFileTool;
+import org.example.utils.cmd.AgentCommandTool;
+import org.example.utils.file.AgentFileTool;
 
 import java.io.File;
 import java.io.IOException;

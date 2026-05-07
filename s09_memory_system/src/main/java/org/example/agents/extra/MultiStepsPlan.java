@@ -1,21 +1,28 @@
-package org.example.use_tools.todo;
+package org.example.agents.extra;
 
-import java.util.*;
+import com.alibaba.fastjson2.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.example.define_agent.AgentCallback;
+import org.example.define_agent.core.AbstractAgent;
 import org.example.define_tool.ToolMethod;
 import org.example.define_tool.ToolParam;
 
 /**
- * 让AI记录下多步骤的事项
+ * 多步骤规划
  */
-public class TodoManager {
+public class MultiStepsPlan implements AgentCallback {
     public enum ItemStatus {
         pending, in_progress, completed
     }
 
     public record PlanItem(@ToolParam(description = "任务项内容") String content,
                            @ToolParam(description = "任务项状态") ItemStatus status) {
-
     }
 
     private static final Map<ItemStatus, String> MARKER = new HashMap<>();
@@ -28,6 +35,42 @@ public class TodoManager {
 
     private final List<PlanItem> cache = new ArrayList<>();
     private int rounds_since_update = 0;
+
+    private boolean inited = false;
+    private boolean useTodo = false;
+
+    @Override
+    public void eachAtomicInitFirst(AbstractAgent agent) {
+        if (!inited) {
+            agent.registryTool(this);
+            inited = true;
+        }
+    }
+
+    @Override
+    public void callBeforeToolsUse(AbstractAgent agent) {
+        useTodo = false;
+    }
+
+    @Override
+    public void callBeforeToolUse(AbstractAgent agent, String id, String name, JSONObject arguments) {
+        if (name.equals("updateTasks")) {
+            useTodo = true;
+        }
+    }
+
+    @Override
+    public void callAfterToolsUse(AbstractAgent agent) {
+        if (useTodo) {
+            noteRoundReset();
+        } else {
+            noteRoundWithoutUpdate();
+            String reminder = reminder();
+            if (!reminder.isEmpty()) {
+                agent.getModel().addUserMessage(reminder);
+            }
+        }
+    }
 
     /**
      * 更新任务项
@@ -47,7 +90,7 @@ public class TodoManager {
      *
      * @return 视图
      */
-    public String render() {
+    private String render() {
         if (cache.isEmpty()) {
             return "No session plan yet.";
         }
@@ -65,7 +108,7 @@ public class TodoManager {
      *
      * @return 提醒
      */
-    public String reminder() {
+    private String reminder() {
         if (cache.isEmpty()) {
             return "";
         }
@@ -78,14 +121,14 @@ public class TodoManager {
     /**
      * 增加未刷新的次数
      */
-    public void noteRoundWithoutUpdate() {
+    private void noteRoundWithoutUpdate() {
         rounds_since_update++;
     }
 
     /**
      * 重置未刷新的次数
      */
-    public void noteRoundReset() {
+    private void noteRoundReset() {
         rounds_since_update = 0;
     }
 }

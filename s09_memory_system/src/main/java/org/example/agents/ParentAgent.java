@@ -1,4 +1,4 @@
-package org.example.use_agents;
+package org.example.agents;
 
 import org.example.define_models.AbstractModel;
 import org.example.define_tool.ToolMethod;
