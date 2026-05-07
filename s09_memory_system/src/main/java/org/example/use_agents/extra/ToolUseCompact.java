@@ -3,20 +3,19 @@ package org.example.use_agents.extra;
 import com.alibaba.fastjson2.JSONObject;
 
 import org.example.define_agent.AgentCallback;
-import org.example.define_agent.IAgent;
 import org.example.define_agent.core.AbstractAgent;
 import org.example.queue.FixedSizeQueue;
 
 /**
  * toolUse压缩，设置最大保留的tool返回数，当超过指定值时最开始的tool返回将被压缩
  */
-public class ToolUseCompactSupport implements AgentCallback {
+public class ToolUseCompact implements AgentCallback {
     private final FixedSizeQueue<JSONObject> toolUseResult;
 
     /**
      * @param toolUseResultRemain 最大保留的tool返回数
      */
-    public ToolUseCompactSupport(int toolUseResultRemain) {
+    public ToolUseCompact(int toolUseResultRemain) {
         this.toolUseResult = new FixedSizeQueue<>(toolUseResultRemain);
     }
 

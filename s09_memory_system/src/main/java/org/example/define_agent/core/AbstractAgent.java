@@ -20,16 +20,18 @@ import java.util.Optional;
 
 /**
  * agent抽象父类:
- * 提供最根本的chatOrCommand实现,提供命令输入最开始的判断和部分回调机制
- * 提供AgentCallback的回调机制
+ * 提供最根本的chatOrCommand实现
+ * 提供回调机制
+ * 提供命令机制
+ * 提供hook机制
  */
 public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentToolUse, IAgentSkillUse, IAgentCallBackUse, IAgentHookUse, IAgentCommandUse {
     public final AbstractModel model;
     public final String agentName;
 
-    protected final List<AgentCallback> agentCallbacks = new ArrayList<>();
-    protected final List<AgentCommand> agentCommands = new ArrayList<>();
-    protected final List<AgentHook> agentHooks = new ArrayList<>();
+    public final List<AgentCallback> agentCallbacks = new ArrayList<>();
+    public final List<AgentCommand> agentCommands = new ArrayList<>();
+    public final List<AgentHook> agentHooks = new ArrayList<>();
 
     public AbstractAgent(AbstractModel model, String agentName) {
         this.model = model;

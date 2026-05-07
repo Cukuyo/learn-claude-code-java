@@ -8,8 +8,8 @@ import com.alibaba.fastjson2.JSONObject;
 /**
  * 日志打印回调
  */
-public class AgentLogPrintSupport implements AgentCallback {
-    public static final AgentLogPrintSupport INSTANCE = new AgentLogPrintSupport();
+public class AgentLogPrint implements AgentCallback {
+    public static final AgentLogPrint INSTANCE = new AgentLogPrint();
 
     @Override
     public void callBeforeToolUse(AbstractAgent agent, String id, String name, JSONObject arguments) {

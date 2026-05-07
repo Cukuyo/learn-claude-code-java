@@ -5,11 +5,11 @@ import org.example.define_agent.core.AbstractAgent;
 import org.example.define_agent.core.AgentLoopAgent;
 import org.example.define_agent.core.components.SkillUseComponent;
 import org.example.define_models.AbstractModel;
-import org.example.use_agents.extra.AgentLogPrintSupport;
-import org.example.use_agents.extra.ContextSummarySupport;
+import org.example.use_agents.extra.AgentLogPrint;
+import org.example.use_agents.extra.ContextSummary;
 import org.example.use_agents.extra.PermissionSystem;
-import org.example.use_agents.extra.TodoManagerSupport;
-import org.example.use_agents.extra.ToolUseCompactSupport;
+import org.example.use_agents.extra.MultiStepsPlan;
+import org.example.use_agents.extra.ToolUseCompact;
 import org.example.use_tools.cmd.AgentCommandTool;
 import org.example.use_tools.file.AgentFileTool;
 
@@ -19,14 +19,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
 /**
- * 子agent，封装了SkillUseAgent，添加了:
- * 1、支持命令行工具
- * 2、支持文件编辑工具
- * 3、支持skills
- * <p>
- * 4、支持todoManager
- * 5、支持上下文压缩
- * 6、支持权限管控
+ * 子agent，添加默认能力
  */
 public class SubAgent implements IAgent {
     /**
@@ -51,10 +44,10 @@ public class SubAgent implements IAgent {
 
         agent.registrySkills(System.getProperty("user.dir") + File.separator + "skills");
 
-        agent.registryAgentCallback(AgentLogPrintSupport.INSTANCE);
-        agent.registryAgentCallback(new TodoManagerSupport());
-        agent.registryAgentCallback(new ToolUseCompactSupport(10));
-        agent.registryAgentCallback(new ContextSummarySupport(0.5d, 3));
+        agent.registryAgentCallback(AgentLogPrint.INSTANCE);
+        agent.registryAgentCallback(new MultiStepsPlan());
+        agent.registryAgentCallback(new ToolUseCompact(10));
+        agent.registryAgentCallback(new ContextSummary(0.5d, 3));
 
         PermissionSystem permissionSystem;
         try {

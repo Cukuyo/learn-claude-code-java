@@ -1,0 +1,86 @@
+package org.example.define_agent.core.components;
+
+import com.alibaba.fastjson2.JSONObject;
+
+import org.example.define_agent.AgentHook;
+import org.example.define_agent.IAgentToolUse;
+import org.example.define_agent.core.AbstractAgent;
+import org.example.define_tool.ToolExecuter;
+import org.example.define_tool.ToolResolveUtil;
+import org.example.define_tool.ToolTransformUtil;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * agent父类：
+ * 提供skillUse实现
+ */
+public class ToolUseComponent implements IAgentToolUse {
+    protected AbstractAgent agent;
+
+    protected final Map<String, ToolExecuter> toolHandlers = new HashMap<>();
+
+    public ToolUseComponent(AbstractAgent agent) {
+        agent.registryTool(this);
+    }
+
+    public void toolUse(JSONObject obj) {
+        JSONObject function = obj.getJSONObject("function");
+
+        // tool参数
+        String id = obj.getString("id");
+        String name = function.getString("name");
+        JSONObject arguments = JSONObject.parse(function.getString("arguments"));
+
+        // 工具使用前回调
+        agent.callBeforeToolUse(agent, id, name, arguments);
+
+        JSONObject toolMessage = agent.model.addToolMessage(getToolRspWithOptionHook(id, name, arguments), id);
+
+        // 工具使用后回调
+        agent.callAfterToolUse(agent, id, name, arguments, toolMessage);
+    }
+
+    protected String getToolRspWithOptionHook(String id, String name, JSONObject arguments) {
+        String toolRsp = null;
+        for (AgentHook agentHook : agent.agentHooks) {
+            toolRsp = agentHook.hookToolUse(agent, id, name, arguments);
+            if (toolRsp != null) {
+                break;
+            }
+        }
+        if (toolRsp == null) {
+            toolRsp = toolHandlers.get(name).execute(arguments);
+        }
+        return toolRsp;
+    }
+
+    /**
+     * 工具注册
+     *
+     * @param toolObj 实例类型tool
+     */
+    @Override
+    public void registryTool(Object toolObj) {
+        registryTool(ToolResolveUtil.resolve(toolObj));
+    }
+
+    /**
+     * 工具注册
+     *
+     * @param toolObj 静态方法类型tool
+     */
+    @Override
+    public void registryTool(Class<?> toolObj) {
+        registryTool(ToolResolveUtil.resolve(toolObj));
+    }
+
+    private void registryTool(List<ToolResolveUtil.ToolResolveResult> toolResolveResults) {
+        for (ToolResolveUtil.ToolResolveResult toolResolveResult : toolResolveResults) {
+            toolHandlers.put(toolResolveResult.name(), toolResolveResult.toolHandler());
+            agent.model.addTool(ToolTransformUtil.transform(toolResolveResult, agent.model));
+        }
+    }
+}

@@ -3,14 +3,13 @@ package org.example.use_agents.extra;
 import com.alibaba.fastjson2.JSONObject;
 
 import org.example.define_agent.AgentCallback;
-import org.example.define_agent.IAgent;
 import org.example.define_agent.core.AbstractAgent;
 import org.example.use_tools.todo.TodoManager;
 
 /**
- * agent抽象父类，提供公共方法，定义架构
+ * 多步骤规划
  */
-public class TodoManagerSupport implements AgentCallback {
+public class MultiStepsPlan implements AgentCallback {
     private boolean inited = false;
     private final TodoManager todoManager = new TodoManager();
     private boolean useTodo = false;

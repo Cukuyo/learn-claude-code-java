@@ -18,14 +18,14 @@ import java.util.function.Predicate;
  * 上下文总结，设置最大上下文阈值x%，最近的会话保留数y。</p>
  * 若当前token数超过模型最大输入token*x%，除最近的y条会话外，其余用户会话将会总结压缩
  */
-public class ContextSummarySupport implements AgentCallback {
+public class ContextSummary implements AgentCallback {
     private final double contextRemainRatio;
 
     private final FixedSizeConversationQueue recentConversations;
     private final List<JSONObject> olderThanRecentConversations = new LinkedList<>();
     private final Predicate<JSONObject> endPredicate = msg -> msg.getString("role").equalsIgnoreCase("user");
 
-    public ContextSummarySupport(double contextRemainRatio, int recentConversations) {
+    public ContextSummary(double contextRemainRatio, int recentConversations) {
         this.contextRemainRatio = contextRemainRatio;
         this.recentConversations = new FixedSizeConversationQueue(recentConversations);
     }
