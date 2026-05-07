@@ -1,17 +1,12 @@
 package org.example.agents.extra;
 
 import com.alibaba.fastjson2.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.example.define_agent.AgentCallback;
 import org.example.define_agent.core.AbstractAgent;
 import org.example.define_tool.ToolMethod;
 import org.example.define_tool.ToolParam;
+
+import java.util.*;
 
 /**
  * 多步骤规划

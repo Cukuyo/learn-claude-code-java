@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import org.example.define_agent.AgentCommand;
 import org.example.define_agent.AgentHook;
 import org.example.define_agent.core.AbstractAgent;
-import org.example.systems.permission.*;
+import org.example.define_systems.permission.*;
 
 import java.io.IOException;
 import java.nio.file.Path;

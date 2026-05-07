@@ -1,4 +1,4 @@
-package org.example.systems.permission;
+package org.example.define_systems.permission;
 
 /**
  * 权限询问行为

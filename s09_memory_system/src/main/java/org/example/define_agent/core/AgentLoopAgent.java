@@ -87,12 +87,12 @@ public class AgentLoopAgent extends AbstractAgent {
 
     @Override
     public void registryTool(Object toolObj) {
-        toolUseComponent.registryTool(ToolResolveUtil.resolve(toolObj));
+        toolUseComponent.registryTool(toolObj);
     }
 
     @Override
     public void registryTool(Class<?> toolObj) {
-        toolUseComponent.registryTool(ToolResolveUtil.resolve(toolObj));
+        toolUseComponent.registryTool(toolObj);
     }
 
     @Override

@@ -63,7 +63,7 @@ public class SkillUseComponent implements IAgentSkillUse {
             builder.append("- {")
                     .append(skillManifest.name())
                     .append(":").append(skillManifest.description())
-                    .append(":").append("所在目录路径为").append(skillManifest.dirPath().relativize(Paths.get(System.getProperty("user.dir"))))
+                    .append(":").append("所在目录相对路径为").append(Paths.get(System.getProperty("user.dir")).relativize(skillManifest.dirPath()))
                     .append("}").append(System.lineSeparator());
         }
         return builder.toString();
