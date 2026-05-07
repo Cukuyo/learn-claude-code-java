@@ -23,7 +23,8 @@ public class ToolUseComponent implements IAgentToolUse {
     protected final Map<String, ToolExecuter> toolHandlers = new HashMap<>();
 
     public ToolUseComponent(AbstractAgent agent) {
-        agent.registryTool(this);
+        this.agent = agent;
+        registryTool(this);
     }
 
     public void toolUse(JSONObject obj) {

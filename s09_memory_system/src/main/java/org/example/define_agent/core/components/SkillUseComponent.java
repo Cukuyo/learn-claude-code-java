@@ -27,6 +27,7 @@ public class SkillUseComponent implements IAgentSkillUse {
     protected JSONObject skillMessage;
 
     public SkillUseComponent(AbstractAgent agent) {
+        this.agent = agent;
         agent.registryTool(this);
     }
 

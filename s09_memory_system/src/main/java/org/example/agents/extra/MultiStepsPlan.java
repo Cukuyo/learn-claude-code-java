@@ -98,7 +98,7 @@ public class MultiStepsPlan implements AgentCallback {
         for (PlanItem planItem : cache) {
             builder.append(MARKER.get(planItem.status)).append(planItem.content).append(System.lineSeparator());
         }
-        return builder.toString();3
+        return builder.toString();
     }
 
     /**
