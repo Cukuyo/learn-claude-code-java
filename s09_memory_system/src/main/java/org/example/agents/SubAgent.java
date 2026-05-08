@@ -1,15 +1,15 @@
 package org.example.agents;
 
-import org.example.agents.extra.AgentLogPrint;
-import org.example.agents.extra.ContextSummary;
-import org.example.agents.extra.MultiStepsPlan;
-import org.example.agents.extra.ToolUseCompact;
+import org.example.agents.extension.AgentLogPrint;
+import org.example.agents.extension.ContextSummary;
+import org.example.agents.extension.MultiStepsPlan;
+import org.example.agents.extension.ToolUseCompact;
 import org.example.agents.systems.MemorySystem;
 import org.example.agents.systems.PermissionSystem;
-import org.example.define_agent.IAgent;
-import org.example.define_agent.core.AbstractAgent;
-import org.example.define_agent.core.AgentLoopAgent;
-import org.example.define_models.AbstractModel;
+import org.example.framework_agent.IAgent;
+import org.example.framework_agent.core.AbstractAgent;
+import org.example.framework_agent.core.AgentLoopAgent;
+import org.example.framework_models.AbstractModel;
 import org.example.utils.cmd.AgentCommandTool;
 import org.example.utils.file.AgentFileTool;
 

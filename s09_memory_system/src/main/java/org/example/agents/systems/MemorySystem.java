@@ -1,15 +1,15 @@
 package org.example.agents.systems;
 
 import com.alibaba.fastjson2.JSONObject;
-import org.example.define_agent.AgentCallback;
-import org.example.define_agent.AgentCommand;
-import org.example.define_agent.core.AbstractAgent;
-import org.example.define_systems.memory.MemoryDirUtil;
-import org.example.define_systems.memory.MemoryEntity;
-import org.example.define_systems.memory.MemoryFileUtil;
-import org.example.define_systems.memory.MemoryType;
-import org.example.define_tool.ToolMethod;
-import org.example.define_tool.ToolParam;
+import org.example.framework_agent.AgentCallback;
+import org.example.framework_agent.AgentCommand;
+import org.example.framework_agent.core.AbstractAgent;
+import org.example.framework_systems.memory.MemoryDirUtil;
+import org.example.framework_systems.memory.MemoryEntity;
+import org.example.framework_systems.memory.MemoryFileUtil;
+import org.example.framework_systems.memory.MemoryType;
+import org.example.framework_tool.ToolMethod;
+import org.example.framework_tool.ToolParam;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,11 +1,10 @@
 package org.example.agents.systems;
 
 import com.alibaba.fastjson2.JSONObject;
-
-import org.example.define_agent.AgentCommand;
-import org.example.define_agent.AgentHook;
-import org.example.define_agent.core.AbstractAgent;
-import org.example.define_systems.permission.*;
+import org.example.framework_agent.AgentCommand;
+import org.example.framework_agent.AgentHook;
+import org.example.framework_agent.core.AbstractAgent;
+import org.example.framework_systems.permission.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -47,6 +46,10 @@ public class PermissionSystem implements AgentHook, AgentCommand {
                 break;
         }
 
+        if (command == null) {
+            command = arguments.getString(name);
+        }
+
         PermissionRule denyRule = matchedPermissionRule(name, command, denyProps);
         // 没有匹配规则时返回，代表不是高危命令
         if (denyRule == null) {
@@ -86,10 +89,16 @@ public class PermissionSystem implements AgentHook, AgentCommand {
     private PermissionRule matchedPermissionRule(String name, String content, Map<String, List<PermissionRule>> map) {
         List<PermissionRule> ruleList = map.getOrDefault(name, new ArrayList<>());
         for (PermissionRule rule : ruleList) {
-            if (rule.pattern.matcher(content).find()) {
-                return rule;
+            try {
+                if (rule.pattern.matcher(content).find()) {
+                    return rule;
+                }
+            } catch (NullPointerException e) {
+                throw e;
             }
         }
+
+
         return null;
     }
 

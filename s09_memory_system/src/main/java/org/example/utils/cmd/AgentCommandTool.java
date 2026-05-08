@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.*;
 
-import org.example.define_tool.ToolMethod;
-import org.example.define_tool.ToolParam;
+import org.example.framework_tool.ToolMethod;
+import org.example.framework_tool.ToolParam;
 
 /**
  * 操作系统命令行工具类

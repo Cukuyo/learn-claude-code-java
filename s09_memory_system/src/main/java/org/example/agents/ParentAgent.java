@@ -1,8 +1,8 @@
 package org.example.agents;
 
-import org.example.define_models.AbstractModel;
-import org.example.define_tool.ToolMethod;
-import org.example.define_tool.ToolParam;
+import org.example.framework_models.AbstractModel;
+import org.example.framework_tool.ToolMethod;
+import org.example.framework_tool.ToolParam;
 
 import java.io.IOException;
 
