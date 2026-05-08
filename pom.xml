@@ -23,6 +23,7 @@
         <module>s07_permission_system</module>
         <module>s08_hook_system</module>
         <module>s09_memory_system</module>
+        <module>s10_system_prompt</module>
     </modules>
 
     <properties>
