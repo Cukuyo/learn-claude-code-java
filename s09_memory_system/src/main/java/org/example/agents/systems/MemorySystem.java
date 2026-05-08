@@ -126,7 +126,6 @@ public class MemorySystem implements AgentCallback, AgentCommand{
         return cmd.trim().split("\\s+")[0].equals("/memories");
     }
 
-
     @Override
     public String command(AbstractAgent agent, String cmd) throws IOException {
         return buildMemories();

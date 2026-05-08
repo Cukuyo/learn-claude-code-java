@@ -134,7 +134,6 @@ public class PermissionSystem implements AgentHook, AgentCommand {
             String[] arr = cmd.trim().split("\\s+");
             if (arr.length == 1) {
                 StringBuilder builder = new StringBuilder(denyProps.size() * 256);
-                builder.append("当前已禁止的命令为").append(System.lineSeparator());
                 denyProps.values().forEach(list -> list.forEach(rule ->
                         builder.append(rule.toString()).append(System.lineSeparator())));
                 return builder.toString();
