@@ -106,7 +106,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
     private class ModeCommand implements AgentCommand {
         @Override
         public boolean isSupportCommand(AbstractAgent agent, String cmd) {
-            return cmd.startsWith("/mode");
+            return cmd.trim().split("\\s+")[0].equals("/mode");
         }
 
         @Override
@@ -126,7 +126,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
     private class RulesCommand implements AgentCommand {
         @Override
         public boolean isSupportCommand(AbstractAgent agent, String cmd) {
-            return cmd.startsWith("/rules");
+            return cmd.trim().split("\\s+")[0].equals("/rules");
         }
 
         @Override

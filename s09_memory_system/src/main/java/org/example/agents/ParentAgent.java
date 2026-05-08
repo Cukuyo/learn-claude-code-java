@@ -22,11 +22,13 @@ public class ParentAgent extends SubAgent {
      *
      * @param content 子agent任务
      * @return 任务返回
-     * @throws IOException          io异常
-     * @throws InterruptedException 等待中断
      */
     @ToolMethod(description = "生成一个全新上下文的子智能体执行子任务，该智能体共享文件系统，但不继承会话历史")
-    public String handOut(@ToolParam(description = "子任务描述") String content) throws IOException, InterruptedException {
-        return new SubAgent(agent.getModel().cloneWithoutHistory(), agent.getAgentName() + "-subagent").chatOrCommand(content);
+    public String handOut(@ToolParam(description = "子任务描述") String content) {
+        try {
+            return new SubAgent(agent.getModel().cloneWithoutHistory(), agent.getAgentName() + "-subagent").chatOrCommand(content);
+        } catch (IOException |InterruptedException e) {
+            return "Error: " + e.getMessage();
+        }
     }
 }

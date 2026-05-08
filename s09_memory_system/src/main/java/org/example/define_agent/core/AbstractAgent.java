@@ -15,8 +15,10 @@ import org.example.define_models.AbstractModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * agent抽象父类:
@@ -30,6 +32,8 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
     public final String agentName;
 
     public final List<AgentCallback> agentCallbacks = new ArrayList<>();
+    public final Set<AgentCallback> initedAgentCallbacks = new HashSet<>();
+
     public final List<AgentCommand> agentCommands = new ArrayList<>();
     public final List<AgentHook> agentHooks = new ArrayList<>();
 
@@ -112,7 +116,11 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
 
     @Override
     public void eachAtomicInitFirst(AbstractAgent agent) {
-        agentCallbacks.forEach(cv -> cv.eachAtomicInitFirst(agent));
+        agentCallbacks.forEach(cv -> {
+            if (!initedAgentCallbacks.contains(cv)) {
+                cv.eachAtomicInitFirst(agent);
+            }
+        });
     }
 
     @Override

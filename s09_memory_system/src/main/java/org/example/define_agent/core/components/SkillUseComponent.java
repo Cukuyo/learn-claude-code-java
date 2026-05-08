@@ -5,8 +5,8 @@ import com.alibaba.fastjson2.JSONObject;
 import org.example.define_agent.IAgentSkillUse;
 import org.example.define_agent.core.AbstractAgent;
 import org.example.define_skill.SkillManifest;
-import org.example.define_skill.SkillReadUtil;
-import org.example.define_skill.SkillResolvUtil;
+import org.example.define_skill.SkillFileUtil;
+import org.example.define_skill.SkillDirUtil;
 import org.example.define_tool.ToolMethod;
 import org.example.define_tool.ToolParam;
 
@@ -29,6 +29,8 @@ public class SkillUseComponent implements IAgentSkillUse {
     public SkillUseComponent(AbstractAgent agent) {
         this.agent = agent;
         agent.registryTool(this);
+
+        renderPrompts();   
     }
 
     /**
@@ -38,19 +40,15 @@ public class SkillUseComponent implements IAgentSkillUse {
      */
     @Override
     public void registrySkills(String dirPath) {
-        List<SkillManifest> skillManifests = SkillResolvUtil.resolveDir(Paths.get(dirPath));
+        List<SkillManifest> skillManifests = SkillDirUtil.resolveDir(Paths.get(dirPath));
         for (SkillManifest skillManifest : skillManifests) {
             skillManifestMap.put(skillManifest.name(), skillManifest);
         }
 
-        if (skillMessage != null) {
-            skillMessage.put("content", renderSkills());
-        } else {
-            skillMessage = agent.model.addSystemMessages(renderSkills());
-        }
+        renderPrompts();
     }
 
-    private String renderSkills() {
+    private void renderPrompts() {
         StringBuilder builder = new StringBuilder(skillManifestMap.size() * 128);
         builder.append("[SkillUse]当行动前需要特定指令时，使用<loadSkill>工具加载技能.").append(System.lineSeparator());
         builder.append("技能如下:").append(System.lineSeparator());
@@ -66,11 +64,20 @@ public class SkillUseComponent implements IAgentSkillUse {
                     .append(":").append("所在目录相对路径为").append(Paths.get(System.getProperty("user.dir")).relativize(skillManifest.dirPath()))
                     .append("}").append(System.lineSeparator());
         }
-        return builder.toString();
+
+        if (skillMessage != null) {
+            skillMessage.put("content", builder.toString());
+        } else {
+            skillMessage = agent.model.addSystemMessages(builder.toString());
+        }
     }
 
     @ToolMethod(description = "本function用于根据指定的skill名称，将SKILL.md全部内容加载到当前会话")
-    public String loadSkill(@ToolParam(description = "指定的skill名称") String skillName) throws IOException {
-        return SkillReadUtil.readSkillMDBody(skillManifestMap.get(skillName).dirPath());
+    public String loadSkill(@ToolParam(description = "指定的skill名称") String skillName) {
+        try {
+            return SkillFileUtil.readSkillMDBody(skillManifestMap.get(skillName).dirPath());
+        } catch (IOException e) {
+            return "Error: " + e.getMessage();
+        }
     }
 }

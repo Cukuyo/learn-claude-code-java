@@ -7,9 +7,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
- * skill读取类
+ * skill 文件工具类
  */
-public class SkillReadUtil {
+public class SkillFileUtil {
     /**
      * 读取指定路径下skill.md的body内容
      *

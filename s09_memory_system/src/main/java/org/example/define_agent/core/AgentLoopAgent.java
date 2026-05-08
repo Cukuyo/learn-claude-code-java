@@ -6,7 +6,6 @@ import org.example.define_agent.AgentHook;
 import org.example.define_agent.core.components.SkillUseComponent;
 import org.example.define_agent.core.components.ToolUseComponent;
 import org.example.define_models.AbstractModel;
-import org.example.define_tool.ToolResolveUtil;
 
 import java.io.IOException;
 
@@ -21,7 +20,9 @@ public class AgentLoopAgent extends AbstractAgent {
 
     public AgentLoopAgent(AbstractModel model, String agentName) {
         super(model, agentName);
-        model.addSystemMessages("[ToolUse]你当前的工作目录是<" + System.getProperty("user.dir") + ">，执行tools时注意不要做出范围之外的危险行为！");
+
+        model.addSystemMessages(
+            "你当前的工作目录是<" + System.getProperty("user.dir") + ">，注意不要做出范围之外的危险行为！");
 
         toolUseComponent = new ToolUseComponent(this);
         skillUseAgent = new SkillUseComponent(this);

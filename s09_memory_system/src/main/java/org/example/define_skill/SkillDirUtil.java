@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * skill 解析工具类
+ * skill 文件夹工具类
  */
-public class SkillResolvUtil {
+public class SkillDirUtil {
     /**
      * 起始分隔符
      */
@@ -40,7 +40,7 @@ public class SkillResolvUtil {
     }
 
     /**
-     * 接下skill文件的信息
+     * 解析skill文件的信息
      *
      * @param path skill.md文件
      * @return 该路径下所有的skills信息

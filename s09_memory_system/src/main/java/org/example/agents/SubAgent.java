@@ -4,6 +4,7 @@ import org.example.agents.extra.AgentLogPrint;
 import org.example.agents.extra.ContextSummary;
 import org.example.agents.extra.MultiStepsPlan;
 import org.example.agents.extra.ToolUseCompact;
+import org.example.agents.systems.MemorySystem;
 import org.example.agents.systems.PermissionSystem;
 import org.example.define_agent.IAgent;
 import org.example.define_agent.core.AbstractAgent;
@@ -54,9 +55,12 @@ public class SubAgent implements IAgent {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-
         agent.registryHook(permissionSystem);
         agent.registryCommand(permissionSystem);
+
+        MemorySystem memorySystem = new MemorySystem(Paths.get(System.getProperty("user.dir"), ".memory"));
+        agent.registryAgentCallback(memorySystem);
+        agent.registryCommand(memorySystem);
     }
 
     @Override

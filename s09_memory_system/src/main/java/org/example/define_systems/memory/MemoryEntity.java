@@ -8,13 +8,6 @@ import java.time.LocalDateTime;
  */
 public class MemoryEntity {
     /**
-     * 枚举：记忆类型
-     */
-    public enum MemoryType {
-        USER, FEEDBACK, PROJECT, REFERENCE
-    }
-
-    /**
      * 记忆唯一标识（对应Python的safe_name）
      */
     public String name;
