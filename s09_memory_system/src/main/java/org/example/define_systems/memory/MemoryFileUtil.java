@@ -1,11 +1,12 @@
 package org.example.define_systems.memory;
 
+import org.example.utils.DateUtil;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import org.example.utils.DateUtil;
 
 /**
  * memory file工具类
@@ -19,34 +20,34 @@ public class MemoryFileUtil {
     /**
      * 写入信息到memory文件
      *
-     * @param path memory 文件夹
+     * @param path   memory 文件夹
      * @param memory memory
      * @return 写入结果
-     * @throws IOException 
+     * @throws IOException
      */
     public static String write(Path dirPath, MemoryEntity memory) throws IOException {
         String frontmatter = String.format(
                 """
-                        %s%s
-                        name: %s%s
-                        description: %s%s
-                        type: %s%s
-                        %s%s
-                        %s
+                %s%s
+                name: %s%s
+                description: %s%s
+                type: %s%s
+                %s%s
+                %s
                 """,
-                SEPARATOR,System.lineSeparator(),
+                SEPARATOR, System.lineSeparator(),
                 memory.name, System.lineSeparator(),
                 memory.description, System.lineSeparator(),
                 memory.type, System.lineSeparator(),
-                SEPARATOR,System.lineSeparator(),
+                SEPARATOR, System.lineSeparator(),
                 memory.content);
-            Path memoryFile = dirPath.resolve(memory.name + ".md");
-            Files.write(dirPath.resolve(memory.name + ".md"), frontmatter.getBytes());
+        Path memoryFile = dirPath.resolve(memory.type + "_" + memory.name + ".md");
+        Files.write(dirPath.resolve(memory.name + ".md"), frontmatter.getBytes());
 
-            memory.storagePath=memoryFile;
-            memory.updateTime=DateUtil.transLong2LocalDateTime(System.currentTimeMillis());
+        memory.storagePath = memoryFile;
+        memory.updateTime = DateUtil.transLong2LocalDateTime(System.currentTimeMillis());
 
-            return String.format("<%s>已成功写入%s",memory.name, memoryFile);
+        return String.format("<%s>已成功写入%s", memory.name, memoryFile);
 
     }
 
@@ -72,7 +73,7 @@ public class MemoryFileUtil {
             if (separatorNum == 1) {
                 String[] arr = line.split(":");
                 meta.put(arr[0].trim(), arr[1].trim());
-            }else{
+            } else {
                 builder.append(line).append(System.lineSeparator());
             }
         }

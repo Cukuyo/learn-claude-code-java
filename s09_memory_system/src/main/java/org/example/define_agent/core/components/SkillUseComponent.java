@@ -72,7 +72,7 @@ public class SkillUseComponent implements IAgentSkillUse {
         }
     }
 
-    @ToolMethod(description = "本function用于根据指定的skill名称，将SKILL.md全部内容加载到当前会话")
+    @ToolMethod(description = "用于根据指定的skill名称，将SKILL.md全部内容加载到当前会话")
     public String loadSkill(@ToolParam(description = "指定的skill名称") String skillName) {
         try {
             return SkillFileUtil.readSkillMDBody(skillManifestMap.get(skillName).dirPath());

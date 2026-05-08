@@ -23,7 +23,7 @@ public class ParentAgent extends SubAgent {
      * @param content 子agent任务
      * @return 任务返回
      */
-    @ToolMethod(description = "生成一个全新上下文的子智能体执行子任务，该智能体共享文件系统，但不继承会话历史")
+    @ToolMethod(description = "当需要执行一个复杂多步骤任务，但只需要一个结果时，使用此工具生成一个全新上下文的子智能体执行子任务，该智能体共享文件系统，但不继承会话历史")
     public String handOut(@ToolParam(description = "子任务描述") String content) {
         try {
             return new SubAgent(agent.getModel().cloneWithoutHistory(), agent.getAgentName() + "-subagent").chatOrCommand(content);
