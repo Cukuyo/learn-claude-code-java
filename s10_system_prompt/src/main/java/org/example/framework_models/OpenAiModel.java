@@ -1,0 +1,80 @@
+package org.example.framework_models;
+
+import com.alibaba.fastjson2.JSONObject;
+
+import java.io.IOException;
+import java.util.Map;
+
+/**
+ * Deepseek客户端
+ */
+public abstract class OpenAiModel extends AbstractModel {
+    @Override
+    public String extractToolName(JSONObject tool) {
+        return tool.getJSONObject("function").getString("name");
+    }
+
+    /**
+     * 示例：
+     * {
+     * "type": "object",
+     * "properties": {
+     * "keywords": {
+     * "type": "array",
+     * "description": "Five keywords of the article, sorted by importance",
+     * "items": {
+     * "type": "string",
+     * "description": "A concise and accurate keyword or phrase."}}},
+     * "required": ["keywords"],
+     * "additionalProperties": false
+     * }
+     *
+     * @param function function
+     * @return tool JSON
+     */
+    @Override
+    public JSONObject buildTool(JSONObject function) {
+        JSONObject tool = new JSONObject();
+        tool.put("type", "function");
+        tool.put("function", function);
+        return tool;
+    }
+
+    @Override
+    public JSONObject buildToolFunction(String name, String desc, JSONObject parameters) {
+        JSONObject function = new JSONObject();
+        function.put("name", name);
+        function.put("description", desc);
+        function.put("parameters", parameters);
+        return function;
+    }
+
+    @Override
+    public JSONObject buildToolParameters(JSONObject properties, String[] required) {
+        JSONObject function = new JSONObject();
+        function.put("type", "object");
+        function.put("properties", properties);
+        function.put("required", required);
+        return function;
+    }
+
+    @Override
+    public JSONObject buildToolProperties(Map<String, JSONObject> properties) {
+        return new JSONObject(properties);
+    }
+
+    @Override
+    public JSONObject buildToolProperty(String type, String description, Object[] enums, JSONObject items) {
+        JSONObject property = new JSONObject();
+        property.put("type", type);
+        property.put("description", description);
+        property.put("enums", enums);
+        property.put("items", items);
+        return property;
+    }
+
+    @Override
+    public JSONObject chat() throws IOException, InterruptedException {
+        return super.chat().getJSONArray("choices").getJSONObject(0);
+    }
+}

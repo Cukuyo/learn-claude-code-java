@@ -23,6 +23,7 @@ public class AgentLogPrint implements AgentCallback {
 
     @Override
     public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage) {
+        System.out.printf("%s>>>(%s)%s", agent.getAgentName(), assistantMessage.getString("reasoning_content"), System.lineSeparator());
         System.out.printf("%s>>>%s%s", agent.getAgentName(), assistantMessage.getString("content"), System.lineSeparator());
     }
 

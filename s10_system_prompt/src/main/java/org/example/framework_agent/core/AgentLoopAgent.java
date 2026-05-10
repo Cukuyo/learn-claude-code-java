@@ -22,7 +22,9 @@ public class AgentLoopAgent extends AbstractAgent {
         super(model, agentName);
 
         model.addSystemMessages(
-            "你当前的工作目录是<" + System.getProperty("user.dir") + ">，注意不要做出范围之外的危险行为！");
+                "当前的工作目录是<" + System.getProperty("user.dir") + ">" +
+                        "当前的操作系统是<" + System.getProperty("os.name") + ">" +
+                        "，注意不要做出范围之外的危险行为！");
 
         toolUseComponent = new ToolUseComponent(this);
         skillUseAgent = new SkillUseComponent(this);
