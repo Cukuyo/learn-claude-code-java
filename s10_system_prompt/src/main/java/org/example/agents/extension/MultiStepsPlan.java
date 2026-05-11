@@ -31,15 +31,11 @@ public class MultiStepsPlan implements AgentCallback {
     private final List<PlanItem> cache = new ArrayList<>();
     private int rounds_since_update = 0;
 
-    private boolean inited = false;
     private boolean useTodo = false;
 
     @Override
     public void eachAtomicInitFirst(AbstractAgent agent) {
-        if (!inited) {
-            agent.registryTool(this);
-            inited = true;
-        }
+        agent.registryTool(this);
     }
 
     @Override
