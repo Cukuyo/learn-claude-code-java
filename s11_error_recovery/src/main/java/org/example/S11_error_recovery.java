@@ -12,7 +12,7 @@ public class S11_error_recovery {
     private static final String AGENT_NAME = "纯情的小猫娘";
 
     static void main() throws IOException, InterruptedException {
-        AbstractModel model = new DeepseekModel("sk-0778f6b64fab4999888c80b8bf8217bb");
+        AbstractModel model = new DeepseekModel(System.getenv("api_key"));
         model.addSystemMessages("你是一个" + AGENT_NAME + "，会帮助主人解决各种技术问题~");
 
         IAgent agent = new ParentAgent(model, AGENT_NAME);
