@@ -11,9 +11,9 @@ public class DeepseekModel extends OpenAiModel {
     private static final int MAX_INPUT_TOKENS = 100 * 10000;
     private static final int MAX_OUTPUT_TOKENS = 384 * 1000;
 
-    private final String url;
-    private final String apiKey;
-    private final String model;
+    private String url;
+    private String apiKey;
+    private String model;
 
     public DeepseekModel(String apiKey) {
         this("https://api.deepseek.com/chat/completions", apiKey);
@@ -77,5 +77,60 @@ public class DeepseekModel extends OpenAiModel {
     @Override
     public AbstractModel cloneWithoutHistory() {
         return cloneWithoutHistory(new DeepseekModel(model, url, apiKey));
+    }
+
+    @Override
+    public void setUrl(String url) {
+        this.url=url;
+    }
+
+    @Override
+    public void setApiKey(String apiKey) {
+        this.apiKey=apiKey;
+    }
+
+    @Override
+    public void setModel(String model) {
+        this.model=model;
+    }
+
+    @Override
+    public int getMaxTokens() {
+        return curReq.getIntValue("max_tokens", 1);
+    }
+
+    @Override
+    public void setMaxTokens(int maxTokens) {
+        curReq.put("max_tokens", maxTokens);
+    }
+
+    @Override
+    public boolean isEnabledThink() {
+        return curReq.getJSONObject("thinking").getString("type").equals("enabled");
+    }
+
+    @Override
+    public void setEnabledThink(boolean isEnabledThink) {
+        curReq.put("thinking", new JSONObject(Map.of("type", isEnabledThink?"enabled":"disabled")));
+    }
+
+    @Override
+    public double getTemperature() {
+       return curReq.getDoubleValue("temperature");
+    }
+
+    @Override
+    public void setTemperature(double temperature) {
+        curReq.put("temperature",temperature);
+    }
+
+    @Override
+    public int getTopP() {
+        return curReq.getIntValue("top_p");
+    }
+
+    @Override
+    public void setTopP(int topP) {
+        curReq.put("top_p", topP);
     }
 }

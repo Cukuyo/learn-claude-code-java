@@ -14,7 +14,7 @@ public interface IModelSetting {
 
     String getModel();
 
-    String setModel(String model);
+    void setModel(String model);
 
     int getMaxInputTokens();
 
@@ -22,7 +22,7 @@ public interface IModelSetting {
 
     int getMaxTokens();
 
-    void setMaxTokens();
+    void setMaxTokens(int maxTokens);
 
     boolean isEnabledThink();
 
@@ -34,5 +34,5 @@ public interface IModelSetting {
 
     int getTopP();
 
-    void setTopP();
+    void setTopP(int topP);
 }
