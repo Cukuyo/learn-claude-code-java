@@ -29,6 +29,11 @@ public abstract class AbstractModel implements IModel, IModelSetting, IModelTool
         curReq.put("tools", new JSONArray());
     }
 
+    @Override
+    public JSONObject chat() throws IOException, InterruptedException {
+        return chatInline().getJSONArray("choices").getJSONObject(0);
+    }
+
     /**
      * 使用当前提示词请求一次
      *
@@ -36,8 +41,7 @@ public abstract class AbstractModel implements IModel, IModelSetting, IModelTool
      * @throws IOException          io异常
      * @throws InterruptedException 线程等待中断
      */
-    @Override
-    public JSONObject chat() throws IOException, InterruptedException {
+    private JSONObject chatInline() throws IOException, InterruptedException {
         JSONObject result = HttpClientUtil.send(getUrl(), getApiKey(), curReq);
 
         JSONObject usage = result.getJSONObject("usage");

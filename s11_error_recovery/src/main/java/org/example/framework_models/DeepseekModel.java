@@ -2,7 +2,7 @@ package org.example.framework_models;
 
 import com.alibaba.fastjson2.JSONObject;
 
-import java.io.IOException;
+import java.util.Map;
 
 /**
  * Deepseek客户端
@@ -29,9 +29,18 @@ public class DeepseekModel extends OpenAiModel {
         this.apiKey = apiKey;
         this.model = model;
         curReq.put("model", model);
-        curReq.put("frequency_penalty", 0);
-        curReq.put("max_tokens", 4096);
-        curReq.put("presence_penalty", 0);
+        
+        // 最大输出tokens
+        curReq.put("max_tokens", MAX_OUTPUT_TOKENS/10);
+        // 思考模式
+        curReq.put("thinking", new JSONObject(Map.of("type", "enabled")));
+        // 思考等级
+        curReq.put("reasoning_effort", "high");
+        // 返回响应格式
+        curReq.put("response_format", new JSONObject(Map.of("type", "json_object")));
+        // 推理温度
+        curReq.put("temperature", 1);
+        // 推理topP
         curReq.put("top_p", 1);
     }
 

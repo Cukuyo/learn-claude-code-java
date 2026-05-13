@@ -2,7 +2,6 @@ package org.example.framework_models;
 
 import com.alibaba.fastjson2.JSONObject;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -71,10 +70,5 @@ public abstract class OpenAiModel extends AbstractModel {
         property.put("enums", enums);
         property.put("items", items);
         return property;
-    }
-
-    @Override
-    public JSONObject chat() throws IOException, InterruptedException {
-        return super.chat().getJSONArray("choices").getJSONObject(0);
     }
 }
