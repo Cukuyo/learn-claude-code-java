@@ -5,7 +5,6 @@ import org.example.framework_agent.IAgent;
 import org.example.framework_models.AbstractModel;
 import org.example.framework_models.DeepseekModel;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class S11_error_recovery {
@@ -27,7 +26,7 @@ public class S11_error_recovery {
 
                 try {
                     agent.chatOrCommand(cmd);
-                } catch (IOException | InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 

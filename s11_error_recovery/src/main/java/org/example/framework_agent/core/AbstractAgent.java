@@ -139,8 +139,13 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
     }
 
     @Override
-    public void callAfterAddUserMessage(AbstractAgent agent, JSONObject userMessage) {
-        agentCallbacks.forEach(cv -> cv.callAfterAddUserMessage(agent, userMessage));
+    public void callBeforeAgentLoop(AbstractAgent agent, JSONObject userMessage) {
+        agentCallbacks.forEach(cv -> cv.callBeforeAgentLoop(agent, userMessage));
+    }
+
+     @Override
+    public void callAfterAgentLoop(AbstractAgent agent, JSONObject userMessage, String chatRsp) {
+        agentCallbacks.forEach(cv -> cv.callAfterAgentLoop(agent, userMessage, chatRsp));
     }
 
     @Override

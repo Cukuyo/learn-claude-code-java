@@ -33,31 +33,72 @@ public class AgentLoopAgent extends AbstractAgent {
     @Override
     protected String agentLoop(String content) throws IOException, InterruptedException {
         // 添加User提示词后回调
-        callAfterAddUserMessage(this, addUserMessageWithOptionHook(content));
+        callBeforeAgentLoop(this, addUserMessageWithOptionHook(content));
 
+        // ai返回拼接
+        StringBuilder resultBuilder = new StringBuilder(512);
+        // 遇到错误时的最大重试次数
+        int retryMaxTime = 3;
+        
+        agent_loop:
         while (true) {
             // chat前回调
             callBeforeChat(this);
 
             JSONObject chatRsp = getChatRspWithOptionHook();
             JSONObject message = chatRsp.getJSONObject("message");
+            
             model.addAssistantMessages(message);
-
-            // chat后回调
             callAfterChat(this, chatRsp, message);
+            
+            String rspContent = message.getString("content");
+            String finishiReson = chatRsp.getString("finish_reason");
+            switch (finishiReson) {
+                // 模型自然停止生成，或遇到 stop 序列中列出的字符串
+                case "stop":
+                    resultBuilder.append(rspContent);
+                    break agent_loop;
 
-            // 非工具调用即刻返回
-            if (!chatRsp.getString("finish_reason").equals("tool_calls")) {
-                return message.getString("content");
+                // 输出内容因触发过滤策略而被过滤。
+                case "content_filter":
+                    resultBuilder.append(rspContent).append("......").append("输出内容因触发过滤策略而被过滤");
+                    break agent_loop;
+
+                // 系统推理资源不足，生成被打断。         
+                case "insufficient_system_resource":
+                    if (retryMaxTime > 0) {
+                        retryMaxTime--;
+                        resultBuilder.append(rspContent);
+                        model.addUserMessage("系统推理资源不足，生成被打断。直接从中断处继续，无需回顾总结、不重复内容，必要时可从句子中间接续行文");
+                        break;
+                    }else {
+                        resultBuilder.append("......").append("系统推理资源不足，生成被打断");
+                        break agent_loop;
+                    } 
+                                    
+                // 输出长度达到了模型上下文长度限制，或达到了 max_tokens 的限制。
+                case "length":
+                    resultBuilder.append(rspContent);
+                    model.addUserMessage("已达到输出上限。直接从中断处继续，无需回顾总结、不重复内容，必要时可从句子中间接续行文");
+                    break;               
+
+                // 工具使用
+                case "tool_calls":
+                    // 工具使用前回调
+                    callBeforeToolsUse(this);
+                    // 依次调用tools
+                    message.getJSONArray("tool_calls").forEach(obj -> toolUseComponent.toolUse((JSONObject) obj));
+                    // 工具使用后回调
+                    callAfterToolsUse(this);
+                    break;      
+                 
+                default:
+                    resultBuilder.append(rspContent).append("......").append("未知的finish_reason: ").append(finishiReson);
+                    break agent_loop;
             }
-
-            // 工具使用前回调
-            callBeforeToolsUse(this);
-            // 依次调用tools
-            message.getJSONArray("tool_calls").forEach(obj -> toolUseComponent.toolUse((JSONObject) obj));
-            // 工具使用后回调
-            callAfterToolsUse(this);
         }
+
+        return resultBuilder.toString();
     }
 
     protected JSONObject getChatRspWithOptionHook() throws IOException, InterruptedException {

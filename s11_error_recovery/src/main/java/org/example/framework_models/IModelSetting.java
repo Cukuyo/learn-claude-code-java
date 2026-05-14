@@ -3,7 +3,7 @@ package org.example.framework_models;
 import com.alibaba.fastjson2.JSONArray;
 
 /**
- * 定义模型的参数配置
+ * 定义模型的参数配置，具体可配置内容以官网为准
  */
 public interface IModelSetting {
     String getUrl();

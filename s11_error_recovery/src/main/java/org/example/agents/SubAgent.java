@@ -47,7 +47,7 @@ public class SubAgent implements IAgent {
 
         agent.registryAgentCallback(AgentLogPrint.INSTANCE);
         agent.registryAgentCallback(new MultiStepsPlan());
-        agent.registryAgentCallback(new ToolUseCompact(10));
+        agent.registryAgentCallback(new ToolUseCompact(30));
         agent.registryAgentCallback(new ContextSummary(0.5d, 3));
 
         PermissionSystem permissionSystem;

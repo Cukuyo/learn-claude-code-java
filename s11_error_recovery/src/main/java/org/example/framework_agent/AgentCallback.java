@@ -44,12 +44,21 @@ public interface AgentCallback {
     }
 
     /**
-     * 添加用户提示后的回调
+     * agentLoop前回调，添加用户提示后的回调
      *
      * @param agent       agent
      * @param userMessage userMessage
      */
-    default void callAfterAddUserMessage(AbstractAgent agent, JSONObject userMessage) {
+    default void callBeforeAgentLoop(AbstractAgent agent, JSONObject userMessage) {
+    }
+
+    /**
+     * agentLoop后回调，添加用户提示后直至响应完成
+     *
+     * @param agent       agent
+     * @param userMessage userMessage
+     */
+    default void callAfterAgentLoop(AbstractAgent agent, JSONObject userMessage, String chatRsp) {
     }
 
     /**
