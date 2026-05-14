@@ -22,7 +22,10 @@ public class AgentLogPrint implements AgentCallback {
     }
 
     @Override
-    public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage) {
+    public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage, boolean finishied) {
+        if (finishied) {
+            return;
+        }
         if (assistantMessage.containsKey("reasoning_content")) {
             System.out.printf("%s>>>(%s)%s", agent.getAgentName(), assistantMessage.getString("reasoning_content"), System.lineSeparator());
         }
@@ -32,5 +35,10 @@ public class AgentLogPrint implements AgentCallback {
     @Override
     public void callAfterCommand(AbstractAgent agent, String content, String commandRsp) {
         System.out.printf("%s>>>%s%s", agent.getAgentName(), commandRsp, System.lineSeparator());
+    }
+
+    @Override
+    public void callAfterAgentLoop(AbstractAgent agent, JSONObject userMessage, String chatRsp) {
+        System.out.printf("%s>>>%s%s", agent.getAgentName(), chatRsp, System.lineSeparator());
     }
 }

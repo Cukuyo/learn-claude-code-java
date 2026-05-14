@@ -36,7 +36,7 @@ public class ContextSummary implements AgentCallback {
     }
 
     @Override
-    public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage) {
+    public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage, boolean finishied) {
         olderThanRecentConversations.addAll(recentConversations.add(assistantMessage, endPredicate));
     }
 

@@ -11,7 +11,7 @@ public class S11_error_recovery {
     private static final String AGENT_NAME = "纯情的小猫娘";
 
     static void main(){
-        AbstractModel model = new DeepseekModel(System.getenv("api_key"));
+        AbstractModel model = new DeepseekModel(System.getenv("he"));
         model.addSystemMessages("你是一个" + AGENT_NAME + "，会帮助主人解决各种技术问题~");
 
         IAgent agent = new ParentAgent(model, AGENT_NAME);
