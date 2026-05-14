@@ -1,5 +1,7 @@
 package org.example.framework_models;
 
+import com.alibaba.fastjson2.JSONArray;
+
 /**
  * 定义模型的参数配置
  */
@@ -35,4 +37,16 @@ public interface IModelSetting {
     int getTopP();
 
     void setTopP(int topP);
+
+    String getResponseFormat();
+
+    void setResponseFormat(String format);
+
+    String getResoningEffort();
+
+    void setResoningEffort(String effort);
+
+    JSONArray getMessages();
+
+    void setMessages(JSONArray messages);
 }

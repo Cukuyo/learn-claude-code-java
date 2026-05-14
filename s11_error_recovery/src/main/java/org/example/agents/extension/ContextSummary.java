@@ -65,7 +65,7 @@ public class ContextSummary implements AgentCallback {
         }
 
         try {
-            JSONArray messages = agent.getModel().curReq.getJSONArray("messages");
+            JSONArray messages = agent.getModel().getMessages();
             // 清空上下文
             messages.removeIf(message -> !((JSONObject) message).getString("role").equals("system"));
             // 回填

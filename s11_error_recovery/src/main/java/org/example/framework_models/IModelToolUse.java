@@ -1,5 +1,6 @@
 package org.example.framework_models;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 
 import java.util.Map;
@@ -8,6 +9,10 @@ import java.util.Map;
  * 定义工具的构造
  */
 public interface IModelToolUse {
+    JSONArray getTools();
+
+    void setTools(JSONArray tools);
+
     void addTool(JSONObject tool);
 
     String extractToolName(JSONObject tool);
