@@ -12,7 +12,7 @@ import java.io.IOException;
  * 2、支持派发子agent
  */
 public class ParentAgent extends SubAgent {
-    public ParentAgent(AbstractModel model, String agentName) throws IOException {
+    public ParentAgent(AbstractModel model, String agentName) {
         super(model, agentName);
         agent.registryTool(this);
     }

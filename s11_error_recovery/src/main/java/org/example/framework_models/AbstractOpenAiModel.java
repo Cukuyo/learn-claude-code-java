@@ -11,8 +11,8 @@ import org.example.utils.HttpClientUtil;
 /**
  * Deepseek API格式
  */
-public abstract class OpenAiModel extends AbstractModel {
-    public OpenAiModel(String url, String apiKey, String model) {
+public abstract class AbstractOpenAiModel extends AbstractModel {
+    public AbstractOpenAiModel(String url, String apiKey, String model) {
         super(url, apiKey, model);
         setModel(model);
 

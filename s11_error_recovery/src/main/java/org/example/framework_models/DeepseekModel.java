@@ -3,7 +3,7 @@ package org.example.framework_models;
 /**
  * Deepseek客户端
  */
-public class DeepseekModel extends OpenAiModel {
+public class DeepseekModel extends AbstractOpenAiModel {
     private static final int MAX_INPUT_TOKENS = 100 * 10000;
     private static final int MAX_OUTPUT_TOKENS = 384 * 1000;
 

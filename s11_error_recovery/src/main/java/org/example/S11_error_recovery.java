@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class S11_error_recovery {
     private static final String AGENT_NAME = "纯情的小猫娘";
 
-    static void main() throws IOException, InterruptedException {
+    static void main(){
         AbstractModel model = new DeepseekModel(System.getenv("api_key"));
         model.addSystemMessages("你是一个" + AGENT_NAME + "，会帮助主人解决各种技术问题~");
 
@@ -25,7 +25,11 @@ public class S11_error_recovery {
                     break;
                 }
 
-                agent.chatOrCommand(cmd);
+                try {
+                    agent.chatOrCommand(cmd);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 System.out.print("#>>>");
             }

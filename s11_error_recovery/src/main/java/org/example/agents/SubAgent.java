@@ -15,7 +15,6 @@ import org.example.utils.file.AgentFileTool;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
 /**
@@ -29,6 +28,8 @@ public class SubAgent implements IAgent {
      * @param agentName     agentName
      * @param chatOrCommand 提示词
      * @return llm 返回
+     * @throws InterruptedException 
+     * @throws IOException 
      */
     public static String singleChat(AbstractModel model, String agentName, String chatOrCommand) throws IOException, InterruptedException {
         return new SubAgent(model.cloneWithoutHistory(), agentName).chatOrCommand(chatOrCommand);
@@ -36,7 +37,7 @@ public class SubAgent implements IAgent {
 
     protected final AbstractAgent agent;
 
-    public SubAgent(AbstractModel model, String agentName) throws IOException {
+    public SubAgent(AbstractModel model, String agentName) {
         agent = new AgentLoopAgent(model, agentName);
 
         agent.registryTool(AgentCommandTool.class);
@@ -52,7 +53,7 @@ public class SubAgent implements IAgent {
         PermissionSystem permissionSystem;
         try {
             permissionSystem = new PermissionSystem(Paths.get(getClass().getClassLoader().getResource("permission_deny.properties").toURI()));
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         agent.registryHook(permissionSystem);
