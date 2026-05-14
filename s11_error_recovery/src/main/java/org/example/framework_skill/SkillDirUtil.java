@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -16,6 +17,8 @@ public class SkillDirUtil {
      * 起始分隔符
      */
     private static final String SEPARATOR = "---";
+
+    private static final Pattern LINE_HEAD_FORMAT = Pattern.compile("\\S+:.*");
 
     /**
      * 解析skill目录下所有的skills
@@ -49,6 +52,7 @@ public class SkillDirUtil {
     private static SkillManifest resolveFile(Path path) throws IOException {
         Map<String, String> meta = new HashMap<>();
         int separatorNum = 0;
+        String lastKey = null;
         for (String line : Files.readAllLines(path)) {
             if (line.isEmpty()) {
                 continue;
@@ -60,8 +64,17 @@ public class SkillDirUtil {
             if (separatorNum == 2) {
                 break;
             }
-            String[] arr = line.split(":");
-            meta.put(arr[0].trim(), arr[1].trim());
+            if (LINE_HEAD_FORMAT.matcher(line).matches()) {
+                String[] arr = line.split(":");
+                if (arr.length == 1) {
+                    meta.put(arr[0].trim(), "");
+                } else {
+                    meta.put(arr[0].trim(), arr[1].trim());
+                }
+                lastKey = arr[0].trim();
+            } else {
+                meta.put(lastKey, meta.get(lastKey) + line);
+            }
         }
 
         return new SkillManifest(meta.get("name"), meta.get("description"), path.toFile().getParentFile().toPath());
