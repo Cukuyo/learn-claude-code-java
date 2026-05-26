@@ -28,17 +28,17 @@ public class ToolParamConvertUtil {
         }
 
         // 3. 字符串
-        if (targetType == String.class) {
+        if (targetType.equals(String.class)) {
             return value.toString();
         }
 
         // 4. int / Integer
-        if (targetType == int.class || targetType == Integer.class) {
+        if (targetType.equals(int.class) || targetType.equals(Integer.class)) {
             return Integer.parseInt(String.valueOf(value));
         }
 
         // 5. boolean / Boolean
-        if (targetType == boolean.class || targetType == Boolean.class) {
+        if (targetType.equals(boolean.class) || targetType.equals(Boolean.class)) {
             return Boolean.valueOf(value.toString());
         }
 

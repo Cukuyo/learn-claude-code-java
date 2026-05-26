@@ -1,11 +1,13 @@
 package org.example.utils.cmd;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.concurrent.*;
-
 import org.example.framework_tool.ToolMethod;
 import org.example.framework_tool.ToolParam;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.Locale;
+import java.util.concurrent.*;
 
 /**
  * 操作系统命令行工具类
@@ -25,7 +27,7 @@ public class AgentCommandTool {
 
     private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("win");
     private static final String[] RUN_ENGINE = IS_WINDOWS ? new String[]{"cmd", "/c"} : new String[]{"bash", "-c"};
-    private static final String OS_CHARSET = IS_WINDOWS ? "GBK" : "UTF-8";
+    private static final String OS_CHARSET = Charset.forName(System.getProperty("native.encoding", "UTF-8")).toString().toUpperCase(Locale.ROOT);
 
     /**
      * 执行系统命令（自动识别平台）

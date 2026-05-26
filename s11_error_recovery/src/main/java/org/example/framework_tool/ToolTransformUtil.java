@@ -1,13 +1,12 @@
 package org.example.framework_tool;
 
 import com.alibaba.fastjson2.JSONObject;
+import org.example.framework_models.AbstractModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.example.framework_models.AbstractModel;
 
 /**
  * 将tool工具解析转换为model需要格式的工具类
@@ -25,7 +24,7 @@ public class ToolTransformUtil {
         Map<String, JSONObject> map = new HashMap<>();
         List<String> required = new ArrayList<>();
         for (ToolResolveUtil.ToolResolveItem toolResolveItem : toolResolveResult.properties()) {
-            map.put(toolResolveResult.name(), buildToolProperty(toolResolveItem, model));
+            map.put(toolResolveItem.name(), buildToolProperty(toolResolveItem, model));
             if (toolResolveItem.required()) {
                 required.add(toolResolveItem.name());
             }
@@ -47,7 +46,7 @@ public class ToolTransformUtil {
 
         JSONObject properties;
         // 原逻辑不好处理基础类型数组的组装，相当于特例了，于是在次进行单独判断
-        if (toolResolveItem.type().equals("array") && toolResolveItem.properties().getFirst().name().isEmpty()) {
+        if (ToolResolveUtil.isPrimitiveArrayParam(toolResolveItem)) {
             ToolResolveUtil.ToolResolveItem first = toolResolveItem.properties().getFirst();
             properties = model.buildToolProperty(first.type(), first.description(), toolResolveItem.enums(), null);
         } else {

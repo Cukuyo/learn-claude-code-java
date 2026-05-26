@@ -46,10 +46,6 @@ public class PermissionSystem implements AgentHook, AgentCommand {
                 break;
         }
 
-        if (command == null) {
-            command = arguments.getString(name);
-        }
-
         PermissionRule denyRule = matchedPermissionRule(name, command, denyProps);
         // 没有匹配规则时返回，代表不是高危命令
         if (denyRule == null) {
