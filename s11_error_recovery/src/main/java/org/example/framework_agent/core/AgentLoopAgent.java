@@ -52,8 +52,8 @@ public class AgentLoopAgent extends AbstractAgent {
             model.addAssistantMessages(message);
                         
             String rspContent = message.getString("content");
-            String finishiReson = chatRsp.getString("finish_reason");
-            switch (finishiReson) {
+            String finishReason = chatRsp.getString("finish_reason");
+            switch (finishReason) {
                 // 模型自然停止生成，或遇到 stop 序列中列出的字符串
                 case "stop":
                     callAfterChat(this, chatRsp, message, true);
@@ -107,7 +107,7 @@ public class AgentLoopAgent extends AbstractAgent {
                 default:
                     callAfterChat(this, chatRsp, message, true);
 
-                    resultBuilder.append(rspContent).append("......").append("未知的finish_reason: ").append(finishiReson);
+                    resultBuilder.append(rspContent).append("......").append("未知的finish_reason: ").append(finishReason);
                     break agent_loop;
             }
         }

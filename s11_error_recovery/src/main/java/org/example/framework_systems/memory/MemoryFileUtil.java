@@ -20,21 +20,21 @@ public class MemoryFileUtil {
     /**
      * 写入信息到memory文件
      *
-     * @param path   memory 文件夹
-     * @param memory memory
+     * @param dirPath memory 文件夹
+     * @param memory  memory
      * @return 写入结果
      * @throws IOException
      */
     public static String write(Path dirPath, MemoryEntity memory) throws IOException {
         String frontmatter = String.format(
                 """
-                %s%s
-                name: %s%s
-                description: %s%s
-                type: %s%s
-                %s%s
-                %s
-                """,
+                        %s%s
+                        name: %s%s
+                        description: %s%s
+                        type: %s%s
+                        %s%s
+                        %s
+                        """,
                 SEPARATOR, System.lineSeparator(),
                 memory.name, System.lineSeparator(),
                 memory.description, System.lineSeparator(),

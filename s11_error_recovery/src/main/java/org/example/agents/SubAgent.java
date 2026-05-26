@@ -28,8 +28,8 @@ public class SubAgent implements IAgent {
      * @param agentName     agentName
      * @param chatOrCommand 提示词
      * @return llm 返回
-     * @throws InterruptedException 
-     * @throws IOException 
+     * @throws InterruptedException InterruptedException
+     * @throws IOException          IOException
      */
     public static String singleChat(AbstractModel model, String agentName, String chatOrCommand) throws IOException, InterruptedException {
         return new SubAgent(model.cloneWithoutHistory(), agentName).chatOrCommand(chatOrCommand);
