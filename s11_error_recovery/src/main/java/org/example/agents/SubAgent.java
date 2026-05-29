@@ -1,9 +1,9 @@
 package org.example.agents;
 
 import org.example.agents.extension.AgentLogPrint;
-import org.example.agents.extension.ContextSummary;
+import org.example.agents.efficiency.ContextSummary;
 import org.example.agents.extension.MultiStepsPlan;
-import org.example.agents.extension.ToolUseCompact;
+import org.example.agents.efficiency.ToolUseCompact;
 import org.example.agents.systems.MemorySystem;
 import org.example.agents.systems.PermissionSystem;
 import org.example.framework_agent.IAgent;
