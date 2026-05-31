@@ -28,21 +28,21 @@ public class MemoryFileUtil {
     public static String write(Path dirPath, MemoryEntity memory) throws IOException {
         String frontmatter = String.format(
                 """
-                        %s%s
-                        name: %s%s
-                        description: %s%s
-                        type: %s%s
-                        %s%s
+                        %s
+                        name: %s
+                        description: %s
+                        type: %s
+                        %s
                         %s
                         """,
-                SEPARATOR, System.lineSeparator(),
-                memory.name, System.lineSeparator(),
-                memory.description, System.lineSeparator(),
-                memory.type, System.lineSeparator(),
-                SEPARATOR, System.lineSeparator(),
+                SEPARATOR,
+                memory.name,
+                memory.description,
+                memory.type,
+                SEPARATOR,
                 memory.content);
         Path memoryFile = dirPath.resolve(memory.type + "_" + memory.name + ".md");
-        Files.write(dirPath.resolve(memory.name + ".md"), frontmatter.getBytes());
+        Files.write(memoryFile, frontmatter.getBytes());
 
         memory.storagePath = memoryFile;
         memory.updateTime = DateUtil.transLong2LocalDateTime(System.currentTimeMillis());
@@ -81,7 +81,7 @@ public class MemoryFileUtil {
         MemoryEntity memoryEntity = new MemoryEntity();
         memoryEntity.name = meta.get("name");
         memoryEntity.description = meta.get("description");
-        memoryEntity.type = MemoryType.valueOf(meta.get("name"));
+        memoryEntity.type = MemoryType.valueOf(meta.get("type"));
         memoryEntity.content = builder.toString();
         memoryEntity.storagePath = path;
         memoryEntity.updateTime = DateUtil.transLong2LocalDateTime(path.toFile().lastModified());
