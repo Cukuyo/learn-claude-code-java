@@ -22,8 +22,8 @@ public class AgentLogPrint implements AgentCallback {
     }
 
     @Override
-    public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage, boolean finishied) {
-        if (finishied) {
+    public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage, boolean finished) {
+        if (finished) {
             return;
         }
         if (assistantMessage.containsKey("reasoning_content")) {

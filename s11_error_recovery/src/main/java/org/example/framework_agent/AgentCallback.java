@@ -75,7 +75,7 @@ public interface AgentCallback {
      * @param agent   agent
      * @param chatRsp chat rsp
      */
-    default void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage, boolean finishied) {
+    default void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage, boolean finished) {
     }
 
     /**

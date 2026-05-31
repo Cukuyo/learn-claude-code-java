@@ -36,7 +36,7 @@ public class ContextSummary implements AgentCallback {
     }
 
     @Override
-    public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage, boolean finishied) {
+    public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage, boolean finished) {
         olderThanRecentConversations.addAll(recentConversations.add(assistantMessage, endPredicate));
     }
 
@@ -53,6 +53,27 @@ public class ContextSummary implements AgentCallback {
             return;
         }
 
+        JSONArray messages = agent.getModel().getMessages();
+        // 清空除系统提示词外的上下文
+        messages.removeIf(message -> !((JSONObject) message).getString("role").equals("system"));
+
+        try {
+            // 获取压缩会话
+            String forSummaryContext = buildSummaryContext(totalTokens, tokenThreshold);
+            String summaryContext = summary(agent, forSummaryContext);
+            // 先放入压缩的
+            agent.getModel().addUserMessage(String.format("之前的对话已精简压缩，便于智能体继续开展工作。精简后内容如下：%s%s", System.lineSeparator(), summaryContext));
+            // 再放入最近没压缩过的
+            messages.addAll(recentConversations);
+
+            System.out.printf("！！！上下文压缩已完成：压缩前预估tokens %d, 压缩后预估tokens %d %s",
+                    forSummaryContext.length(), summaryContext.length(), System.lineSeparator());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String buildSummaryContext(long totalTokens, double tokenThreshold) {
         // 只是按比例简单估算下StringBuilder的容量，防止重复扩容
         double conversationNewOldRatio = 1.0d * olderThanRecentConversations.size() / (olderThanRecentConversations.size() + recentConversations.size());
 
@@ -63,23 +84,7 @@ public class ContextSummary implements AgentCallback {
         for (JSONObject message : olderThanRecentConversations) {
             builder.append("-").append(message).append(System.lineSeparator());
         }
-
-        try {
-            JSONArray messages = agent.getModel().getMessages();
-            // 清空上下文
-            messages.removeIf(message -> !((JSONObject) message).getString("role").equals("system"));
-            // 回填
-            String forSummaryContext = builder.toString();
-            String summaryContext = summary(agent, forSummaryContext);
-            agent.getModel().addUserMessage(String.format("之前的对话已精简压缩，便于智能体继续开展工作。精简后内容如下：%s%s", System.lineSeparator(), summaryContext));
-            // 跟上
-            messages.addAll(recentConversations);
-
-            System.out.printf("！！！上下文压缩已完成：压缩前预估tokens %d, 压缩后预估tokens %d %s",
-                    forSummaryContext.length(), summaryContext.length(), System.lineSeparator());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        return builder.toString();
     }
 
     private String summary(IAgent agent, String content) throws IOException, InterruptedException {
