@@ -5,6 +5,7 @@ import org.example.framework_agent.AgentCommand;
 import org.example.framework_agent.AgentHook;
 import org.example.framework_agent.core.AbstractAgent;
 import org.example.framework_systems.permission.*;
+import org.example.utils.DialogUtil;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -59,14 +60,15 @@ public class PermissionSystem implements AgentHook, AgentCommand {
         } else if (behavior == PermissionBehavior.ALLOW) {
             return null;
         } else {// 需要询问用户
-            return ask(name, command, denyRule);
+            return ask(agent, name, command, denyRule);
         }
     }
 
-    private String ask(String name, String command, PermissionRule denyRule) {
-        System.out.printf("agent正在执行危险操作：%s : %s，请确认是否允许，可选输入为%s %s",
-                name, command, Arrays.toString(PermissionAskBehavior.values()), System.lineSeparator());
-        PermissionAskBehavior userRsp = PermissionAskBehavior.valueOf(new Scanner(System.in).nextLine().trim().toUpperCase());
+    private String ask(AbstractAgent agent, String toolName, String command, PermissionRule denyRule) {
+        String title = "危险操作确认";
+        String desc = String.format("%s正在执行危险操作：%s : %s，请确认是否允许", agent.agentName, toolName, command);
+        Object selectValue = DialogUtil.showDangerConfirmDialog(PermissionAskBehavior.values(), title, desc, PermissionAskBehavior.NO);
+        PermissionAskBehavior userRsp = PermissionAskBehavior.valueOf(selectValue.toString());
         switch (userRsp) {
             case ALWAYS -> {
                 denyRule.update(mode, PermissionBehavior.ALLOW, "用户已确认允许执行此高危命令！");
