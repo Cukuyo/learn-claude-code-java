@@ -6,29 +6,15 @@ import org.example.framework_agent.core.AbstractAgent;
 import org.example.framework_tool.ToolMethod;
 import org.example.framework_tool.ToolParam;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 多步骤规划
  */
 public class MultiStepsPlan implements AgentCallback {
-    public enum ItemStatus {
-        pending, in_progress, completed
-    }
-
-    public record PlanItem(@ToolParam(description = "任务项内容") String content,
-                           @ToolParam(description = "任务项状态") ItemStatus status) {
-    }
-
-    private static final Map<ItemStatus, String> MARKER = new HashMap<>();
-
-    static {
-        MARKER.put(ItemStatus.pending, "[ ]");
-        MARKER.put(ItemStatus.in_progress, "[>]");
-        MARKER.put(ItemStatus.completed, "[x]");
-    }
-
-    private final List<PlanItem> cache = new ArrayList<>();
+    private final List<String> cache = new ArrayList<>();
     private int rounds_since_update = 0;
 
     private boolean useTodo = false;
@@ -69,10 +55,20 @@ public class MultiStepsPlan implements AgentCallback {
      * @param planItems 任务项数组
      * @return 友好的视图
      */
-    @ToolMethod(description = "保存多步骤任务的任务项，若当前执行的任务包含多个步骤，为防止执行出现偏差，需保存待执行的任务项，同时注意每个任务项执行完后刷新状态")
-    public String updateTasks(@ToolParam(description = "任务项数组") PlanItem[] planItems) {
+    @ToolMethod(description = "更新任务项记事本。若当前执行的任务包含多个连贯的步骤，你可以使用此tool进行保存，防止长时间执行时出现偏差")
+    public String updateTasks(@ToolParam(description = "任务项数组") String[] planItems) {
         cache.clear();
         Collections.addAll(cache, planItems);
+        return "保存成功！";
+    }
+
+    /**
+     * 更新任务项
+     *
+     * @return 友好的视图
+     */
+    @ToolMethod(description = "查看任务项记事本。若当前执行的任务包含多个连贯的步骤，你可以使用此tool进行查看，防止长时间执行时出现偏")
+    public String lookUpTasks() {
         return render();
     }
 
@@ -83,11 +79,11 @@ public class MultiStepsPlan implements AgentCallback {
      */
     private String render() {
         if (cache.isEmpty()) {
-            return "No session plan yet.";
+            return "当前无任务项";
         }
         StringBuilder builder = new StringBuilder(cache.size() * 64);
-        for (PlanItem planItem : cache) {
-            builder.append(MARKER.get(planItem.status)).append(planItem.content).append(System.lineSeparator());
+        for (String planItem : cache) {
+            builder.append(planItem).append(System.lineSeparator());
         }
         return builder.toString();
     }

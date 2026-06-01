@@ -48,7 +48,7 @@ public class ToolTransformUtil {
         // 原逻辑不好处理基础类型数组的组装，相当于特例了，于是在次进行单独判断
         if (ToolResolveUtil.isPrimitiveArrayParam(toolResolveItem)) {
             ToolResolveUtil.ToolResolveItem first = toolResolveItem.properties().getFirst();
-            properties = model.buildToolProperty(first.type(), first.description(), toolResolveItem.enums(), null);
+            properties = model.buildToolProperty(first.type(), first.description(), toolResolveItem.enums(), new JSONObject());
         } else {
             properties = model.buildToolProperties(map);
         }

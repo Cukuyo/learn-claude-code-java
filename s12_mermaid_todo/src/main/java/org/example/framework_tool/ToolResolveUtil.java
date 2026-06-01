@@ -89,7 +89,7 @@ public class ToolResolveUtil {
         if (parameterType.isArray()) {
             Class<?> componentTypeClass = parameterType.getComponentType();
 
-            String contentType = getSupportedTypeName(parameterType);
+            String contentType = getSupportedTypeName(componentTypeClass);
             Object[] contentEnums = componentTypeClass.isEnum() ? componentTypeClass.getEnumConstants() : new Object[0];
 
             if (componentTypeClass.isPrimitive() || componentTypeClass.equals(String.class) || componentTypeClass.isEnum()) {
