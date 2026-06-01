@@ -27,7 +27,7 @@ public class ToolUseCompact implements AgentCallback {
 
     @Override
     public void callAfterToolUse(AbstractAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
-        if (arguments.getString("content").length() <= 128) {
+        if (toolMessage.getString("content").length() <= 128) {
             return;
         }
 
