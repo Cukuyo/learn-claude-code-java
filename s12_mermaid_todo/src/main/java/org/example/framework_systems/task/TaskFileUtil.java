@@ -1,4 +1,4 @@
-package org.example.framework_systems.memory;
+package org.example.framework_systems.task;
 
 import org.example.utils.DateUtil;
 
@@ -9,56 +9,58 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * memory file工具类
+ * task file工具类
  */
-public class MemoryFileUtil {
+public class TaskFileUtil {
     /**
      * 起始分隔符
      */
     private static final String SEPARATOR = "---";
 
     /**
-     * 写入信息到memory文件
+     * 写入信息到task文件
      *
-     * @param dirPath memory 文件夹
-     * @param memory  memory
+     * @param dirPath task 文件夹
+     * @param task    task
      * @return 写入结果
      * @throws IOException IOException
      */
-    public static String write(Path dirPath, MemoryEntity memory) throws IOException {
+    public static String write(Path dirPath, TaskEntity task) throws IOException {
         String frontmatter = String.format(
                 """
                         %s
+                        agent: %s
                         name: %s
                         description: %s
-                        type: %s
+                        process: %d
                         %s
                         %s
                         """,
                 SEPARATOR,
-                memory.name,
-                memory.description,
-                memory.type,
+                task.agent,
+                task.name,
+                task.description,
+                task.progress,
                 SEPARATOR,
-                memory.content);
-        Path memoryFile = dirPath.resolve(memory.type + "_" + memory.name + ".md");
+                task.content);
+        Path memoryFile = dirPath.resolve(task.agent + "_" + task.name + ".md");
         Files.write(memoryFile, frontmatter.getBytes());
 
-        memory.storagePath = memoryFile;
-        memory.updateTime = DateUtil.transLong2LocalDateTime(System.currentTimeMillis());
+        task.storagePath = memoryFile;
+        task.updateTime = DateUtil.transLong2LocalDateTime(System.currentTimeMillis());
 
-        return String.format("<%s>已成功写入%s", memory.name, memoryFile);
+        return String.format("<%s>已成功写入%s", task.name, memoryFile);
 
     }
 
     /**
-     * 解析memory文件的信息
+     * 解析task文件的信息
      *
-     * @param path memory.md文件
-     * @return memory信息
+     * @param path task.md文件
+     * @return task
      * @throws IOException IOException
      */
-    public static MemoryEntity readFile(Path path) throws IOException {
+    public static TaskEntity readFile(Path path) throws IOException {
         Map<String, String> meta = new HashMap<>();
         StringBuilder builder = new StringBuilder(128);
         int separatorNum = 0;
@@ -78,13 +80,13 @@ public class MemoryFileUtil {
             }
         }
 
-        MemoryEntity memoryEntity = new MemoryEntity();
-        memoryEntity.name = meta.get("name");
-        memoryEntity.description = meta.get("description");
-        memoryEntity.type = MemoryType.valueOf(meta.get("type"));
-        memoryEntity.content = builder.toString();
-        memoryEntity.storagePath = path;
-        memoryEntity.updateTime = DateUtil.transLong2LocalDateTime(path.toFile().lastModified());
-        return memoryEntity;
+        TaskEntity taskEntity = new TaskEntity();
+        taskEntity.agent = meta.get("agent");
+        taskEntity.name = meta.get("name");
+        taskEntity.description = meta.get("description");
+        taskEntity.content = builder.toString();
+        taskEntity.storagePath = path;
+        taskEntity.updateTime = DateUtil.transLong2LocalDateTime(path.toFile().lastModified());
+        return taskEntity;
     }
 }

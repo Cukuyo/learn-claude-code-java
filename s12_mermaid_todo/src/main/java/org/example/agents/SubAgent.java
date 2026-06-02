@@ -3,9 +3,9 @@ package org.example.agents;
 import org.example.agents.efficiency.ContextSummary;
 import org.example.agents.efficiency.ToolUseCompact;
 import org.example.agents.extension.AgentLogPrint;
-import org.example.agents.extension.MultiStepsPlan;
 import org.example.agents.systems.MemorySystem;
 import org.example.agents.systems.PermissionSystem;
+import org.example.agents.systems.TaskSystem;
 import org.example.framework_agent.IAgent;
 import org.example.framework_agent.core.AbstractAgent;
 import org.example.framework_agent.core.AgentLoopAgent;
@@ -46,7 +46,6 @@ public class SubAgent implements IAgent {
         agent.registrySkills(System.getProperty("user.dir") + File.separator + "skills");
 
         agent.registryAgentCallback(AgentLogPrint.INSTANCE);
-        agent.registryAgentCallback(new MultiStepsPlan());
         agent.registryAgentCallback(new ToolUseCompact(30, 50));
         agent.registryAgentCallback(new ContextSummary(0.5d, 3));
 
@@ -59,9 +58,12 @@ public class SubAgent implements IAgent {
         agent.registryHook(permissionSystem);
         agent.registryCommand(permissionSystem);
 
-        MemorySystem memorySystem = new MemorySystem(Paths.get(System.getProperty("user.dir"), ".memory"));
+        MemorySystem memorySystem = new MemorySystem(Paths.get(System.getProperty("user.dir"), ".memories"));
         agent.registryAgentCallback(memorySystem);
         agent.registryCommand(memorySystem);
+
+        TaskSystem taskSystem = new TaskSystem(Paths.get(System.getProperty("user.dir"), ".tasks"));
+        agent.registryAgentCallback(taskSystem);
     }
 
     @Override
