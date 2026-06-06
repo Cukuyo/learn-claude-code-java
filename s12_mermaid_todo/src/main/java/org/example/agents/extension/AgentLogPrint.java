@@ -1,9 +1,9 @@
 package org.example.agents.extension;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import org.example.framework_agent.AgentCallback;
 import org.example.framework_agent.core.AbstractAgent;
-
-import com.alibaba.fastjson2.JSONObject;
 
 /**
  * 日志打印回调
@@ -38,7 +38,7 @@ public class AgentLogPrint implements AgentCallback {
     }
 
     @Override
-    public void callAfterAgentLoop(AbstractAgent agent, JSONObject userMessage, String chatRsp) {
+    public void callAfterAgentLoop(AbstractAgent agent, JSONArray messages, JSONObject userMessage, String chatRsp) {
         System.out.printf("%s>>>%s%s", agent.getAgentName(), chatRsp, System.lineSeparator());
     }
 }

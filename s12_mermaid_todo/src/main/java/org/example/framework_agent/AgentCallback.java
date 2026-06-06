@@ -1,27 +1,28 @@
 package org.example.framework_agent;
 
-import org.example.framework_agent.core.AbstractAgent;
-
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import org.example.framework_agent.core.AbstractAgent;
 
 /**
  * agent-loop生命周期回调
  */
 public interface AgentCallback {
     /**
-     * 每次接到用户输入时执行的原子初始化，执行序列第一
+     * 初始化操作
      *
      * @param agent agent
      */
-    default void eachAtomicInitFirst(AbstractAgent agent) {
+    default void initSelf(AbstractAgent agent) {
     }
 
     /**
      * 每次接到用户输入时执行的校验工作，执行序列第二
      *
-     * @param agent agent
+     * @param agent   agent
+     * @param content content
      */
-    default void eachCheckSecond(AbstractAgent agent) {
+    default void eachCheckWithContent(AbstractAgent agent, String content) {
     }
 
     /**
@@ -47,18 +48,21 @@ public interface AgentCallback {
      * agentLoop前回调，添加用户提示后的回调
      *
      * @param agent       agent
+     * @param messages    messages
      * @param userMessage userMessage
      */
-    default void callBeforeAgentLoop(AbstractAgent agent, JSONObject userMessage) {
+    default void callBeforeAgentLoop(AbstractAgent agent, JSONArray messages, JSONObject userMessage) {
     }
 
     /**
      * agentLoop后回调，添加用户提示后直至响应完成
      *
      * @param agent       agent
+     * @param messages    messages
      * @param userMessage userMessage
+     * @param chatRsp     chatRsp
      */
-    default void callAfterAgentLoop(AbstractAgent agent, JSONObject userMessage, String chatRsp) {
+    default void callAfterAgentLoop(AbstractAgent agent, JSONArray messages, JSONObject userMessage, String chatRsp) {
     }
 
     /**

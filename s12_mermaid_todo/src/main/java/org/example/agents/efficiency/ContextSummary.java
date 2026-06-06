@@ -31,7 +31,7 @@ public class ContextSummary implements AgentCallback {
     }
 
     @Override
-    public void callBeforeAgentLoop(AbstractAgent agent, JSONObject userMessage) {
+    public void callBeforeAgentLoop(AbstractAgent agent, JSONArray messages, JSONObject userMessage) {
         olderThanRecentConversations.addAll(recentConversations.add(userMessage, endPredicate));
     }
 

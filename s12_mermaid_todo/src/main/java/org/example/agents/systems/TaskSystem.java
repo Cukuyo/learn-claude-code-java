@@ -25,7 +25,7 @@ public class TaskSystem implements AgentCallback {
     }
 
     @Override
-    public void eachAtomicInitFirst(AbstractAgent agent) {
+    public void initSelf(AbstractAgent agent) {
         this.agent = agent;
         agent.registryTool(this);
 

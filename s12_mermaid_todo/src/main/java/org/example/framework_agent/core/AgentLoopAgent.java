@@ -34,13 +34,13 @@ public class AgentLoopAgent extends AbstractAgent {
     protected String agentLoop(String content) throws IOException, InterruptedException {
         // 添加User提示词后回调
         JSONObject userMessage = addUserMessageWithOptionHook(content);
-        callBeforeAgentLoop(this, userMessage);
+        callBeforeAgentLoop(this, getModel().getMessages(), userMessage);
 
         // ai返回拼接
         StringBuilder resultBuilder = new StringBuilder(512);
         // 遇到错误时的最大重试次数
         int retryMaxTime = 3;
-        
+
         agent_loop:
         while (true) {
             // chat前回调
@@ -48,9 +48,9 @@ public class AgentLoopAgent extends AbstractAgent {
 
             JSONObject chatRsp = getChatRspWithOptionHook();
             JSONObject message = chatRsp.getJSONObject("message");
-            
+
             model.addAssistantMessages(message);
-                        
+
             String rspContent = message.getString("content");
             String finishReason = chatRsp.getString("finish_reason");
             switch (finishReason) {
@@ -77,20 +77,20 @@ public class AgentLoopAgent extends AbstractAgent {
                         resultBuilder.append(rspContent);
                         model.addUserMessage("系统推理资源不足，生成被打断。直接从中断处继续，无需回顾总结、不重复内容，必要时可从句子中间接续行文");
                         break;
-                    }else {
+                    } else {
                         callAfterChat(this, chatRsp, message, true);
 
                         resultBuilder.append("......").append("系统推理资源不足，生成被打断");
                         break agent_loop;
-                    } 
-                                    
-                // 输出长度达到了模型上下文长度限制，或达到了 max_tokens 的限制。
+                    }
+
+                    // 输出长度达到了模型上下文长度限制，或达到了 max_tokens 的限制。
                 case "length":
                     callAfterChat(this, chatRsp, message, false);
 
                     resultBuilder.append(rspContent);
                     model.addUserMessage("已达到输出上限。直接从中断处继续，无需回顾总结、不重复内容，必要时可从句子中间接续行文");
-                    break;               
+                    break;
 
                 // 工具使用
                 case "tool_calls":
@@ -102,8 +102,8 @@ public class AgentLoopAgent extends AbstractAgent {
                     message.getJSONArray("tool_calls").forEach(obj -> toolUseComponent.toolUse((JSONObject) obj));
                     // 工具使用后回调
                     callAfterToolsUse(this);
-                    break;      
-                 
+                    break;
+
                 default:
                     callAfterChat(this, chatRsp, message, true);
 
@@ -113,14 +113,14 @@ public class AgentLoopAgent extends AbstractAgent {
         }
 
         String chatRsp = resultBuilder.toString();
-        callAfterAgentLoop(this,userMessage, chatRsp);
+        callAfterAgentLoop(this, getModel().getMessages(), userMessage, chatRsp);
         return chatRsp;
     }
 
     protected JSONObject getChatRspWithOptionHook() throws IOException, InterruptedException {
         JSONObject chatRsp = null;
         for (AgentHook agentHook : agentHooks) {
-            chatRsp = agentHook.hookChat(this);
+            chatRsp = agentHook.hookChat(this, model.getMessages());
             if (chatRsp != null) {
                 break;
             }

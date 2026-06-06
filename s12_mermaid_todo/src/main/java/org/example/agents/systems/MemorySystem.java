@@ -31,7 +31,7 @@ public class MemorySystem implements AgentCallback, AgentCommand {
     }
 
     @Override
-    public void eachAtomicInitFirst(AbstractAgent agent) {
+    public void initSelf(AbstractAgent agent) {
         agent.registryTool(this);
 
         if (!Files.exists(memoryDirPath)) {

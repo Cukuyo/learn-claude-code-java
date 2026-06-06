@@ -1,24 +1,14 @@
 package org.example.framework_agent.core;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-
-import org.example.framework_agent.AgentCallback;
-import org.example.framework_agent.AgentCommand;
-import org.example.framework_agent.AgentHook;
-import org.example.framework_agent.IAgent;
-import org.example.framework_agent.IAgentCallBackUse;
-import org.example.framework_agent.IAgentCommandUse;
-import org.example.framework_agent.IAgentHookUse;
-import org.example.framework_agent.IAgentSkillUse;
-import org.example.framework_agent.IAgentToolUse;
+import org.example.framework_agent.*;
 import org.example.framework_models.AbstractModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * agent抽象父类:
@@ -32,8 +22,6 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
     public final String agentName;
 
     public final List<AgentCallback> agentCallbacks = new ArrayList<>();
-    public final Set<AgentCallback> initedAgentCallbacks = new HashSet<>();
-
     public final List<AgentCommand> agentCommands = new ArrayList<>();
     public final List<AgentHook> agentHooks = new ArrayList<>();
 
@@ -44,8 +32,7 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
 
     @Override
     public String chatOrCommand(String content) throws IOException, InterruptedException {
-        eachAtomicInitFirst(this);
-        eachCheckSecond(this);
+        eachCheckWithContent(this, content);
         if (content.startsWith("/")) {
             return command(content);
         } else {
@@ -58,9 +45,8 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
 
         // 执行命令前回调
         callBeforeCommand(this, content);
-
+        // 执行带可能hook的命令
         String commandRsp = getCommandRspWithOptionHook(content, agentCommandOptional);
-
         // 执行命令后回调
         callAfterCommand(this, content, commandRsp);
 
@@ -102,6 +88,7 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
     @Override
     public void registryAgentCallback(AgentCallback agentCallback) {
         agentCallbacks.add(agentCallback);
+        agentCallback.initSelf(this);
     }
 
     @Override
@@ -115,17 +102,8 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
     }
 
     @Override
-    public void eachAtomicInitFirst(AbstractAgent agent) {
-        agentCallbacks.forEach(cv -> {
-            if (!initedAgentCallbacks.contains(cv)) {
-                cv.eachAtomicInitFirst(agent);
-            }
-        });
-    }
-
-    @Override
-    public void eachCheckSecond(AbstractAgent agent) {
-        agentCallbacks.forEach(cv -> cv.eachCheckSecond(agent));
+    public void eachCheckWithContent(AbstractAgent agent, String content) {
+        agentCallbacks.forEach(cv -> cv.eachCheckWithContent(agent, content));
     }
 
     @Override
@@ -139,13 +117,13 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
     }
 
     @Override
-    public void callBeforeAgentLoop(AbstractAgent agent, JSONObject userMessage) {
-        agentCallbacks.forEach(cv -> cv.callBeforeAgentLoop(agent, userMessage));
+    public void callBeforeAgentLoop(AbstractAgent agent, JSONArray messages, JSONObject userMessage) {
+        agentCallbacks.forEach(cv -> cv.callBeforeAgentLoop(agent, messages, userMessage));
     }
 
-     @Override
-    public void callAfterAgentLoop(AbstractAgent agent, JSONObject userMessage, String chatRsp) {
-        agentCallbacks.forEach(cv -> cv.callAfterAgentLoop(agent, userMessage, chatRsp));
+    @Override
+    public void callAfterAgentLoop(AbstractAgent agent, JSONArray messages, JSONObject userMessage, String chatRsp) {
+        agentCallbacks.forEach(cv -> cv.callAfterAgentLoop(agent, messages, userMessage, chatRsp));
     }
 
     @Override
@@ -154,7 +132,7 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
     }
 
     @Override
-    public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage,  boolean finished) {
+    public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage, boolean finished) {
         agentCallbacks.forEach(cv -> cv.callAfterChat(agent, chatRsp, assistantMessage, finished));
     }
 

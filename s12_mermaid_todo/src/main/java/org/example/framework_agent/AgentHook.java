@@ -1,8 +1,8 @@
 package org.example.framework_agent;
 
-import org.example.framework_agent.core.AbstractAgent;
-
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import org.example.framework_agent.core.AbstractAgent;
 
 /**
  * hook agent的输入输出，返回null代表不hook
@@ -16,7 +16,7 @@ public interface AgentHook {
         return null;
     }
 
-    default JSONObject hookChat(AbstractAgent agent) {
+    default JSONObject hookChat(AbstractAgent agent, JSONArray messages) {
         return null;
     }
 
