@@ -42,7 +42,7 @@ public class MemorySystem implements AgentCallback, AgentCommand {
 
     private void renderPrompts(AbstractAgent agent, List<MemoryEntity> memoryList) {
         String content = """
-                                 [MemorySystem]记忆系统用于对关键信息进行跨会话的保存和加载，使用<saveMemory>保存记忆。
+                                 [MemorySystem]记忆系统用于对关键信息进行跨会话的保存和加载。
                                   需注意：
                                   何时需要保存记忆：
                                   -用户表达个人偏好（如「我习惯用标签页」「一律使用 pytest」）→ 类型：用户偏好-USER
