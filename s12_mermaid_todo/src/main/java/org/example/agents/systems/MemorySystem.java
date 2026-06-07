@@ -42,7 +42,7 @@ public class MemorySystem implements AgentCallback, AgentCommand {
 
     private void renderPrompts(AbstractAgent agent, List<MemoryEntity> memoryList) {
         String content = """
-                                 [MemorySystem]记忆系统用于对关键信息进行跨会话的保存和加载，使用<saveMemory>保存记忆，使用<lookUpMemory>查看记忆详情。
+                                 [MemorySystem]记忆系统用于对关键信息进行跨会话的保存和加载，使用<saveMemory>保存记忆。
                                   需注意：
                                   何时需要保存记忆：
                                   -用户表达个人偏好（如「我习惯用标签页」「一律使用 pytest」）→ 类型：用户偏好-USER
@@ -53,7 +53,7 @@ public class MemorySystem implements AgentCallback, AgentCommand {
                                   -从代码中可直接推导的信息（函数签名、文件结构、目录布局）
                                   -临时任务状态（当前代码分支、待合并 PR 编号、临时待办事项）
                                   -隐私密钥与凭证（API 密钥、账号密码等敏感信息）
-                                  当前已加载的历史记忆如下：
+                                  当前已加载的记忆简介如下，使用<lookUpMemory>查看记忆详情，使用<saveMemory>保存新记忆或覆盖旧记忆：
                                  """ + buildMemories(memoryList);
 
         agent.getModel().addSystemMessages(content);
@@ -71,7 +71,7 @@ public class MemorySystem implements AgentCallback, AgentCommand {
         return builder.toString();
     }
 
-    @ToolMethod(description = "保存记忆")
+    @ToolMethod(description = "保存新记忆或覆盖旧记忆")
     public String saveMemory(
             @ToolParam(description = "关键信息的类型") MemoryType type,
             @ToolParam(description = "关键信息的名称，采用驼峰加下划线的形式") String name,
@@ -96,7 +96,6 @@ public class MemorySystem implements AgentCallback, AgentCommand {
             return "Error: " + e.getMessage();
         }
     }
-
 
     @Override
     public boolean isSupportCommand(AbstractAgent agent, String cmd) {
