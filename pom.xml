@@ -26,6 +26,7 @@
         <module>s10_system_prompt</module>
         <module>s11_error_recovery</module>
         <module>s12_mermaid_todo</module>
+        <module>s13_pipeline_interaction</module>
     </modules>
 
     <properties>
