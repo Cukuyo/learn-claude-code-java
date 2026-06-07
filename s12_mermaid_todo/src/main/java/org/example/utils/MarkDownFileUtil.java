@@ -72,6 +72,10 @@ public class MarkDownFileUtil {
      * @throws IOException IOException
      */
     public static void writeMeta(Path filePath, Map<String, String> meta) throws IOException {
+        if (!Files.exists(filePath)) {
+            filePath.getParent().toFile().mkdirs();
+        }
+
         StringBuilder builder = new StringBuilder(meta.size() * 128);
         builder.append(SEPARATOR).append(System.lineSeparator());
         for (Map.Entry<String, String> entry : meta.entrySet()) {
