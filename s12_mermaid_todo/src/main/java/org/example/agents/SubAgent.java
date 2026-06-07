@@ -4,7 +4,7 @@ import org.example.agents.efficiency.ContextSummary;
 import org.example.agents.efficiency.ToolUseCompact;
 import org.example.agents.extension.AgentLogPrint;
 import org.example.agents.systems.MemorySystem;
-import org.example.agents.systems.PermissionSystem;
+import org.example.agents.security.PermissionSystem;
 import org.example.agents.systems.TaskSystem;
 import org.example.framework_agent.IAgent;
 import org.example.framework_agent.core.AbstractAgent;

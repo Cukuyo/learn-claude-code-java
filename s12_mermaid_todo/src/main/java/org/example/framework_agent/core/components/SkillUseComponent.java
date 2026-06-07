@@ -42,7 +42,7 @@ public class SkillUseComponent implements IAgentSkillUse {
     public void registrySkills(String dirPath) {
         List<SkillManifest> skillManifests = SkillDirUtil.resolveDir(Paths.get(dirPath));
         for (SkillManifest skillManifest : skillManifests) {
-            skillManifestMap.put(skillManifest.name(), skillManifest);
+            skillManifestMap.put(skillManifest.name, skillManifest);
         }
 
         renderPrompts();
@@ -59,9 +59,9 @@ public class SkillUseComponent implements IAgentSkillUse {
 
         for (SkillManifest skillManifest : skillManifestMap.values()) {
             builder.append("- {")
-                    .append(skillManifest.name())
-                    .append(":").append(skillManifest.description())
-                    .append(":").append("所在目录相对路径为").append(Paths.get(System.getProperty("user.dir")).relativize(skillManifest.dirPath()))
+                    .append(skillManifest.name)
+                    .append(":").append(skillManifest.description)
+                    .append(":").append("所在目录相对路径为").append(Paths.get(System.getProperty("user.dir")).relativize(skillManifest.dirPath))
                     .append("}").append(System.lineSeparator());
         }
 
@@ -75,7 +75,7 @@ public class SkillUseComponent implements IAgentSkillUse {
     @ToolMethod(description = "用于根据指定的skill名称，将SKILL.md全部内容加载到当前会话")
     public String loadSkill(@ToolParam(description = "指定的skill名称") String skillName) {
         try {
-            return SkillFileUtil.readSkillMDBody(skillManifestMap.get(skillName).dirPath());
+            return SkillFileUtil.readSkillMDBody(skillManifestMap.get(skillName).dirPath);
         } catch (IOException e) {
             return "Error: " + e.getMessage();
         }

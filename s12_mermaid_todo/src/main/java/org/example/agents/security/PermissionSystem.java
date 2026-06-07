@@ -1,4 +1,4 @@
-package org.example.agents.systems;
+package org.example.agents.security;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.example.framework_agent.AgentCommand;
@@ -64,6 +64,22 @@ public class PermissionSystem implements AgentHook, AgentCommand {
         }
     }
 
+    private PermissionRule matchedPermissionRule(String name, String content, Map<String, List<PermissionRule>> map) {
+        List<PermissionRule> ruleList = map.getOrDefault(name, new ArrayList<>());
+        for (PermissionRule rule : ruleList) {
+            try {
+                if (rule.pattern.matcher(content).find()) {
+                    return rule;
+                }
+            } catch (NullPointerException e) {
+                throw e;
+            }
+        }
+
+
+        return null;
+    }
+
     private String ask(AbstractAgent agent, String toolName, String command, PermissionRule denyRule) {
         String title = "危险操作确认";
         String desc = String.format("%s正在执行危险操作：%s : %s，请确认是否允许", agent.agentName, toolName, command);
@@ -82,22 +98,6 @@ public class PermissionSystem implements AgentHook, AgentCommand {
                 return null;
             }
         }
-    }
-
-    private PermissionRule matchedPermissionRule(String name, String content, Map<String, List<PermissionRule>> map) {
-        List<PermissionRule> ruleList = map.getOrDefault(name, new ArrayList<>());
-        for (PermissionRule rule : ruleList) {
-            try {
-                if (rule.pattern.matcher(content).find()) {
-                    return rule;
-                }
-            } catch (NullPointerException e) {
-                throw e;
-            }
-        }
-
-
-        return null;
     }
 
     @Override

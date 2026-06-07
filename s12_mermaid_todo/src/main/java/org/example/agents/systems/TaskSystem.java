@@ -42,11 +42,11 @@ public class TaskSystem implements AgentCallback {
 
     private void renderPrompts(AbstractAgent agent, List<TaskEntity> taskList) {
         agent.getModel().addUserMessage("""
-                [TaskSystem]任务系统用于对任务进行跨会话的保存和加载，使用<updateTasks>可对任务进行保存。需注意：
-                1、进行多步骤任务时必须使用TaskSystem进行保存
-                2、必须使用Mermaid格式进行保存，任务间显示声明依赖关系和完成情况
-                当前已加载的未完成历史任务如下：
-                """ + loadTasks(taskList));
+                                                [TaskSystem]任务系统用于对任务进行跨会话的保存和加载，使用<updateTasks>可对任务进行保存。需注意：
+                                                1、进行多步骤任务时必须使用TaskSystem进行保存
+                                                2、必须使用Mermaid格式进行保存，任务间显示声明依赖关系和完成情况
+                                                当前已加载的未完成历史任务如下：
+                                                """ + loadTasks(taskList));
     }
 
     private String loadTasks(List<TaskEntity> taskList) {

@@ -3,6 +3,7 @@ package org.example.framework_systems.memory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -18,16 +19,17 @@ public class MemoryDirUtil {
      */
     public static List<MemoryEntity> resolveDir(Path dirPath) {
         try (Stream<Path> paths = Files.walk(dirPath)) {
-            return paths.filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".md"))
-                    .map(path -> {
-                        try {
-                            return MemoryFileUtil.readFile(path);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    })
-                    .toList();
+            List<MemoryEntity> list = paths.filter(Files::isRegularFile)
+                                           .filter(path -> path.toString().endsWith(".md"))
+                                           .map(path -> {
+                                               try {
+                                                   return MemoryFileUtil.read(path);
+                                               } catch (IOException e) {
+                                                   throw new RuntimeException(e);
+                                               }
+                                           })
+                                           .toList();
+            return new ArrayList<>(list);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -9,6 +9,14 @@ import java.nio.file.Path;
  * @param description 描述
  * @param dirPath     所在目录路径
  */
-public record SkillManifest(String name, String description, Path dirPath) {
+public class SkillManifest {
+    public String name;
+    public String description;
+    public Path dirPath;
 
+    public SkillManifest(String name, String description, Path dirPath) {
+        this.name = name;
+        this.description = description;
+        this.dirPath = dirPath;
+    }
 }

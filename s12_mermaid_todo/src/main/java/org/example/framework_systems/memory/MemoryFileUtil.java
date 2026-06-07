@@ -1,11 +1,9 @@
 package org.example.framework_systems.memory;
 
-import org.example.utils.DateUtil;
+import org.example.utils.MarkDownFileUtil;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -13,78 +11,45 @@ import java.util.Map;
  */
 public class MemoryFileUtil {
     /**
-     * 起始分隔符
-     */
-    private static final String SEPARATOR = "---";
-
-    /**
      * 写入信息到memory文件
      *
      * @param dirPath memory 文件夹
      * @param memory  memory
-     * @return 写入结果
      * @throws IOException IOException
      */
-    public static String write(Path dirPath, MemoryEntity memory) throws IOException {
-        String frontmatter = String.format(
-                """
-                        %s
-                        name: %s
-                        description: %s
-                        type: %s
-                        %s
-                        %s
-                        """,
-                SEPARATOR,
-                memory.name,
-                memory.description,
-                memory.type,
-                SEPARATOR,
-                memory.content);
-        Path memoryFile = dirPath.resolve(memory.type + "_" + memory.name + ".md");
-        Files.write(memoryFile, frontmatter.getBytes());
-
-        memory.storagePath = memoryFile;
-        memory.updateTime = DateUtil.transLong2LocalDateTime(System.currentTimeMillis());
-
-        return String.format("<%s>已成功写入%s", memory.name, memoryFile);
-
+    public static void write(Path dirPath, MemoryEntity memory) throws IOException {
+        Path filePath = dirPath.resolve(memory.buildFileName());
+        MarkDownFileUtil.writeMeta(filePath, memory.toMeta());
+        MarkDownFileUtil.writeContent(filePath, memory.content);
     }
 
     /**
      * 解析memory文件的信息
      *
-     * @param path memory.md文件
+     * @param dirPath memory 文件夹
+     * @param memory  memory
      * @return memory信息
      * @throws IOException IOException
      */
-    public static MemoryEntity readFile(Path path) throws IOException {
-        Map<String, String> meta = new HashMap<>();
-        StringBuilder builder = new StringBuilder(128);
-        int separatorNum = 0;
-        for (String line : Files.readAllLines(path)) {
-            if (line.isEmpty()) {
-                continue;
-            }
-            if (line.startsWith(SEPARATOR)) {
-                separatorNum++;
-                continue;
-            }
-            if (separatorNum == 1) {
-                String[] arr = line.split(":");
-                meta.put(arr[0].trim(), arr[1].trim());
-            } else {
-                builder.append(line).append(System.lineSeparator());
-            }
-        }
+    public static MemoryEntity read(Path dirPath, MemoryEntity memory) throws IOException {
+        return MemoryFileUtil.read(dirPath.resolve(memory.buildFileName()));
+    }
+
+    /**
+     * 解析memory文件的信息
+     *
+     * @param filePath memory.md文件
+     * @return memory信息
+     * @throws IOException IOException
+     */
+    public static MemoryEntity read(Path filePath) throws IOException {
+        Map<String, String> meta = MarkDownFileUtil.readMeta(filePath);
 
         MemoryEntity memoryEntity = new MemoryEntity();
         memoryEntity.name = meta.get("name");
         memoryEntity.description = meta.get("description");
         memoryEntity.type = MemoryType.valueOf(meta.get("type"));
-        memoryEntity.content = builder.toString();
-        memoryEntity.storagePath = path;
-        memoryEntity.updateTime = DateUtil.transLong2LocalDateTime(path.toFile().lastModified());
+        memoryEntity.content = MarkDownFileUtil.readContent(filePath);
         return memoryEntity;
     }
 }
