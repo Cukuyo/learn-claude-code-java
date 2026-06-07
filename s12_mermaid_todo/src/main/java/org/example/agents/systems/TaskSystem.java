@@ -56,11 +56,7 @@ public class TaskSystem implements AgentCallback {
             return builder.toString();
         }
         for (TaskEntity taskEntity : taskList) {
-            builder.append("- {")
-                    .append(taskEntity.name)
-                    .append(":").append(taskEntity.description)
-                    .append(":").append(taskEntity.content)
-                    .append("}").append(System.lineSeparator());
+            builder.append(taskEntity.toPrompt()).append(System.lineSeparator());
         }
 
         return builder.toString();
