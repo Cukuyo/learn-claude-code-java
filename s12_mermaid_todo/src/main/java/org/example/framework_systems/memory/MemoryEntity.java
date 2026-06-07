@@ -1,48 +1,28 @@
 package org.example.framework_systems.memory;
 
+import org.example.framework_systems.BaseEntity;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 记忆实体：对应Python中单个md文件的记忆
  */
-public class MemoryEntity {
+public class MemoryEntity extends BaseEntity {
     /**
      * 记忆类型：user/feedback/project/reference（对齐Python）
      */
     public MemoryType type;
-    /**
-     * 记忆唯一标识（对应Python的safe_name）
-     */
-    public String name;
-
-    /**
-     * 记忆描述（短摘要）
-     */
-    public String description;
-
-    /**
-     * 记忆内容（完整文本）
-     */
-    public String content;
-
-    public MemoryEntity() {
-    }
-
-    public MemoryEntity(MemoryType type, String name, String description, String content) {
-        this.type = type;
-        this.name = name;
-        this.description = description;
-        this.content = content;
-    }
 
     /**
      * buildFileName
      *
      * @return FileName
      */
+    @Override
     public String buildFileName() {
-        return type + "_" + name + ".md";
+        return type + File.separator + name + ".md";
     }
 
     /**
@@ -50,10 +30,9 @@ public class MemoryEntity {
      *
      * @return prompt
      */
+    @Override
     public String toPrompt() {
-        return "- {" + type + ":" + name + ":" + System.lineSeparator()
-               + description + System.lineSeparator()
-               + "}";
+        return "- {" + type + ":" + name + ":" + filePath + ":" + description + "}";
     }
 
     /**
@@ -61,6 +40,7 @@ public class MemoryEntity {
      *
      * @return meta
      */
+    @Override
     public Map<String, String> toMeta() {
         Map<String, String> meta = new HashMap<>();
         meta.put("type", type.toString());

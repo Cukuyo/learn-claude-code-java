@@ -1,52 +1,43 @@
 package org.example.framework_systems.task;
 
-import java.nio.file.Path;
-import java.time.LocalDateTime;
+import org.example.framework_systems.BaseEntity;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * task 实体
  */
-public class TaskEntity {
+public class TaskEntity extends BaseEntity {
     /**
-     * agent名称
+     * 归属于哪个agent
      */
-    public String agent;
-    /**
-     * 任务名称
-     */
-    public String name;
-    /**
-     * 任务描述（短摘要）
-     */
-    public String description;
+    public String agentName;
+
     /**
      * 任务进度
      */
     public int progress;
+
     /**
-     * 记忆内容（完整文本）
+     * buildFileName
+     *
+     * @return FileName
      */
-    public String content;
-    /**
-     * 存储路径
-     */
-    public Path storagePath;
-    /**
-     * 创建/更新时间（扩展Python逻辑，便于过期清理）
-     */
-    public LocalDateTime updateTime;
+    @Override
+    public String buildFileName() {
+        return agentName + File.separator + name + ".md";
+    }
 
     /**
      * toPrompt
      *
      * @return prompt
      */
+    @Override
     public String toPrompt() {
-        return "- {" + name + ":" + description + ":" + System.lineSeparator()
-                + content + System.lineSeparator()
-                + "}";
+        return "- {" + name + ":" + description + ":" + filePath + ":" + content + "}";
     }
 
     /**
@@ -54,9 +45,10 @@ public class TaskEntity {
      *
      * @return meta
      */
+    @Override
     public Map<String, String> toMeta() {
         Map<String, String> meta = new HashMap<>();
-        meta.put("agent", agent);
+        meta.put("agentName", agentName);
         meta.put("name", name);
         meta.put("description", description);
         meta.put("progress", String.valueOf(progress));

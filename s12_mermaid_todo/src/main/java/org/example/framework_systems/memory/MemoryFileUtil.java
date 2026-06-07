@@ -1,9 +1,11 @@
 package org.example.framework_systems.memory;
 
+import org.example.utils.DateUtil;
 import org.example.utils.MarkDownFileUtil;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
@@ -21,18 +23,9 @@ public class MemoryFileUtil {
         Path filePath = dirPath.resolve(memory.buildFileName());
         MarkDownFileUtil.writeMeta(filePath, memory.toMeta());
         MarkDownFileUtil.writeContent(filePath, memory.content);
-    }
 
-    /**
-     * 解析memory文件的信息
-     *
-     * @param dirPath memory 文件夹
-     * @param memory  memory
-     * @return memory信息
-     * @throws IOException IOException
-     */
-    public static MemoryEntity read(Path dirPath, MemoryEntity memory) throws IOException {
-        return MemoryFileUtil.read(dirPath.resolve(memory.buildFileName()));
+        memory.filePath = filePath;
+        memory.updateTime = LocalDateTime.now();
     }
 
     /**
@@ -50,6 +43,8 @@ public class MemoryFileUtil {
         memoryEntity.description = meta.get("description");
         memoryEntity.type = MemoryType.valueOf(meta.get("type"));
         memoryEntity.content = MarkDownFileUtil.readContent(filePath);
+        memoryEntity.filePath = filePath;
+        memoryEntity.updateTime = DateUtil.transLong2LocalDateTime(filePath.toFile().lastModified());
         return memoryEntity;
     }
 }

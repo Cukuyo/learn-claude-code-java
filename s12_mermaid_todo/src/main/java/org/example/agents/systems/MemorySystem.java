@@ -53,7 +53,7 @@ public class MemorySystem implements AgentCallback, AgentCommand {
                                   -从代码中可直接推导的信息（函数签名、文件结构、目录布局）
                                   -临时任务状态（当前代码分支、待合并 PR 编号、临时待办事项）
                                   -隐私密钥与凭证（API 密钥、账号密码等敏感信息）
-                                  当前已加载的记忆简介如下，使用<lookUpMemory>查看记忆详情，使用<saveMemory>保存新记忆或覆盖旧记忆：
+                                  当前已加载的记忆简介如下，可使用<saveMemory>保存新记忆或覆盖旧记忆，当需要时根据路径查看文件获取详细内容：
                                  """ + buildMemories(memoryList);
 
         agent.getModel().addSystemMessages(content);
@@ -72,26 +72,18 @@ public class MemorySystem implements AgentCallback, AgentCommand {
     }
 
     @ToolMethod(description = "保存新记忆或覆盖旧记忆")
-    public String saveMemory(
-            @ToolParam(description = "关键信息的类型") MemoryType type,
-            @ToolParam(description = "关键信息的名称，采用驼峰加下划线的形式") String name,
-            @ToolParam(description = "关键信息的简短描述") String description,
-            @ToolParam(description = "关键信息的全部内容") String content) {
-        MemoryEntity memoryEntity = new MemoryEntity(type, name, description, content);
+    public String saveMemory(@ToolParam(description = "关键信息的类型") MemoryType type,
+                             @ToolParam(description = "关键信息的名称，采用驼峰加下划线的形式") String name,
+                             @ToolParam(description = "关键信息的简短描述") String description,
+                             @ToolParam(description = "关键信息的全部内容") String content) {
+        MemoryEntity memoryEntity = new MemoryEntity();
+        memoryEntity.type = type;
+        memoryEntity.name = name;
+        memoryEntity.description = description;
+        memoryEntity.content = content;
         try {
             MemoryFileUtil.write(memoryDirPath, memoryEntity);
             return String.format("<%s><%s>记忆已成功写入!", type, name);
-        } catch (IOException e) {
-            return "Error: " + e.getMessage();
-        }
-    }
-
-    @ToolMethod(description = "查看记忆详情")
-    public String lookUpMemory(
-            @ToolParam(description = "关键信息的类型") MemoryType type,
-            @ToolParam(description = "关键信息的名称，采用驼峰加下划线的形式") String name) {
-        try {
-            return MemoryFileUtil.read(memoryDirPath, new MemoryEntity(type, name, "", "")).content;
         } catch (IOException e) {
             return "Error: " + e.getMessage();
         }

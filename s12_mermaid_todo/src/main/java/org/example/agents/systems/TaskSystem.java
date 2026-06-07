@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class TaskSystem implements AgentCallback {
     private final Path taskDirPath;
-    private AbstractAgent agent = null;
+    private String agentName = null;
 
     public TaskSystem(Path taskDirPath) {
         this.taskDirPath = taskDirPath;
@@ -26,7 +26,8 @@ public class TaskSystem implements AgentCallback {
 
     @Override
     public void initSelf(AbstractAgent agent) {
-        this.agent = agent;
+        this.agentName = agent.getAgentName();
+
         agent.registryTool(this);
 
         if (!Files.exists(taskDirPath)) {
@@ -34,48 +35,48 @@ public class TaskSystem implements AgentCallback {
         }
 
         List<TaskEntity> taskList = TaskDirUtil.resolveDir(taskDirPath);
-        List<TaskEntity> waitedTaskList = taskList.stream().filter(
-                task -> task.agent.equals(agent.agentName) && task.progress < 100).toList();
+        List<TaskEntity> waitedTaskList = taskList.stream().filter(task -> task.progress < 100).toList();
 
         renderPrompts(agent, waitedTaskList);
     }
 
     private void renderPrompts(AbstractAgent agent, List<TaskEntity> taskList) {
         agent.getModel().addUserMessage("""
-                                                [TaskSystem]任务系统用于对任务进行跨会话的保存和加载，使用<updateTasks>可对任务进行保存。需注意：
-                                                1、进行多步骤任务时必须使用TaskSystem进行保存
+                                                [TaskSystem]任务系统用于对任务进行跨会话的保存和加载。
+                                                需注意：
+                                                1、进行多步骤任务时必须使用TaskSystem进行保存，防止遗忘
                                                 2、必须使用Mermaid格式进行保存，任务间显示声明依赖关系和完成情况
-                                                当前已加载的未完成历史任务如下：
-                                                """ + loadTasks(taskList));
+                                                当前已加载的未完成历史任务如下，可使用<updateTasks>对任务进行新保存或覆盖：
+                                                """ + buildTasks(taskList));
     }
 
-    private String loadTasks(List<TaskEntity> taskList) {
+    private String buildTasks(List<TaskEntity> taskList) {
         StringBuilder builder = new StringBuilder(taskList.size() * 512);
         if (taskList.isEmpty()) {
             builder.append("当前历史任务为空");
             return builder.toString();
         }
-        for (TaskEntity taskEntity : taskList) {
-            builder.append(taskEntity.toPrompt()).append(System.lineSeparator());
-        }
+
+        taskList.forEach(taskEntity -> builder.append(taskEntity.toPrompt()).append(System.lineSeparator()));
 
         return builder.toString();
     }
 
-    @ToolMethod(description = "使用任务系统保存跨会话的任务信息")
+    @ToolMethod(description = "对任务进行新保存或覆盖")
     public String updateTasks(
-            @ToolParam(description = "任务名") String name,
-            @ToolParam(description = "任务简短描述") String description,
+            @ToolParam(description = "任务名，采用驼峰加下划线的形式") String name,
+            @ToolParam(description = "任务的简短描述") String description,
             @ToolParam(description = "Mermaid格式的任务内容") String content,
             @ToolParam(description = "任务进度，0-100") int progress) {
         TaskEntity taskEntity = new TaskEntity();
-        taskEntity.agent = agent.agentName;
+        taskEntity.agentName = agentName;
         taskEntity.name = name;
         taskEntity.description = description;
         taskEntity.progress = progress;
         taskEntity.content = content;
         try {
-            return TaskFileUtil.write(taskDirPath, taskEntity);
+            TaskFileUtil.write(taskDirPath, taskEntity);
+            return String.format("<%s>已成功写入!", name);
         } catch (IOException e) {
             return "Error: " + e.getMessage();
         }

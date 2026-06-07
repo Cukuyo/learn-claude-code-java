@@ -22,18 +22,17 @@ public class SkillDirUtil {
     public static List<SkillManifest> resolveDir(Path dirPath) {
         try (Stream<Path> paths = Files.walk(dirPath)) {
             return paths.filter(Files::isRegularFile)
-                    .filter(path -> "SKILL.md".equalsIgnoreCase(path.getFileName().toString()))
-                    .map(path -> {
-                        try {
-                            Map<String, String> meta = MarkDownFileUtil.readMeta(path);
-                            return new SkillManifest(meta.get("name"), meta.get("description"), path.toFile().getParentFile().toPath());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).toList();
+                        .filter(path -> "SKILL.md".equalsIgnoreCase(path.getFileName().toString()))
+                        .map(path -> {
+                            try {
+                                Map<String, String> meta = MarkDownFileUtil.readMeta(path);
+                                return new SkillManifest(meta.get("name"), meta.get("description"), path);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }).toList();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
 }

@@ -12,45 +12,38 @@ import java.util.Map;
  */
 public class TaskFileUtil {
     /**
-     * 起始分隔符
-     */
-    private static final String SEPARATOR = "---";
-
-    /**
      * 写入信息到task文件
      *
      * @param dirPath task 文件夹
      * @param task    task
-     * @return 写入结果
      * @throws IOException IOException
      */
-    public static String write(Path dirPath, TaskEntity task) throws IOException {
-        Path filePath = dirPath.resolve(task.agent + "_" + task.name + ".md");
+    public static void write(Path dirPath, TaskEntity task) throws IOException {
+        Path filePath = dirPath.resolve(task.buildFileName());
         MarkDownFileUtil.writeMeta(filePath, task.toMeta());
+        MarkDownFileUtil.writeContent(filePath, task.content);
 
-        task.storagePath = filePath;
+        task.filePath = filePath;
         task.updateTime = DateUtil.transLong2LocalDateTime(System.currentTimeMillis());
-
-        return String.format("<%s>已成功写入%s", task.name, filePath);
     }
 
     /**
      * 解析task文件的信息
      *
-     * @param path task.md文件
+     * @param filePath task.md文件
      * @return task
      * @throws IOException IOException
      */
-    public static TaskEntity readFile(Path path) throws IOException {
-        Map<String, String> meta = MarkDownFileUtil.readMeta(path);
+    public static TaskEntity readFile(Path filePath) throws IOException {
+        Map<String, String> meta = MarkDownFileUtil.readMeta(filePath);
 
         TaskEntity taskEntity = new TaskEntity();
-        taskEntity.agent = meta.get("agent");
+        taskEntity.agentName = meta.get("agentName");
         taskEntity.name = meta.get("name");
         taskEntity.description = meta.get("description");
-        taskEntity.content = MarkDownFileUtil.readContent(path);
-        taskEntity.storagePath = path;
-        taskEntity.updateTime = DateUtil.transLong2LocalDateTime(path.toFile().lastModified());
+        taskEntity.content = MarkDownFileUtil.readContent(filePath);
+        taskEntity.filePath = filePath;
+        taskEntity.updateTime = DateUtil.transLong2LocalDateTime(filePath.toFile().lastModified());
         return taskEntity;
     }
 }
