@@ -71,7 +71,7 @@ public abstract class AbstractOpenAiModel extends AbstractModel {
     @Override
     public JSONObject addSystemMessages(String content) {
         JSONObject msg = message(content, "system");
-        ((JSONArray) curReq.get("messages")).add(msg);
+        curReq.getJSONArray("messages").add(msg);
         return msg;
     }
 
@@ -83,7 +83,7 @@ public abstract class AbstractOpenAiModel extends AbstractModel {
     @Override
     public JSONObject addUserMessage(String content) {
         JSONObject msg = message(content, "user");
-        ((JSONArray) curReq.get("messages")).add(msg);
+        curReq.getJSONArray("messages").add(msg);
         return msg;
     }
 
@@ -104,7 +104,7 @@ public abstract class AbstractOpenAiModel extends AbstractModel {
     public JSONObject addToolMessage(String content, String toolCallId) {
         JSONObject msg = message(content, "tool");
         msg.put("tool_call_id", toolCallId);
-        ((JSONArray) curReq.get("messages")).add(msg);
+        curReq.getJSONArray("messages").add(msg);
         return msg;
     }
 
@@ -115,7 +115,7 @@ public abstract class AbstractOpenAiModel extends AbstractModel {
      */
     @Override
     public void addAssistantMessages(JSONObject content) {
-        ((JSONArray) curReq.get("messages")).add(content);
+        curReq.getJSONArray("messages").add(content);
     }
 
     private JSONObject message(String content, String role) {

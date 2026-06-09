@@ -7,16 +7,6 @@ public interface IModelClone<T> {
     /**
      * 带全部历史信息的克隆
      */
-    T cloneWithHistory(T newT);
-
-    /**
-     * 不带全部历史信息的克隆
-     */
-    T cloneWithoutHistory(T newT);
-
-    /**
-     * 带全部历史信息的克隆
-     */
     T cloneWithHistory();
 
     /**

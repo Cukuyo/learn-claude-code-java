@@ -2,11 +2,10 @@ package org.example.agents.efficiency;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-
-import org.example.agents.SubAgent;
 import org.example.framework_agent.AgentCallback;
 import org.example.framework_agent.IAgent;
 import org.example.framework_agent.core.AbstractAgent;
+import org.example.framework_models.AbstractModel;
 import org.example.queue.FixedSizeConversationQueue;
 
 import java.io.IOException;
@@ -100,6 +99,8 @@ public class ContextSummary implements AgentCallback {
                     对话如下：
                     %s
                 """, content);
-        return SubAgent.singleChat(agent.getModel().cloneWithoutHistory(), agent.getAgentName() + "-summary", prompt);
+        AbstractModel model = agent.getModel().cloneWithoutHistory();
+        model.addUserMessage(prompt);
+        return model.chat().getJSONObject("message").getString("content");
     }
 }

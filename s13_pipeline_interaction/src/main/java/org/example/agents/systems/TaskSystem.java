@@ -18,7 +18,6 @@ import java.util.List;
  */
 public class TaskSystem implements AgentCallback {
     private final Path taskDirPath;
-    private String agentName = null;
 
     public TaskSystem(Path taskDirPath) {
         this.taskDirPath = taskDirPath;
@@ -26,8 +25,6 @@ public class TaskSystem implements AgentCallback {
 
     @Override
     public void initSelf(AbstractAgent agent) {
-        this.agentName = agent.getAgentName();
-
         agent.registryTool(this);
 
         if (!Files.exists(taskDirPath)) {
@@ -42,12 +39,12 @@ public class TaskSystem implements AgentCallback {
 
     private void renderPrompts(AbstractAgent agent, List<TaskEntity> taskList) {
         agent.getModel().addUserMessage("""
-                                                [TaskSystem]任务系统用于对任务进行跨会话的保存和加载。
-                                                需注意：
-                                                1、进行多步骤任务时必须使用TaskSystem进行保存，防止遗忘
-                                                2、必须使用Mermaid格式进行保存，任务间显示声明依赖关系和完成情况
-                                                当前已加载的未完成历史任务如下，可使用<updateTasks>对任务进行新保存或覆盖：
-                                                """ + buildTasks(taskList));
+                [TaskSystem]任务系统用于对任务进行跨会话的保存和加载。
+                需注意：
+                1、进行多步骤任务时必须使用TaskSystem进行保存，防止遗忘
+                2、必须使用Mermaid格式进行保存，任务间显示声明依赖关系和完成情况
+                当前已加载的未完成历史任务如下，可使用<updateTasks>对任务进行新保存或覆盖：
+                """ + buildTasks(taskList));
     }
 
     private String buildTasks(List<TaskEntity> taskList) {
@@ -64,6 +61,7 @@ public class TaskSystem implements AgentCallback {
 
     @ToolMethod(description = "对任务进行新保存或覆盖")
     public String updateTasks(
+            @ToolParam(description = "agent名字，也就是你的名字") String agentName,
             @ToolParam(description = "任务名，采用驼峰加下划线的形式") String name,
             @ToolParam(description = "任务的简短描述") String description,
             @ToolParam(description = "Mermaid格式的任务内容") String content,

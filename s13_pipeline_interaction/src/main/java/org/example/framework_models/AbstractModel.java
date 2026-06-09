@@ -1,7 +1,6 @@
 package org.example.framework_models;
 
 import com.alibaba.fastjson2.JSONObject;
-import org.example.utils.JsonCloneUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -89,19 +88,6 @@ public abstract class AbstractModel implements IModel, IModelSetting, IModelTool
     @Override
     public long getCompletionTokensSum() {
         return completionTokensSum;
-    }
-
-    @Override
-    public AbstractModel cloneWithHistory(AbstractModel newModel) {
-        newModel.curReq = JsonCloneUtil.deepClone(curReq);
-        newModel.toolsSet.addAll(toolsSet);
-        return newModel;
-    }
-
-    @Override
-    public AbstractModel cloneWithoutHistory(AbstractModel newModel) {
-        newModel.toolsSet.addAll(toolsSet);
-        return newModel;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package org.example.framework_models;
 
+import org.example.utils.JsonCloneUtil;
+
 /**
  * Deepseek客户端
  */
@@ -31,11 +33,18 @@ public class DeepseekModel extends AbstractOpenAiModel {
 
     @Override
     public AbstractModel cloneWithHistory() {
-        return cloneWithHistory(new DeepseekModel(model, url, apiKey));
+        DeepseekModel deepseekModel = new DeepseekModel(model, url, apiKey);
+        deepseekModel.curReq = JsonCloneUtil.deepClone(curReq);
+        deepseekModel.getTools().clear();
+        return deepseekModel;
     }
 
     @Override
     public AbstractModel cloneWithoutHistory() {
-        return cloneWithoutHistory(new DeepseekModel(model, url, apiKey));
+        DeepseekModel deepseekModel = new DeepseekModel(model, url, apiKey);
+        deepseekModel.curReq = JsonCloneUtil.deepClone(curReq);
+        deepseekModel.getMessages().clear();
+        deepseekModel.getTools().clear();
+        return deepseekModel;
     }
 }
