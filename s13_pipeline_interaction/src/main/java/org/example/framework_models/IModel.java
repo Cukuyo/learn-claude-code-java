@@ -14,6 +14,8 @@ public interface IModel {
 
     JSONObject addUserMessage(String content);
 
+    JSONObject addUserMessage(String content, String name);
+
     JSONObject addToolMessage(String content, String toolCallId);
 
     void addAssistantMessages(JSONObject content);

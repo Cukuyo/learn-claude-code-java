@@ -87,6 +87,13 @@ public abstract class AbstractOpenAiModel extends AbstractModel {
         return msg;
     }
 
+    @Override
+    public JSONObject addUserMessage(String content, String name) {
+        JSONObject msg = addUserMessage(content);
+        msg.put("name", name);
+        return msg;
+    }
+
     /**
      * 构造工具提示词
      *
