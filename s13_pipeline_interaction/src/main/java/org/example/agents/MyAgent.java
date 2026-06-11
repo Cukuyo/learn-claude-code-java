@@ -6,12 +6,12 @@ import org.example.agents.log.AgentLogPrint;
 import org.example.agents.persist.MemorySystem;
 import org.example.agents.persist.PermissionSystem;
 import org.example.agents.persist.TaskSystem;
-import org.example.framework_agent.IAgent;
-import org.example.framework_agent.core.AbstractAgent;
-import org.example.framework_agent.core.AgentLoopAgent;
+import org.example.agent.IAgent;
+import org.example.agent.impl.AbstractAgent;
+import org.example.agent.impl.AgentLoopAgent;
 import org.example.framework_models.AbstractModel;
-import org.example.framework_tool.ToolMethod;
-import org.example.framework_tool.ToolParam;
+import org.example.agent.tool.ToolMethod;
+import org.example.agent.tool.ToolParam;
 import org.example.utils.cmd.AgentCommandTool;
 import org.example.utils.file.AgentFileTool;
 

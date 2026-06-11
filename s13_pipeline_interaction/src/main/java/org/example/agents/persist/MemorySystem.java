@@ -1,14 +1,14 @@
 package org.example.agents.persist;
 
-import org.example.framework_agent.AgentCallback;
-import org.example.framework_agent.AgentCommand;
-import org.example.framework_agent.core.AbstractAgent;
+import org.example.agent.AgentCallback;
+import org.example.agent.AgentCommand;
+import org.example.agent.impl.AbstractAgent;
 import org.example.agents.persist.systems.memory.MemoryDirUtil;
 import org.example.agents.persist.systems.memory.MemoryEntity;
 import org.example.agents.persist.systems.memory.MemoryFileUtil;
 import org.example.agents.persist.systems.memory.MemoryType;
-import org.example.framework_tool.ToolMethod;
-import org.example.framework_tool.ToolParam;
+import org.example.agent.tool.ToolMethod;
+import org.example.agent.tool.ToolParam;
 
 import java.io.IOException;
 import java.nio.file.Files;

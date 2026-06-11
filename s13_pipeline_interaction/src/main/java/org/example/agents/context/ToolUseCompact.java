@@ -2,9 +2,9 @@ package org.example.agents.context;
 
 import com.alibaba.fastjson2.JSONObject;
 
-import org.example.framework_agent.AgentCallback;
-import org.example.framework_agent.core.AbstractAgent;
-import org.example.queues.FixedSizeQueue;
+import org.example.agent.AgentCallback;
+import org.example.agent.impl.AbstractAgent;
+import org.example.agents.context.queues.FixedSizeQueue;
 
 /**
  * toolUse压缩，设置最大保留的tool返回数，当超过指定值时最开始的tool返回将被压缩

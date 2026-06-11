@@ -1,8 +1,8 @@
 package org.example;
 
 import org.example.agents.MyAgent;
-import org.example.framework_agent.IAgent;
-import org.example.framework_models.DeepseekModel;
+import org.example.agent.IAgent;
+import org.example.models.openai.DeepseekModel;
 
 import java.util.Scanner;
 

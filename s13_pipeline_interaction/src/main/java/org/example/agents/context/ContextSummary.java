@@ -2,11 +2,11 @@ package org.example.agents.context;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import org.example.framework_agent.AgentCallback;
-import org.example.framework_agent.IAgent;
-import org.example.framework_agent.core.AbstractAgent;
+import org.example.agent.AgentCallback;
+import org.example.agent.IAgent;
+import org.example.agent.impl.AbstractAgent;
 import org.example.framework_models.AbstractModel;
-import org.example.queues.FixedSizeConversationQueue;
+import org.example.agents.context.queues.FixedSizeConversationQueue;
 
 import java.io.IOException;
 import java.util.LinkedList;

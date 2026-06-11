@@ -1,7 +1,7 @@
 package org.example.utils.cmd;
 
-import org.example.framework_tool.ToolMethod;
-import org.example.framework_tool.ToolParam;
+import org.example.agent.tool.ToolMethod;
+import org.example.agent.tool.ToolParam;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

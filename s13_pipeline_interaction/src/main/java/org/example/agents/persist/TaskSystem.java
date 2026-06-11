@@ -1,12 +1,12 @@
 package org.example.agents.persist;
 
-import org.example.framework_agent.AgentCallback;
-import org.example.framework_agent.core.AbstractAgent;
+import org.example.agent.AgentCallback;
+import org.example.agent.impl.AbstractAgent;
 import org.example.agents.persist.systems.task.TaskDirUtil;
 import org.example.agents.persist.systems.task.TaskEntity;
 import org.example.agents.persist.systems.task.TaskFileUtil;
-import org.example.framework_tool.ToolMethod;
-import org.example.framework_tool.ToolParam;
+import org.example.agent.tool.ToolMethod;
+import org.example.agent.tool.ToolParam;
 
 import java.io.IOException;
 import java.nio.file.Files;

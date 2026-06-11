@@ -5,8 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-import org.example.framework_tool.ToolMethod;
-import org.example.framework_tool.ToolParam;
+import org.example.agent.tool.ToolMethod;
+import org.example.agent.tool.ToolParam;
 
 /**
  * 对应Python工具类的文件操作封装

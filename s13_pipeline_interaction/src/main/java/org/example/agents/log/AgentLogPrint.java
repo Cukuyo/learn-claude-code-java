@@ -2,8 +2,8 @@ package org.example.agents.log;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import org.example.framework_agent.AgentCallback;
-import org.example.framework_agent.core.AbstractAgent;
+import org.example.agent.AgentCallback;
+import org.example.agent.impl.AbstractAgent;
 
 /**
  * 日志打印回调
