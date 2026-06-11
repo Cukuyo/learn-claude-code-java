@@ -18,6 +18,7 @@ import org.example.utils.file.AgentFileTool;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * 子agent，添加默认能力
@@ -79,6 +80,26 @@ public final class MyAgent implements IAgent {
     @Override
     public String chatOrCommand(String content) throws IOException, InterruptedException {
         return agent.chatOrCommand(content);
+    }
+
+    @Override
+    public String command(String command) throws IOException, InterruptedException {
+        return agent.command(command);
+    }
+
+    @Override
+    public String command(String name, String command) throws IOException, InterruptedException {
+        return agent.command(name, command);
+    }
+
+    @Override
+    public String chat(String chatContent) throws IOException, InterruptedException {
+        return agent.chat(chatContent);
+    }
+
+    @Override
+    public String chat(List<String> nameList, List<String> chatContentList) throws IOException, InterruptedException {
+        return agent.chat(nameList, chatContentList);
     }
 
     /**
