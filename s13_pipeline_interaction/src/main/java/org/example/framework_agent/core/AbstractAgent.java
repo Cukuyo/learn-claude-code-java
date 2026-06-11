@@ -20,14 +20,18 @@ import java.util.Optional;
 public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentToolUse, IAgentSkillUse, IAgentCallBackUse, IAgentHookUse, IAgentCommandUse {
     public final AbstractModel model;
     public final String agentName;
+    public final String agentRole;
 
     public final List<AgentCallback> agentCallbacks = new ArrayList<>();
     public final List<AgentCommand> agentCommands = new ArrayList<>();
     public final List<AgentHook> agentHooks = new ArrayList<>();
 
-    public AbstractAgent(AbstractModel model, String agentName) {
+    public AbstractAgent(AbstractModel model, String agentName, String agentRole) {
         this.model = model;
         this.agentName = agentName;
+        this.agentRole = agentRole;
+
+        model.addSystemMessages(agentRole);
     }
 
     @Override
@@ -83,6 +87,11 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
     @Override
     public String getAgentName() {
         return agentName;
+    }
+
+    @Override
+    public String getAgentRole() {
+        return agentRole;
     }
 
     @Override

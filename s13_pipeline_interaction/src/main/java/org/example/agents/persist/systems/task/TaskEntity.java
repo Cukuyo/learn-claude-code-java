@@ -1,19 +1,24 @@
-package org.example.framework_systems.memory;
+package org.example.agents.persist.systems.task;
 
-import org.example.framework_systems.BaseEntity;
+import org.example.agents.persist.systems.BaseEntity;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 记忆实体：对应Python中单个md文件的记忆
+ * task 实体
  */
-public class MemoryEntity extends BaseEntity {
+public class TaskEntity extends BaseEntity {
     /**
-     * 记忆类型：user/feedback/project/reference（对齐Python）
+     * 归属于哪个agent
      */
-    public MemoryType type;
+    public String agentName;
+
+    /**
+     * 任务进度
+     */
+    public int progress;
 
     /**
      * buildFileName
@@ -22,7 +27,7 @@ public class MemoryEntity extends BaseEntity {
      */
     @Override
     public String buildFileName() {
-        return type + File.separator + name + ".md";
+        return agentName + File.separator + name + ".md";
     }
 
     /**
@@ -32,7 +37,7 @@ public class MemoryEntity extends BaseEntity {
      */
     @Override
     public String toPrompt() {
-        return "- {" + type + ":" + name + ":" + filePath + ":" + description + "}";
+        return "- {" + name + ":" + description + ":" + filePath + ":" + content + "}";
     }
 
     /**
@@ -43,9 +48,10 @@ public class MemoryEntity extends BaseEntity {
     @Override
     public Map<String, String> toMeta() {
         Map<String, String> meta = new HashMap<>();
-        meta.put("type", type.toString());
+        meta.put("agentName", agentName);
         meta.put("name", name);
         meta.put("description", description);
+        meta.put("progress", String.valueOf(progress));
         return meta;
     }
 }

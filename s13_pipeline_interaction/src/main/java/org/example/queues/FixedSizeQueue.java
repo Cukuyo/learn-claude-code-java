@@ -1,4 +1,4 @@
-package org.example.queue;
+package org.example.queues;
 
 import java.util.LinkedList;
 

@@ -1,4 +1,4 @@
-package org.example.agents.extension;
+package org.example.agents.log;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;

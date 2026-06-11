@@ -1,11 +1,11 @@
 package org.example.agents;
 
-import org.example.agents.efficiency.ContextSummary;
-import org.example.agents.efficiency.ToolUseCompact;
-import org.example.agents.extension.AgentLogPrint;
-import org.example.agents.systems.MemorySystem;
+import org.example.agents.context.ContextSummary;
+import org.example.agents.context.ToolUseCompact;
+import org.example.agents.log.AgentLogPrint;
+import org.example.agents.persist.MemorySystem;
 import org.example.agents.security.PermissionSystem;
-import org.example.agents.systems.TaskSystem;
+import org.example.agents.persist.TaskSystem;
 import org.example.framework_agent.IAgent;
 import org.example.framework_agent.core.AbstractAgent;
 import org.example.framework_agent.core.AgentLoopAgent;
@@ -39,8 +39,8 @@ public final class MyAgent implements IAgent {
 
     private final AbstractAgent agent;
 
-    public MyAgent(AbstractModel model, String agentName) {
-        agent = new AgentLoopAgent(model, agentName);
+    public MyAgent(AbstractModel model, String agentName, String agentRole) {
+        agent = new AgentLoopAgent(model, agentName, agentRole);
         agent.registryTool(this);
 
         agent.registryTool(AgentCommandTool.class);
@@ -72,6 +72,11 @@ public final class MyAgent implements IAgent {
     }
 
     @Override
+    public String getAgentRole() {
+        return agent.getAgentRole();
+    }
+
+    @Override
     public String chatOrCommand(String content) throws IOException, InterruptedException {
         return agent.chatOrCommand(content);
     }
@@ -93,7 +98,7 @@ public final class MyAgent implements IAgent {
         try {
             String agentName = agent.getAgentName() + "-subagent" + jutsuName;
             AbstractModel model = agent.getModel().cloneWithoutHistory();
-            return new MyAgent(model, agentName).chatOrCommand(content);
+            return new MyAgent(model, agentName, agent.getAgentRole()).chatOrCommand(content);
         } catch (IOException | InterruptedException e) {
             return "Error: " + e.getMessage();
         }

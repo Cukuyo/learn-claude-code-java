@@ -1,4 +1,4 @@
-package org.example.framework_systems.memory;
+package org.example.agents.persist.systems.memory;
 
 /**
  * 枚举：记忆类型

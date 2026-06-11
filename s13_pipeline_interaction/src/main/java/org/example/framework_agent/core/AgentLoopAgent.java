@@ -18,8 +18,8 @@ public class AgentLoopAgent extends AbstractAgent {
     protected ToolUseComponent toolUseComponent;
     protected SkillUseComponent skillUseAgent;
 
-    public AgentLoopAgent(AbstractModel model, String agentName) {
-        super(model, agentName);
+    public AgentLoopAgent(AbstractModel model, String agentName, String role) {
+        super(model, agentName, role);
 
         model.addSystemMessages(
                 "当前的工作目录是<" + System.getProperty("user.dir") + ">" +

@@ -1,4 +1,4 @@
-package org.example.framework_systems.permission;
+package org.example.agents.persist.systems.permission;
 
 /**
  * 权限模式

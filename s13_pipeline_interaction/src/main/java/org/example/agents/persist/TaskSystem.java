@@ -1,10 +1,10 @@
-package org.example.agents.systems;
+package org.example.agents.persist;
 
 import org.example.framework_agent.AgentCallback;
 import org.example.framework_agent.core.AbstractAgent;
-import org.example.framework_systems.task.TaskDirUtil;
-import org.example.framework_systems.task.TaskEntity;
-import org.example.framework_systems.task.TaskFileUtil;
+import org.example.agents.persist.systems.task.TaskDirUtil;
+import org.example.agents.persist.systems.task.TaskEntity;
+import org.example.agents.persist.systems.task.TaskFileUtil;
 import org.example.framework_tool.ToolMethod;
 import org.example.framework_tool.ToolParam;
 

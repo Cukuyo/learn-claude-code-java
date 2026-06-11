@@ -1,4 +1,4 @@
-package org.example.framework_systems.permission;
+package org.example.agents.persist.systems.permission;
 
 import java.io.IOException;
 import java.nio.file.Files;
