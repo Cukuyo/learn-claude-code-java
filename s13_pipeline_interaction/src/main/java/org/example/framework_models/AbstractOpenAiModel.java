@@ -90,7 +90,9 @@ public abstract class AbstractOpenAiModel extends AbstractModel {
     @Override
     public JSONObject addUserMessage(String content, String name) {
         JSONObject msg = addUserMessage(content);
-        msg.put("name", name);
+        if (name != null && !name.isEmpty()) {
+            msg.put("name", name);
+        }
         return msg;
     }
 

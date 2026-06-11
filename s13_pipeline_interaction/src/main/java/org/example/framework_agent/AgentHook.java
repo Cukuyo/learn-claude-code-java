@@ -8,11 +8,11 @@ import org.example.framework_agent.core.AbstractAgent;
  * hook agent的输入输出，返回null代表不hook
  */
 public interface AgentHook {
-    default String hookCommand(AbstractAgent agent, String content) {
+    default String hookCommand(AbstractAgent agent, String name, String content) {
         return null;
     }
 
-    default JSONObject hookAddUserMessage(AbstractAgent agent, String content) {
+    default JSONObject hookAddUserMessage(AbstractAgent agent, String name, String content) {
         return null;
     }
 

@@ -36,31 +36,36 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
 
     @Override
     public String chatOrCommand(String content) throws IOException, InterruptedException {
-        eachCheckWithContent(this, content);
         if (content.startsWith("/")) {
             return command(content);
         } else {
-            return agentLoop(content);
+            return chat(content);
         }
     }
 
-    protected String command(String content) throws IOException {
-        Optional<AgentCommand> agentCommandOptional = agentCommands.stream().filter(cv -> cv.isSupportCommand(this, content)).findFirst();
+    @Override
+    public String command(String command) throws IOException, InterruptedException {
+        return command("", command);
+    }
+
+    @Override
+    public String command(String name, String command) throws IOException, InterruptedException {
+        Optional<AgentCommand> agentCommandOptional = agentCommands.stream().filter(cv -> cv.isSupportCommand(this, command)).findFirst();
 
         // 执行命令前回调
-        callBeforeCommand(this, content);
+        callBeforeCommand(this, command);
         // 执行带可能hook的命令
-        String commandRsp = getCommandRspWithOptionHook(content, agentCommandOptional);
+        String commandRsp = getCommandRspWithOptionHook(name, command, agentCommandOptional);
         // 执行命令后回调
-        callAfterCommand(this, content, commandRsp);
+        callAfterCommand(this, command, commandRsp);
 
         return commandRsp;
     }
 
-    protected String getCommandRspWithOptionHook(String content, Optional<AgentCommand> agentCommandOptional) throws IOException {
+    protected String getCommandRspWithOptionHook(String name, String content, Optional<AgentCommand> agentCommandOptional) throws IOException {
         String commandRsp = null;
         for (AgentHook agentHook : agentHooks) {
-            commandRsp = agentHook.hookCommand(this, content);
+            commandRsp = agentHook.hookCommand(this, name, content);
             if (commandRsp != null) {
                 break;
             }
@@ -71,13 +76,49 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
         return commandRsp;
     }
 
+    @Override
+    public String chat(String chatContent) throws IOException, InterruptedException {
+        return chat(List.of(""), List.of(chatContent));
+    }
+
+    @Override
+    public String chat(List<String> nameList, List<String> chatContentList) throws IOException, InterruptedException {
+        List<JSONObject> userMessageList = new ArrayList<>();
+        for (int i = 0; i < chatContentList.size(); i++) {
+            String name = nameList.get(i);
+            String chatContent = chatContentList.get(i);
+
+            // 添加User提示词后回调
+            JSONObject userMessage = addUserMessageWithOptionHook(name, chatContent);
+            userMessageList.add(userMessage);
+        }
+
+        callBeforeAgentLoop(this, getModel().getMessages(), userMessageList);
+        String rsp = agentLoop();
+        callAfterAgentLoop(this, getModel().getMessages(), userMessageList, rsp);
+        return rsp;
+    }
+
+    protected JSONObject addUserMessageWithOptionHook(String name, String content) {
+        JSONObject userMessage = null;
+        for (AgentHook agentHook : agentHooks) {
+            userMessage = agentHook.hookAddUserMessage(this, name, content);
+            if (userMessage != null) {
+                break;
+            }
+        }
+        if (userMessage == null) {
+            userMessage = model.addUserMessage(content, name);
+        }
+        return userMessage;
+    }
+
     /**
      * agentLoop，交给子类实现
      *
-     * @param content 用户提示词
      * @return 返回
      */
-    protected abstract String agentLoop(String content) throws IOException, InterruptedException;
+    protected abstract String agentLoop() throws IOException, InterruptedException;
 
     @Override
     public AbstractModel getModel() {
@@ -111,11 +152,6 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
     }
 
     @Override
-    public void eachCheckWithContent(AbstractAgent agent, String content) {
-        agentCallbacks.forEach(cv -> cv.eachCheckWithContent(agent, content));
-    }
-
-    @Override
     public void callBeforeCommand(AbstractAgent agent, String content) {
         agentCallbacks.forEach(cv -> cv.callBeforeCommand(agent, content));
     }
@@ -126,13 +162,13 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
     }
 
     @Override
-    public void callBeforeAgentLoop(AbstractAgent agent, JSONArray messages, JSONObject userMessage) {
-        agentCallbacks.forEach(cv -> cv.callBeforeAgentLoop(agent, messages, userMessage));
+    public void callBeforeAgentLoop(AbstractAgent agent, JSONArray messages, List<JSONObject> userMessageList) {
+        agentCallbacks.forEach(cv -> cv.callBeforeAgentLoop(agent, messages, userMessageList));
     }
 
     @Override
-    public void callAfterAgentLoop(AbstractAgent agent, JSONArray messages, JSONObject userMessage, String chatRsp) {
-        agentCallbacks.forEach(cv -> cv.callAfterAgentLoop(agent, messages, userMessage, chatRsp));
+    public void callAfterAgentLoop(AbstractAgent agent, JSONArray messages, List<JSONObject> userMessageList, String chatRsp) {
+        agentCallbacks.forEach(cv -> cv.callAfterAgentLoop(agent, messages, userMessageList, chatRsp));
     }
 
     @Override

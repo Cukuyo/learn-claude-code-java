@@ -31,13 +31,9 @@ public class AgentLoopAgent extends AbstractAgent {
     }
 
     @Override
-    protected String agentLoop(String content) throws IOException, InterruptedException {
-        // 添加User提示词后回调
-        JSONObject userMessage = addUserMessageWithOptionHook(content);
-        callBeforeAgentLoop(this, getModel().getMessages(), userMessage);
-
+    protected String agentLoop() throws IOException, InterruptedException {
         // ai返回拼接
-        StringBuilder resultBuilder = new StringBuilder(512);
+        StringBuilder resultBuilder = new StringBuilder(model.getMaxTokens() / 2);
         // 遇到错误时的最大重试次数
         int retryMaxTime = 3;
 
@@ -112,9 +108,7 @@ public class AgentLoopAgent extends AbstractAgent {
             }
         }
 
-        String chatRsp = resultBuilder.toString();
-        callAfterAgentLoop(this, getModel().getMessages(), userMessage, chatRsp);
-        return chatRsp;
+        return resultBuilder.toString();
     }
 
     protected JSONObject getChatRspWithOptionHook() throws IOException, InterruptedException {
@@ -129,20 +123,6 @@ public class AgentLoopAgent extends AbstractAgent {
             chatRsp = model.chat();
         }
         return chatRsp;
-    }
-
-    protected JSONObject addUserMessageWithOptionHook(String content) {
-        JSONObject userMessage = null;
-        for (AgentHook agentHook : agentHooks) {
-            userMessage = agentHook.hookAddUserMessage(this, content);
-            if (userMessage != null) {
-                break;
-            }
-        }
-        if (userMessage == null) {
-            userMessage = model.addUserMessage(content);
-        }
-        return userMessage;
     }
 
     @Override

@@ -4,6 +4,8 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.example.framework_agent.core.AbstractAgent;
 
+import java.util.List;
+
 /**
  * agent-loop生命周期回调
  */
@@ -14,15 +16,6 @@ public interface AgentCallback {
      * @param agent agent
      */
     default void initSelf(AbstractAgent agent) {
-    }
-
-    /**
-     * 每次接到用户输入时执行的校验工作，执行序列第二
-     *
-     * @param agent   agent
-     * @param content content
-     */
-    default void eachCheckWithContent(AbstractAgent agent, String content) {
     }
 
     /**
@@ -47,22 +40,22 @@ public interface AgentCallback {
     /**
      * agentLoop前回调，添加用户提示后的回调
      *
-     * @param agent       agent
-     * @param messages    messages
-     * @param userMessage userMessage
+     * @param agent           agent
+     * @param messages        messages
+     * @param userMessageList userMessage
      */
-    default void callBeforeAgentLoop(AbstractAgent agent, JSONArray messages, JSONObject userMessage) {
+    default void callBeforeAgentLoop(AbstractAgent agent, JSONArray messages, List<JSONObject> userMessageList) {
     }
 
     /**
      * agentLoop后回调，添加用户提示后直至响应完成
      *
-     * @param agent       agent
-     * @param messages    messages
-     * @param userMessage userMessage
-     * @param chatRsp     chatRsp
+     * @param agent           agent
+     * @param messages        messages
+     * @param userMessageList userMessage
+     * @param chatRsp         chatRsp
      */
-    default void callAfterAgentLoop(AbstractAgent agent, JSONArray messages, JSONObject userMessage, String chatRsp) {
+    default void callAfterAgentLoop(AbstractAgent agent, JSONArray messages, List<JSONObject> userMessageList, String chatRsp) {
     }
 
     /**
