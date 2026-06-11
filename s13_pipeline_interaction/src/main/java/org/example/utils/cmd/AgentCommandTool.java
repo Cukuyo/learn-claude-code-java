@@ -35,7 +35,7 @@ public class AgentCommandTool {
      * @param command 命令
      * @return 执行结果
      */
-    @ToolMethod(description = "在当前工作目录下执行shell命令，windows下为cmc /c， linux下为bash -c")
+    @ToolMethod(description = "在当前工作目录下执行shell命令，windows下为cmc /c command， linux下为bash -c command")
     public static String execute(@ToolParam(description = "shell command") String command) {
         return execute(command, DEFAULT_TIMEOUT, TimeUnit.SECONDS);
     }

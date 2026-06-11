@@ -76,7 +76,6 @@ public final class MyAgent implements IAgent {
         return agent.chatOrCommand(content);
     }
 
-
     /**
      * 分身术
      *
