@@ -1,11 +1,10 @@
-package org.example.agents.security;
+package org.example.agents.persist;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.example.agents.persist.systems.permission.*;
 import org.example.framework_agent.AgentCommand;
 import org.example.framework_agent.AgentHook;
 import org.example.framework_agent.core.AbstractAgent;
-import org.example.framework_systems.permission.*;
 import org.example.utils.DialogUtil;
 
 import java.io.IOException;
