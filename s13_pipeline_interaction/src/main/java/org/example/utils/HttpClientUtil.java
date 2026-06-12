@@ -45,11 +45,4 @@ public class HttpClientUtil {
 
         return JSONObject.parseObject(response.body());
     }
-
-    /**
-     * 关闭连接
-     */
-    public static void close() {
-        CLIENT.shutdownNow();
-    }
 }

@@ -49,11 +49,39 @@ public class AgentCompany {
         agentsDingDing.clear();
     }
 
-    public String dingDing(ChatMessageType chatMessageType, String agentName, String name, String content) {
+    public String dingDingByAdmin(String agentName, String name, String content) {
         if (!agentsDingDing.containsKey(agentName)) {
-            return "无此员工";
+            return "<" + agentName + ">不存在，请检查后重试";
         }
-        return agentsDingDing.get(agentName).dingDing(new ChatMessage(chatMessageType, name, content));
+        return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.ADMIN, name, content));
+    }
+
+    public String dingDingByAgent(String agentName, String name, String content) {
+        if (!agentsDingDing.containsKey(agentName)) {
+            return "<" + agentName + ">不存在，请检查后重试";
+        }
+        return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.AGENT, name, content));
+    }
+
+    public String dingDingByAsyncTOOL(String agentName, String name, String content) {
+        if (!agentsDingDing.containsKey(agentName)) {
+            return "<" + agentName + ">不存在，请检查后重试";
+        }
+        return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.ASYNC_TOOL, name, content));
+    }
+
+    public String dingDingByCron(String agentName, String name, String content) {
+        if (!agentsDingDing.containsKey(agentName)) {
+            return "<" + agentName + ">不存在，请检查后重试";
+        }
+        return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.CRON, name, content));
+    }
+
+    public String dingDingByHerat(String agentName, String name, String content) {
+        if (!agentsDingDing.containsKey(agentName)) {
+            return "<" + agentName + ">不存在，请检查后重试";
+        }
+        return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.HEART, name, content));
     }
 
     /**

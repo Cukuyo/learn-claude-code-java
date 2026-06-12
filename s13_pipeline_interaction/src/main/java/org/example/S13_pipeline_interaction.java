@@ -3,9 +3,7 @@ package org.example;
 import org.example.agent.IAgent;
 import org.example.agents.MyAgent;
 import org.example.agents_company.AgentCompany;
-import org.example.agents_company.ChatMessageType;
 import org.example.models.openai.DeepseekModel;
-import org.example.utils.HttpClientUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,20 +20,19 @@ public class S13_pipeline_interaction {
         AgentCompany agentCompany = new AgentCompany();
         agentCompany.clockIn(agent);
 
-        try (Scanner scanner = new Scanner(System.in);) {
+        try (Scanner scanner = new Scanner(System.in)) {
             LOGGER.info("#>>>");
             while (scanner.hasNextLine()) {
                 String content = scanner.nextLine();
                 if (content.equals("q")) {
-                    agentCompany.clockOut();
-                    HttpClientUtil.close();
                     break;
                 }
 
-                agentCompany.dingDing(ChatMessageType.ADMIN, "纯情的小猫娘", "admin", content);
-
-                LOGGER.info("#>>>");
+                String rspContent = agentCompany.dingDingByAdmin("纯情的小猫娘", System.getProperty("user.name"), content);
+                LOGGER.info("{} -> {} : {}", "纯情的小猫娘", System.getProperty("user.name"), rspContent);
             }
         }
+
+        agentCompany.clockOut();
     }
 }
