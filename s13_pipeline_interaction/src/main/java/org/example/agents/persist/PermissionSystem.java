@@ -101,6 +101,24 @@ public class PermissionSystem implements AgentHook, AgentCommand {
     }
 
     @Override
+    public String list(AbstractAgent agent) {
+        StringBuilder builder = new StringBuilder();
+        for (AgentCommand agentCommand : agentCommands) {
+            builder.append(agentCommand.list(agent)).append(System.lineSeparator());
+        }
+        return builder.toString();
+    }
+
+    @Override
+    public String help(AbstractAgent agent) {
+        StringBuilder builder = new StringBuilder();
+        for (AgentCommand agentCommand : agentCommands) {
+            builder.append(agentCommand.help(agent)).append(System.lineSeparator());
+        }
+        return builder.toString();
+    }
+
+    @Override
     public boolean isSupportCommand(AbstractAgent agent, String cmd) {
         return agentCommands.stream().anyMatch(cv -> cv.isSupportCommand(agent, cmd));
     }
@@ -112,6 +130,19 @@ public class PermissionSystem implements AgentHook, AgentCommand {
 
     private class ModeCommand implements AgentCommand {
         @Override
+        public String list(AbstractAgent agent) {
+            return "/mode 权限模式";
+        }
+
+        @Override
+        public String help(AbstractAgent agent) {
+            return """
+                    /mode 显示当前模式
+                    /mode [newMode] 切换为新模式
+                    """;
+        }
+
+        @Override
         public boolean isSupportCommand(AbstractAgent agent, String cmd) {
             return cmd.trim().split("\\s+")[0].equals("/mode");
         }
@@ -119,18 +150,40 @@ public class PermissionSystem implements AgentHook, AgentCommand {
         @Override
         public String command(AbstractAgent agent, String cmd) {
             String[] arr = cmd.trim().split("\\s+");
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = arr[i].trim();
+            }
+
             if (arr.length == 1) {
                 return "当前模式为 " + mode;
+            }
+            if (arr.length == 2 && arr[1].equals("help")) {
+                return help(agent);
+
             }
             if (arr.length == 2) {
                 mode = PermissionMode.valueOf(arr[1].toUpperCase());
                 return "已切换模式为 " + mode;
+
             }
             return "不支持的命令参数！";
         }
     }
 
     private class RulesCommand implements AgentCommand {
+        @Override
+        public String list(AbstractAgent agent) {
+            return "/rules 权限规则";
+        }
+
+        @Override
+        public String help(AbstractAgent agent) {
+            return """
+                    /rules 显示当前权限规则
+                    /rules flush 持久化当前权限规则
+                    """;
+        }
+
         @Override
         public boolean isSupportCommand(AbstractAgent agent, String cmd) {
             return cmd.trim().split("\\s+")[0].equals("/rules");
@@ -139,12 +192,21 @@ public class PermissionSystem implements AgentHook, AgentCommand {
         @Override
         public String command(AbstractAgent agent, String cmd) {
             String[] arr = cmd.trim().split("\\s+");
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = arr[i].trim();
+            }
+
             if (arr.length == 1) {
                 StringBuilder builder = new StringBuilder(denyProps.size() * 256);
                 denyProps.values().forEach(list -> list.forEach(rule ->
                         builder.append(rule.toString()).append(System.lineSeparator())));
                 return builder.toString();
             }
+
+            if (arr.length == 2 && arr[1].equals("help")) {
+                return help(agent);
+            }
+
             if (arr.length == 2 && arr[1].equals("flush")) {
                 List<PermissionRule> list = new LinkedList<>();
                 denyProps.values().forEach(list::addAll);

@@ -42,19 +42,19 @@ public class MemorySystem implements AgentCallback, AgentCommand {
 
     private void renderPrompts(AbstractAgent agent, List<MemoryEntity> memoryList) {
         String content = """
-                                 [MemorySystem]记忆系统用于对关键信息进行跨会话的保存和加载。
-                                  需注意：
-                                  何时需要保存记忆：
-                                  -用户表达个人偏好（如「我习惯用标签页」「一律使用 pytest」）→ 类型：用户偏好-USER
-                                  -用户对你进行纠正（如「不要这样做」「刚才的做法有误，原因是……」）→ 类型：反馈修正-FEEDBACK
-                                  -获知仅靠现有代码难以自行推断的项目既定规则（例如：因合规要求必须遵守某项规范、某老旧模块出于业务原因严禁改动）→ 类型：项目规则-PROJECT
-                                  -获知外部资源的存放地址（工单看板、数据仪表盘、文档链接）→ 类型：参考资源-REFERENCE
-                                  无需保存的内容：
-                                  -从代码中可直接推导的信息（函数签名、文件结构、目录布局）
-                                  -临时任务状态（当前代码分支、待合并 PR 编号、临时待办事项）
-                                  -隐私密钥与凭证（API 密钥、账号密码等敏感信息）
-                                  当前已加载的记忆简介如下，可使用<saveMemory>保存新记忆或覆盖旧记忆，当需要时根据路径查看文件获取详细内容：
-                                 """ + buildMemories(memoryList);
+                [MemorySystem]记忆系统用于对关键信息进行跨会话的保存和加载。
+                 需注意：
+                 何时需要保存记忆：
+                 -用户表达个人偏好（如「我习惯用标签页」「一律使用 pytest」）→ 类型：用户偏好-USER
+                 -用户对你进行纠正（如「不要这样做」「刚才的做法有误，原因是……」）→ 类型：反馈修正-FEEDBACK
+                 -获知仅靠现有代码难以自行推断的项目既定规则（例如：因合规要求必须遵守某项规范、某老旧模块出于业务原因严禁改动）→ 类型：项目规则-PROJECT
+                 -获知外部资源的存放地址（工单看板、数据仪表盘、文档链接）→ 类型：参考资源-REFERENCE
+                 无需保存的内容：
+                 -从代码中可直接推导的信息（函数签名、文件结构、目录布局）
+                 -临时任务状态（当前代码分支、待合并 PR 编号、临时待办事项）
+                 -隐私密钥与凭证（API 密钥、账号密码等敏感信息）
+                 当前已加载的记忆简介如下，可使用<saveMemory>保存新记忆或覆盖旧记忆，当需要时根据路径查看文件获取详细内容：
+                """ + buildMemories(memoryList);
 
         agent.getModel().addSystemMessages(content);
     }
@@ -90,14 +90,37 @@ public class MemorySystem implements AgentCallback, AgentCommand {
     }
 
     @Override
+    public String list(AbstractAgent agent) {
+        return "/memories 记忆系统";
+    }
+
+    @Override
+    public String help(AbstractAgent agent) {
+        return "/memories 输出当前记忆";
+    }
+
+    @Override
     public boolean isSupportCommand(AbstractAgent agent, String cmd) {
         return cmd.trim().split("\\s+")[0].equals("/memories");
     }
 
     @Override
     public String command(AbstractAgent agent, String cmd) {
-        List<MemoryEntity> memoryList = MemoryDirUtil.resolveDir(memoryDirPath);
-        memoryList.sort(Comparator.comparing(o -> o.type));
-        return buildMemories(memoryList);
+        String[] arr = cmd.trim().split("\\s+");
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = arr[i].trim();
+        }
+
+        if (arr.length == 1) {
+            List<MemoryEntity> memoryList = MemoryDirUtil.resolveDir(memoryDirPath);
+            memoryList.sort(Comparator.comparing(o -> o.type));
+            return buildMemories(memoryList);
+        }
+
+        if (arr.length == 2 && arr[1].equals("help")) {
+            return help(agent);
+        }
+
+        return "不支持的命令参数！";
     }
 }

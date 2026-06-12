@@ -7,6 +7,22 @@ import org.example.agent.impl.AbstractAgent;
  */
 public interface AgentCommand {
     /**
+     * 当前命令描述
+     *
+     * @param agent agent
+     * @return 命令描述
+     */
+    String list(AbstractAgent agent);
+
+    /**
+     * 当前命令帮助
+     *
+     * @param agent agent
+     * @return 命令帮助
+     */
+    String help(AbstractAgent agent);
+
+    /**
      * 是否支持当前命令
      *
      * @param agent agent
@@ -25,6 +41,16 @@ public interface AgentCommand {
     String command(AbstractAgent agent, String cmd);
 
     AgentCommand EMPTY = new AgentCommand() {
+        @Override
+        public String list(AbstractAgent agent) {
+            return "";
+        }
+
+        @Override
+        public String help(AbstractAgent agent) {
+            return "";
+        }
+
         @Override
         public boolean isSupportCommand(AbstractAgent agent, String cmd) {
             return false;
