@@ -2,7 +2,6 @@ package org.example.agent.impl;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import org.example.framework_agent.*;
 import org.example.agent.AgentCallback;
 import org.example.agent.AgentCommand;
 import org.example.agent.AgentHook;
@@ -53,12 +52,12 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
     }
 
     @Override
-    public String command(String command) throws IOException, InterruptedException {
+    public String command(String command) {
         return command("", command);
     }
 
     @Override
-    public String command(String name, String command) throws IOException, InterruptedException {
+    public String command(String name, String command) {
         Optional<AgentCommand> agentCommandOptional = agentCommands.stream().filter(cv -> cv.isSupportCommand(this, command)).findFirst();
 
         // 执行命令前回调
@@ -71,7 +70,7 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
         return commandRsp;
     }
 
-    protected String getCommandRspWithOptionHook(String name, String content, Optional<AgentCommand> agentCommandOptional) throws IOException {
+    protected String getCommandRspWithOptionHook(String name, String content, Optional<AgentCommand> agentCommandOptional) {
         String commandRsp = null;
         for (AgentHook agentHook : agentHooks) {
             commandRsp = agentHook.hookCommand(this, name, content);

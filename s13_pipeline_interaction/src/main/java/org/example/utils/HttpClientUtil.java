@@ -1,6 +1,8 @@
 package org.example.utils;
 
 import com.alibaba.fastjson2.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -13,6 +15,8 @@ import java.nio.charset.StandardCharsets;
  * HttpClient封装工具类
  */
 public class HttpClientUtil {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientUtil.class);
+
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
     /**
@@ -37,9 +41,15 @@ public class HttpClientUtil {
                 .build();
         HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
 
-        System.out.printf("请求url:%s, 状态码:%s, 请求耗时:%dms %s",
-                url, response.statusCode(), (System.currentTimeMillis() - start), System.lineSeparator());
+        LOGGER.debug("请求url: {}, 状态码: {}, 请求耗时: {} ms", url, response.statusCode(), (System.currentTimeMillis() - start));
 
         return JSONObject.parseObject(response.body());
+    }
+
+    /**
+     * 关闭连接
+     */
+    public static void close() {
+        CLIENT.shutdownNow();
     }
 }

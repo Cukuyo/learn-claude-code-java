@@ -30,10 +30,8 @@ public interface IAgent {
      *
      * @param command 会话内容
      * @return 响应
-     * @throws IOException          io异常
-     * @throws InterruptedException 等待被中断
      */
-    String command(String command) throws IOException, InterruptedException;
+    String command(String command);
 
     /**
      * 聊天
@@ -51,10 +49,8 @@ public interface IAgent {
      * @param name    会话人名称
      * @param command 会话内容
      * @return 响应
-     * @throws IOException          io异常
-     * @throws InterruptedException 等待被中断
      */
-    String command(String name, String command) throws IOException, InterruptedException;
+    String command(String name, String command);
 
     /**
      * 聊天，批量传入

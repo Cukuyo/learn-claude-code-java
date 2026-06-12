@@ -3,6 +3,8 @@ package org.example.models.openai;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.example.utils.HttpClientUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -11,6 +13,8 @@ import java.util.Map;
  * OpenAi API格式
  */
 public abstract class AbstractOpenAiModel extends org.example.framework_models.AbstractModel {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOpenAiModel.class);
+
     public AbstractOpenAiModel(String url, String apiKey, String model) {
         super(url, apiKey, model);
         setModel(model);
@@ -58,7 +62,8 @@ public abstract class AbstractOpenAiModel extends org.example.framework_models.A
         completionTokensSum += (lastCompletionTokens = usage.getInteger("completion_tokens"));
         totalTokensSum += (lastTotalTokens = usage.getInteger("total_tokens"));
 
-        System.out.printf("请求url:%s, 模型:%s, 提示词token数:%d, 补全token数:%d, 总token数:%d %s", getUrl(), getModel(), lastPromptTokens, lastCompletionTokens, lastTotalTokens, System.lineSeparator());
+        LOGGER.info("请求url: {}, 模型: {}, 提示词token数: {}, 补全token数: {}, 总token数: {}",
+                getUrl(), getModel(), lastPromptTokens, lastCompletionTokens, lastTotalTokens);
 
         return result;
     }

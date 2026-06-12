@@ -106,7 +106,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
     }
 
     @Override
-    public String command(AbstractAgent agent, String cmd) throws IOException {
+    public String command(AbstractAgent agent, String cmd) {
         return agentCommands.stream().filter(cv -> cv.isSupportCommand(agent, cmd)).findFirst().orElse(AgentCommand.EMPTY).command(agent, cmd);
     }
 
@@ -117,7 +117,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
         }
 
         @Override
-        public String command(AbstractAgent agent, String cmd) throws IOException {
+        public String command(AbstractAgent agent, String cmd) {
             String[] arr = cmd.trim().split("\\s+");
             if (arr.length == 1) {
                 return "当前模式为 " + mode;
@@ -137,7 +137,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
         }
 
         @Override
-        public String command(AbstractAgent agent, String cmd) throws IOException {
+        public String command(AbstractAgent agent, String cmd) {
             String[] arr = cmd.trim().split("\\s+");
             if (arr.length == 1) {
                 StringBuilder builder = new StringBuilder(denyProps.size() * 256);
@@ -148,8 +148,12 @@ public class PermissionSystem implements AgentHook, AgentCommand {
             if (arr.length == 2 && arr[1].equals("flush")) {
                 List<PermissionRule> list = new LinkedList<>();
                 denyProps.values().forEach(list::addAll);
-                PermissionFileUtil.write(denyPath, list);
-                return "已保存当前已允许的命令到 " + denyPath;
+                try {
+                    PermissionFileUtil.write(denyPath, list);
+                    return "已保存当前已允许的命令到 " + denyPath;
+                } catch (IOException e) {
+                    return "保存当前已允许的命令到" + denyPath + "失败！ERROR:  " + e.getMessage();
+                }
             }
             return "不支持的命令参数！";
         }

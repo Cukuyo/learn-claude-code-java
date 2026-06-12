@@ -91,12 +91,4 @@ public class AgentCommandTool {
             process.destroy();
         }
     }
-
-    // ==================== 测试 ====================
-    public static void main(String[] args) {
-        String res = AgentCommandTool.execute("dir");
-        System.out.println("Windows 目录：\n" + res);
-        res = AgentCommandTool.execute("echo Hello Windows from Java");
-        System.out.println("\n输出：" + res);
-    }
 }

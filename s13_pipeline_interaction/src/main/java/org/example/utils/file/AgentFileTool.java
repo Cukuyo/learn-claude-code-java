@@ -1,12 +1,12 @@
 package org.example.utils.file;
 
+import org.example.agent.tool.ToolMethod;
+import org.example.agent.tool.ToolParam;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-
-import org.example.agent.tool.ToolMethod;
-import org.example.agent.tool.ToolParam;
 
 /**
  * 对应Python工具类的文件操作封装
@@ -96,15 +96,5 @@ public class AgentFileTool {
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
-    }
-
-    // 测试示例
-    public static void main(String[] args) {
-        // 测试写入
-        System.out.println(writeFile("test.txt", "Hello World!"));
-        // 测试读取
-        System.out.println(readFile("test.txt"));
-        // 测试编辑
-        System.out.println(editFile("test.txt", "World", "Java"));
     }
 }

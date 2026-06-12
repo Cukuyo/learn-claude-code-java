@@ -83,12 +83,12 @@ public final class MyAgent implements IAgent {
     }
 
     @Override
-    public String command(String command) throws IOException, InterruptedException {
+    public String command(String command) {
         return agent.command(command);
     }
 
     @Override
-    public String command(String name, String command) throws IOException, InterruptedException {
+    public String command(String name, String command) {
         return agent.command(name, command);
     }
 

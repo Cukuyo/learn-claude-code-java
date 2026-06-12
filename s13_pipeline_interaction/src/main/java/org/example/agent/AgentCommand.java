@@ -1,7 +1,5 @@
 package org.example.agent;
 
-import java.io.IOException;
-
 import org.example.agent.impl.AbstractAgent;
 
 /**
@@ -24,7 +22,7 @@ public interface AgentCommand {
      * @param cmd   cmd
      * @return 执行结果
      */
-    String command(AbstractAgent agent, String cmd) throws IOException;
+    String command(AbstractAgent agent, String cmd);
 
     AgentCommand EMPTY = new AgentCommand() {
         @Override
@@ -33,7 +31,7 @@ public interface AgentCommand {
         }
 
         @Override
-        public String command(AbstractAgent agent, String cmd) throws IOException {
+        public String command(AbstractAgent agent, String cmd) {
             return null;
         }
     };
