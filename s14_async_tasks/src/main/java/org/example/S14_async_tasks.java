@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
 
-public class S13_pipeline_interaction {
-    private static final Logger LOGGER = LoggerFactory.getLogger(S13_pipeline_interaction.class);
+public class S14_async_tasks {
+    private static final Logger LOGGER = LoggerFactory.getLogger(S14_async_tasks.class);
 
     private static final String API_KEY = System.getenv("api_key");
 
