@@ -101,21 +101,21 @@ public class PermissionSystem implements AgentHook, AgentCommand {
     }
 
     @Override
-    public String list(AbstractAgent agent) {
-        StringBuilder builder = new StringBuilder();
+    public String desc(AbstractAgent agent) {
+        StringJoiner joiner = new StringJoiner(System.lineSeparator());
         for (AgentCommand agentCommand : agentCommands) {
-            builder.append(agentCommand.list(agent)).append(System.lineSeparator());
+            joiner.add(agentCommand.desc(agent));
         }
-        return builder.toString();
+        return joiner.toString();
     }
 
     @Override
     public String help(AbstractAgent agent) {
-        StringBuilder builder = new StringBuilder();
+        StringJoiner joiner = new StringJoiner(System.lineSeparator());
         for (AgentCommand agentCommand : agentCommands) {
-            builder.append(agentCommand.help(agent)).append(System.lineSeparator());
+            joiner.add(agentCommand.help(agent));
         }
-        return builder.toString();
+        return joiner.toString();
     }
 
     @Override
@@ -130,7 +130,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
 
     private class ModeCommand implements AgentCommand {
         @Override
-        public String list(AbstractAgent agent) {
+        public String desc(AbstractAgent agent) {
             return "/mode 权限模式";
         }
 
@@ -138,8 +138,10 @@ public class PermissionSystem implements AgentHook, AgentCommand {
         public String help(AbstractAgent agent) {
             return """
                     /mode 显示当前模式
-                    /mode [newMode] 切换为新模式
-                    """;
+                    /mode help 显示帮助信息
+                    """ +
+                    "/mode" + " " + Arrays.toString(PermissionMode.values()) + " 切换为新模式" +
+                    System.lineSeparator();
         }
 
         @Override
@@ -172,7 +174,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
 
     private class RulesCommand implements AgentCommand {
         @Override
-        public String list(AbstractAgent agent) {
+        public String desc(AbstractAgent agent) {
             return "/rules 权限规则";
         }
 
@@ -180,6 +182,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
         public String help(AbstractAgent agent) {
             return """
                     /rules 显示当前权限规则
+                    /rules help 显示帮助信息
                     /rules flush 持久化当前权限规则
                     """;
         }
@@ -197,10 +200,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
             }
 
             if (arr.length == 1) {
-                StringBuilder builder = new StringBuilder(denyProps.size() * 256);
-                denyProps.values().forEach(list -> list.forEach(rule ->
-                        builder.append(rule.toString()).append(System.lineSeparator())));
-                return builder.toString();
+                return show();
             }
 
             if (arr.length == 2 && arr[1].equals("help")) {
@@ -208,16 +208,26 @@ public class PermissionSystem implements AgentHook, AgentCommand {
             }
 
             if (arr.length == 2 && arr[1].equals("flush")) {
-                List<PermissionRule> list = new LinkedList<>();
-                denyProps.values().forEach(list::addAll);
-                try {
-                    PermissionFileUtil.write(denyPath, list);
-                    return "已保存当前已允许的命令到 " + denyPath;
-                } catch (IOException e) {
-                    return "保存当前已允许的命令到" + denyPath + "失败！ERROR:  " + e.getMessage();
-                }
+                return flush();
             }
             return "不支持的命令参数！";
+        }
+
+        private String show() {
+            StringBuilder builder = new StringBuilder(denyProps.size() * 256);
+            denyProps.values().forEach(list -> list.forEach(rule -> builder.append(rule.toString()).append(System.lineSeparator())));
+            return builder.toString();
+        }
+
+        private String flush() {
+            List<PermissionRule> list = new LinkedList<>();
+            denyProps.values().forEach(list::addAll);
+            try {
+                PermissionFileUtil.write(denyPath, list);
+                return "已保存当前已允许的命令到 " + denyPath;
+            } catch (IOException e) {
+                return "保存当前已允许的命令到" + denyPath + "失败！ERROR:  " + e.getMessage();
+            }
         }
     }
 }

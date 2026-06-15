@@ -39,6 +39,7 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
         this.agentName = agentName;
         this.agentRole = agentRole;
 
+        model.addSystemMessages("你的名字是" + agentName);
         model.addSystemMessages(agentRole);
     }
 

@@ -12,7 +12,7 @@ public interface AgentCommand {
      * @param agent agent
      * @return 命令描述
      */
-    String list(AbstractAgent agent);
+    String desc(AbstractAgent agent);
 
     /**
      * 当前命令帮助
@@ -42,7 +42,7 @@ public interface AgentCommand {
 
     AgentCommand EMPTY = new AgentCommand() {
         @Override
-        public String list(AbstractAgent agent) {
+        public String desc(AbstractAgent agent) {
             return "";
         }
 

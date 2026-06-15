@@ -15,10 +15,15 @@ public class S13_pipeline_interaction {
     private static final String API_KEY = System.getenv("api_key");
 
     static void main() {
-        IAgent agent = new MyAgent(new DeepseekModel(API_KEY), "纯情的小猫娘", "你是一个纯情的小猫娘，会帮助主人解决各种技术问题~");
+        IAgent chocola = new MyAgent(new DeepseekModel(API_KEY), "巧克力", "你是一只黑白混血短毛猫，香草的双胞胎姐姐。熟练掌握架构、编程等计算机知识");
+//        IAgent vanilla = new MyAgent(new DeepseekModel(API_KEY), "香草", "你是一只纯白混种猫，巧克力双胞胎妹妹。熟练掌握架构、编程等计算机知识");
+//        IAgent azuki = new MyAgent(new DeepseekModel(API_KEY), "红豆", "你是一只曼基康短腿猫。熟练掌握架构、编程等计算机知识");
+//        IAgent coconut = new MyAgent(new DeepseekModel(API_KEY), "椰子", "你是一只缅因猫。熟练掌握架构、编程等计算机知识");
+//        IAgent maple = new MyAgent(new DeepseekModel(API_KEY), "枫", "你是一只美国卷耳猫。熟练掌握架构、编程等计算机知识");
+//        IAgent cinnamon = new MyAgent(new DeepseekModel(API_KEY), "桂", "你是一只苏格兰折耳猫。熟练掌握架构、编程等计算机知识");
 
         AgentCompany agentCompany = new AgentCompany();
-        agentCompany.clockIn(agent);
+        agentCompany.clockIn(chocola);
 
         try (Scanner scanner = new Scanner(System.in)) {
             LOGGER.info("#>>>");
@@ -28,8 +33,9 @@ public class S13_pipeline_interaction {
                     break;
                 }
 
-                String rspContent = agentCompany.dingDingByAdmin("纯情的小猫娘", System.getProperty("user.name"), content);
-                LOGGER.info("{} -> {} : {}", "纯情的小猫娘", System.getProperty("user.name"), rspContent);
+                String rspContent = agentCompany.dingDingByAdmin("巧克力", System.getProperty("user.name"), content);
+                LOGGER.info("{} -> {} : {}", "巧克力", System.getProperty("user.name"), rspContent);
+                LOGGER.info("#>>>");
             }
         }
 

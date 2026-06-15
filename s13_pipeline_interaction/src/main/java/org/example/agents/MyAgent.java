@@ -24,15 +24,16 @@ import java.util.List;
  * 子agent，添加默认能力
  */
 public final class MyAgent implements IAgent {
-    private static final PermissionSystem permissionSystem;
-    private static final MemorySystem memorySystem;
-    private static final TaskSystem taskSystem;
+    private static final PermissionSystem PERMISSION_SYSTEM;
+    private static final MemorySystem MEMORY_SYSTEM;
+    private static final TaskSystem TASK_SYSTEM;
+    private static final ListCommand LIST_COMMAND = new ListCommand();
 
     static {
         try {
-            permissionSystem = new PermissionSystem(Paths.get(MyAgent.class.getClassLoader().getResource("permission_deny.properties").toURI()));
-            memorySystem = new MemorySystem(Paths.get(System.getProperty("user.dir"), ".memories"));
-            taskSystem = new TaskSystem(Paths.get(System.getProperty("user.dir"), ".tasks"));
+            PERMISSION_SYSTEM = new PermissionSystem(Paths.get(MyAgent.class.getClassLoader().getResource("permission_deny.properties").toURI()));
+            MEMORY_SYSTEM = new MemorySystem(Paths.get(System.getProperty("user.dir"), ".memories"));
+            TASK_SYSTEM = new TaskSystem(Paths.get(System.getProperty("user.dir"), ".tasks"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -53,13 +54,15 @@ public final class MyAgent implements IAgent {
         agent.registryAgentCallback(new ToolUseCompact(30, 50));
         agent.registryAgentCallback(new ContextSummary(0.5d, 3));
 
-        agent.registryHook(permissionSystem);
-        agent.registryCommand(permissionSystem);
+        agent.registryHook(PERMISSION_SYSTEM);
+        agent.registryCommand(PERMISSION_SYSTEM);
 
-        agent.registryAgentCallback(memorySystem);
-        agent.registryCommand(memorySystem);
+        agent.registryAgentCallback(MEMORY_SYSTEM);
+        agent.registryCommand(MEMORY_SYSTEM);
 
-        agent.registryAgentCallback(taskSystem);
+        agent.registryAgentCallback(TASK_SYSTEM);
+
+        agent.registryCommand(LIST_COMMAND);
     }
 
     @Override

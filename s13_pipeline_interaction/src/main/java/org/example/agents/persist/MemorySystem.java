@@ -90,13 +90,16 @@ public class MemorySystem implements AgentCallback, AgentCommand {
     }
 
     @Override
-    public String list(AbstractAgent agent) {
+    public String desc(AbstractAgent agent) {
         return "/memories 记忆系统";
     }
 
     @Override
     public String help(AbstractAgent agent) {
-        return "/memories 输出当前记忆";
+        return """
+                /memories 输出当前记忆
+                /memories help 显示帮助信息
+                """;
     }
 
     @Override
@@ -112,9 +115,7 @@ public class MemorySystem implements AgentCallback, AgentCommand {
         }
 
         if (arr.length == 1) {
-            List<MemoryEntity> memoryList = MemoryDirUtil.resolveDir(memoryDirPath);
-            memoryList.sort(Comparator.comparing(o -> o.type));
-            return buildMemories(memoryList);
+            return show();
         }
 
         if (arr.length == 2 && arr[1].equals("help")) {
@@ -122,5 +123,11 @@ public class MemorySystem implements AgentCallback, AgentCommand {
         }
 
         return "不支持的命令参数！";
+    }
+
+    private String show() {
+        List<MemoryEntity> memoryList = MemoryDirUtil.resolveDir(memoryDirPath);
+        memoryList.sort(Comparator.comparing(o -> o.type));
+        return buildMemories(memoryList);
     }
 }
