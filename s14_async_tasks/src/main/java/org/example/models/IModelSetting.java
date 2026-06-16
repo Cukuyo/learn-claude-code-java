@@ -34,17 +34,17 @@ public interface IModelSetting {
 
     void setTemperature(double temperature);
 
-    int getTopP();
+    double getTopP();
 
-    void setTopP(int topP);
+    void setTopP(double topP);
 
     String getResponseFormat();
 
     void setResponseFormat(String format);
 
-    String getResoningEffort();
+    String getReasoningEffort();
 
-    void setResoningEffort(String effort);
+    void setReasoningEffort(String effort);
 
     JSONArray getMessages();
 

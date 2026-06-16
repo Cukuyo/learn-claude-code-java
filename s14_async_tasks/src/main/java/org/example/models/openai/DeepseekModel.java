@@ -1,5 +1,6 @@
 package org.example.models.openai;
 
+import org.example.models.AbstractModel;
 import org.example.utils.JsonCloneUtil;
 
 /**
@@ -32,7 +33,7 @@ public class DeepseekModel extends AbstractOpenAiModel {
     }
 
     @Override
-    public org.example.models.AbstractModel cloneWithHistory() {
+    public AbstractModel cloneWithHistory() {
         DeepseekModel deepseekModel = new DeepseekModel(model, url, apiKey);
         deepseekModel.curReq = JsonCloneUtil.deepClone(curReq);
         deepseekModel.getTools().clear();
@@ -40,7 +41,7 @@ public class DeepseekModel extends AbstractOpenAiModel {
     }
 
     @Override
-    public org.example.models.AbstractModel cloneWithoutHistory() {
+    public AbstractModel cloneWithoutHistory() {
         DeepseekModel deepseekModel = new DeepseekModel(model, url, apiKey);
         deepseekModel.curReq = JsonCloneUtil.deepClone(curReq);
         deepseekModel.getMessages().clear();

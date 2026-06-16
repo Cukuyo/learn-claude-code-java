@@ -40,6 +40,7 @@ public class TaskFileUtil {
         TaskEntity taskEntity = new TaskEntity();
         taskEntity.agentName = meta.get("agentName");
         taskEntity.name = meta.get("name");
+        taskEntity.progress = Integer.parseInt(meta.get("progress"));
         taskEntity.description = meta.get("description");
         taskEntity.content = MarkDownFileUtil.readContent(filePath);
         taskEntity.filePath = filePath;

@@ -1,6 +1,7 @@
 package org.example.agents.context.queues;
 
 import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * 固定容量队列
@@ -9,8 +10,9 @@ import java.util.LinkedList;
  *
  * @param <T> 泛型
  */
-public class FixedSizeQueue<T> extends LinkedList<T> {
+public class FixedSizeQueue<T> {
     private final int fixedSize;
+    private final Queue<T> queue = new LinkedList<>();
 
     public FixedSizeQueue(int fixedSize) {
         this.fixedSize = fixedSize;
@@ -20,8 +22,8 @@ public class FixedSizeQueue<T> extends LinkedList<T> {
      * 添加元素
      */
     public T addWithLimit(T item) {
-        offer(item);
+        queue.offer(item);
         // 超出容量：先删掉最先进来的
-        return size() > fixedSize ? poll() : null;
+        return queue.size() > fixedSize ? queue.poll() : null;
     }
 }

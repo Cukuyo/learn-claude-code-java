@@ -9,21 +9,19 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.*;
 
 /**
  * 公司，agents打卡上下班的地方
  */
 public class AgentCompany {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentCompany.class);
+    private static final ThreadFactory THREAD_FACTORY = Thread.ofPlatform().name("AgentCompany", 0).factory();
 
     /**
      * agents工位
      */
-    private final ExecutorService agentDesks = Executors.newCachedThreadPool();
+    private final ExecutorService agentDesks = Executors.newThreadPerTaskExecutor(THREAD_FACTORY);
 
     /**
      * agents钉钉
@@ -63,7 +61,7 @@ public class AgentCompany {
         return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.AGENT, name, content));
     }
 
-    public String dingDingByAsyncTOOL(String agentName, String name, String content) {
+    public String dingDingByAsyncTool(String agentName, String name, String content) {
         if (!agentsDingDing.containsKey(agentName)) {
             return "<" + agentName + ">不存在，请检查后重试";
         }

@@ -27,7 +27,7 @@ public abstract class AbstractOpenAiModel extends org.example.models.AbstractMod
         // 思考模式
         setEnabledThink(true);
         // 思考等级
-        setResoningEffort("high");
+        setReasoningEffort("high");
         // 返回响应格式
         setResponseFormat("text");
         // 推理温度
@@ -200,10 +200,10 @@ public abstract class AbstractOpenAiModel extends org.example.models.AbstractMod
     public void setEnabledThink(boolean isEnabledThink) {
         if (isEnabledThink) {
             curReq.put("thinking", new JSONObject(Map.of("type", "enabled")));
-            setResoningEffort("high");
+            setReasoningEffort("high");
         } else {
             curReq.put("thinking", new JSONObject(Map.of("type", "disabled")));
-            setResoningEffort("");
+            setReasoningEffort("");
         }
     }
 
@@ -221,15 +221,15 @@ public abstract class AbstractOpenAiModel extends org.example.models.AbstractMod
     }
 
     @Override
-    public int getTopP() {
-        return curReq.getIntValue("top_p");
+    public double getTopP() {
+        return curReq.getDoubleValue("top_p");
     }
 
     /*
      * 作为调节采样温度的替代方案，模型会考虑前 top_p 概率的 token 的结果。所以 0.1 就意味着只有包括在最高 10% 概率中的 token 会被考虑。 我们通常建议修改这个值或者更改 temperature，但不建议同时对两者进行修改。
      */
     @Override
-    public void setTopP(int topP) {
+    public void setTopP(double topP) {
         curReq.put("top_p", topP);
     }
 
@@ -244,12 +244,12 @@ public abstract class AbstractOpenAiModel extends org.example.models.AbstractMod
     }
 
     @Override
-    public String getResoningEffort() {
+    public String getReasoningEffort() {
         return curReq.getString("reasoning_effort", "high");
     }
 
     @Override
-    public void setResoningEffort(String effort) {
+    public void setReasoningEffort(String effort) {
         curReq.put("reasoning_effort", effort);
     }
 

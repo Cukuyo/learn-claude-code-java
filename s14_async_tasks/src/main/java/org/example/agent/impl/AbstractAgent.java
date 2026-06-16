@@ -25,7 +25,7 @@ import java.util.Optional;
  * 提供命令机制
  * 提供hook机制
  */
-public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentToolUse, IAgentSkillUse, IAgentCallbackUse, IAgentHookUse, IAgentCommandUse {
+public abstract class AbstractAgent implements IAgent, IAgentToolUse, IAgentSkillUse, IAgentCallbackUse, IAgentHookUse, IAgentCommandUse {
     public final AbstractModel model;
     public final String agentName;
     public final String agentRole;
@@ -160,52 +160,42 @@ public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentTool
         agentCommands.add(agentCommand);
     }
 
-    @Override
     public void callBeforeCommand(AbstractAgent agent, String content) {
         agentCallbacks.forEach(cv -> cv.callBeforeCommand(agent, content));
     }
 
-    @Override
     public void callAfterCommand(AbstractAgent agent, String content, String commandRsp) {
         agentCallbacks.forEach(cv -> cv.callAfterCommand(agent, content, commandRsp));
     }
 
-    @Override
     public void callBeforeAgentLoop(AbstractAgent agent, JSONArray messages, List<JSONObject> userMessageList) {
         agentCallbacks.forEach(cv -> cv.callBeforeAgentLoop(agent, messages, userMessageList));
     }
 
-    @Override
     public void callAfterAgentLoop(AbstractAgent agent, JSONArray messages, List<JSONObject> userMessageList, String chatRsp) {
         agentCallbacks.forEach(cv -> cv.callAfterAgentLoop(agent, messages, userMessageList, chatRsp));
     }
 
-    @Override
     public void callBeforeChat(AbstractAgent agent) {
         agentCallbacks.forEach(cv -> cv.callBeforeChat(agent));
     }
 
-    @Override
     public void callAfterChat(AbstractAgent agent, JSONObject chatRsp, JSONObject assistantMessage, boolean finished) {
         agentCallbacks.forEach(cv -> cv.callAfterChat(agent, chatRsp, assistantMessage, finished));
     }
 
-    @Override
     public void callBeforeToolsUse(AbstractAgent agent) {
         agentCallbacks.forEach(cv -> cv.callBeforeToolsUse(agent));
     }
 
-    @Override
     public void callAfterToolsUse(AbstractAgent agent) {
         agentCallbacks.forEach(cv -> cv.callAfterToolsUse(agent));
     }
 
-    @Override
     public void callBeforeToolUse(AbstractAgent agent, String id, String name, JSONObject arguments) {
         agentCallbacks.forEach(cv -> cv.callBeforeToolUse(agent, id, name, arguments));
     }
 
-    @Override
     public void callAfterToolUse(AbstractAgent agent, String id, String name, JSONObject arguments, JSONObject toolMessage) {
         agentCallbacks.forEach(cv -> cv.callAfterToolUse(agent, id, name, arguments, toolMessage));
     }
