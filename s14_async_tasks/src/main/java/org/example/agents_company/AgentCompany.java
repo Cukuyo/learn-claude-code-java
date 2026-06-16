@@ -77,7 +77,7 @@ public class AgentCompany {
         return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.CRON, name, content));
     }
 
-    public String dingDingByHerat(String agentName, String name, String content) {
+    public String dingDingByHeart(String agentName, String name, String content) {
         if (!agentsDingDing.containsKey(agentName)) {
             return "<" + agentName + ">不存在，请检查后重试";
         }

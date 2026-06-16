@@ -10,7 +10,7 @@ import org.example.agents.persist.TaskSystem;
 import org.example.agent.IAgent;
 import org.example.agent.impl.AbstractAgent;
 import org.example.agent.impl.AgentLoopAgent;
-import org.example.framework_models.AbstractModel;
+import org.example.models.AbstractModel;
 import org.example.agent.tool.ToolMethod;
 import org.example.agent.tool.ToolParam;
 import org.example.utils.cmd.AgentCommandTool;

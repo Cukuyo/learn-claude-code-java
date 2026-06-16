@@ -1,6 +1,6 @@
 package org.example.agent;
 
-import org.example.framework_models.AbstractModel;
+import org.example.models.AbstractModel;
 
 import java.io.IOException;
 import java.util.List;

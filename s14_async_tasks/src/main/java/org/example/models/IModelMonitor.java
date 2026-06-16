@@ -1,4 +1,4 @@
-package org.example.framework_models;
+package org.example.models;
 
 /**
  * 模型使用监控

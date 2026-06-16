@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * OpenAi API格式
  */
-public abstract class AbstractOpenAiModel extends org.example.framework_models.AbstractModel {
+public abstract class AbstractOpenAiModel extends org.example.models.AbstractModel {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOpenAiModel.class);
 
     public AbstractOpenAiModel(String url, String apiKey, String model) {

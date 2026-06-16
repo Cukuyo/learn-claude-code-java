@@ -3,7 +3,7 @@ package org.example.agent;
 /**
  * agent应支持注册回调
  */
-public interface IAgentCallBackUse {
+public interface IAgentCallbackUse {
     /**
      * 注册回调
      *

@@ -6,7 +6,7 @@ import org.example.agent.AgentCallback;
 import org.example.agent.IAgent;
 import org.example.agent.impl.AbstractAgent;
 import org.example.agents.context.queues.FixedSizeConversationQueue;
-import org.example.framework_models.AbstractModel;
+import org.example.models.AbstractModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package org.example.framework_models;
+package org.example.models;
 
 /**
  * 定义模型的克隆

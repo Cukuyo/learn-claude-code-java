@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import org.example.agent.AgentHook;
 import org.example.agent.skill.impl.SkillUseComponent;
 import org.example.agent.tool.impl.ToolUseComponent;
-import org.example.framework_models.AbstractModel;
+import org.example.models.AbstractModel;
 
 import java.io.IOException;
 

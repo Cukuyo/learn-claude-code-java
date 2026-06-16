@@ -1,7 +1,7 @@
 package org.example.agent.tool;
 
 import com.alibaba.fastjson2.JSONObject;
-import org.example.framework_models.AbstractModel;
+import org.example.models.AbstractModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;

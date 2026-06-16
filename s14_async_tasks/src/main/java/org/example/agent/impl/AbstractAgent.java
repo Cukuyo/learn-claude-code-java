@@ -6,12 +6,12 @@ import org.example.agent.AgentCallback;
 import org.example.agent.AgentCommand;
 import org.example.agent.AgentHook;
 import org.example.agent.IAgent;
-import org.example.agent.IAgentCallBackUse;
+import org.example.agent.IAgentCallbackUse;
 import org.example.agent.IAgentCommandUse;
 import org.example.agent.IAgentHookUse;
 import org.example.agent.IAgentSkillUse;
 import org.example.agent.IAgentToolUse;
-import org.example.framework_models.AbstractModel;
+import org.example.models.AbstractModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.Optional;
  * 提供命令机制
  * 提供hook机制
  */
-public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentToolUse, IAgentSkillUse, IAgentCallBackUse, IAgentHookUse, IAgentCommandUse {
+public abstract class AbstractAgent implements IAgent, AgentCallback, IAgentToolUse, IAgentSkillUse, IAgentCallbackUse, IAgentHookUse, IAgentCommandUse {
     public final AbstractModel model;
     public final String agentName;
     public final String agentRole;
