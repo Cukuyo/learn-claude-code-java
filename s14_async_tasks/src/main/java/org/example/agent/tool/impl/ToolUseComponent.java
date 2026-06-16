@@ -26,7 +26,7 @@ public class ToolUseComponent implements IAgentToolUse {
         this.agent = agent;
         registryTool(this);
 
-        this.agent.model.addSystemMessages("[ToolUse]你可以使用各种tools完成复杂工作，但注意高危命令的使用和多步骤的规划！");
+        this.agent.getModel().addSystemMessages("[ToolUse]你可以使用各种tools完成复杂工作，但注意高危命令的使用和多步骤的规划！");
     }
 
     public void toolUse(JSONObject obj) {
@@ -40,7 +40,7 @@ public class ToolUseComponent implements IAgentToolUse {
         // 工具使用前回调
         agent.callBeforeToolUse(agent, id, name, arguments);
 
-        JSONObject toolMessage = agent.model.addToolMessage(getToolRspWithOptionHook(id, name, arguments), id);
+        JSONObject toolMessage = agent.getModel().addToolMessage(getToolRspWithOptionHook(id, name, arguments), id);
 
         // 工具使用后回调
         agent.callAfterToolUse(agent, id, name, arguments, toolMessage);
@@ -83,7 +83,7 @@ public class ToolUseComponent implements IAgentToolUse {
     private void registryTool(List<ToolResolveUtil.ToolResolveResult> toolResolveResults) {
         for (ToolResolveUtil.ToolResolveResult toolResolveResult : toolResolveResults) {
             toolHandlers.put(toolResolveResult.name(), toolResolveResult.toolHandler());
-            agent.model.addTool(ToolTransformUtil.transform(toolResolveResult, agent.model));
+            agent.getModel().addTool(ToolTransformUtil.transform(toolResolveResult, agent.model));
         }
     }
 }

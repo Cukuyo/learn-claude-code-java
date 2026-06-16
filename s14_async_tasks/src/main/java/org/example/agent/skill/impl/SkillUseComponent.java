@@ -57,7 +57,7 @@ public class SkillUseComponent implements IAgentSkillUse {
         if (skillMessage != null) {
             skillMessage.put("content", builder.toString());
         } else {
-            skillMessage = agent.model.addSystemMessages(builder.toString());
+            skillMessage = agent.getModel().addSystemMessages(builder.toString());
         }
     }
 }
