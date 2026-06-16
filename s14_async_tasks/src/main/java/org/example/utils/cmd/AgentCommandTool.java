@@ -1,19 +1,18 @@
 package org.example.utils.cmd;
 
+import org.example.agent.tool.ToolExecuter;
 import org.example.agent.tool.ToolMethod;
 import org.example.agent.tool.ToolParam;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.util.Locale;
 import java.util.concurrent.*;
 
 /**
  * 操作系统命令行工具类
  */
 public class AgentCommandTool {
-    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+    private static final ThreadFactory THREAD_FACTORY = Thread.ofVirtual().name("AgentCommandTool", 0).factory();
+    private static final ExecutorService EXECUTOR = Executors.newThreadPerTaskExecutor(THREAD_FACTORY);
 
     /**
      * 响应格式，可采用record进行更标准的替代
@@ -22,7 +21,6 @@ public class AgentCommandTool {
 
     private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("win");
     private static final String[] RUN_ENGINE = IS_WINDOWS ? new String[]{"cmd", "/c"} : new String[]{"bash", "-c"};
-    private static final String OS_CHARSET = Charset.forName(System.getProperty("native.encoding", "UTF-8")).toString().toUpperCase(Locale.ROOT);
 
     /**
      * 执行系统命令（自动识别平台）
@@ -31,10 +29,15 @@ public class AgentCommandTool {
      * @return 执行结果
      */
     @ToolMethod(description = "在当前工作目录下执行shell命令，windows下为cmc /c command， linux下为bash -c command")
-    public static String execute(
+    public static Future<String> execute(
             @ToolParam(description = "command") String command,
-            @ToolParam(description = "执行超时时间，超时后再次执行要注意幂等性检查") int timeOut) {
-        return execute(command, timeOut, TimeUnit.SECONDS);
+            @ToolParam(description = "执行超时时间，超时后再次执行要注意幂等性检查") int timeOut,
+            @ToolParam(description = "是否要异步执行，对于耗时较长的命令可以多个命令异步执行以提高效率") boolean isAsync) {
+        if (isAsync) {
+            return EXECUTOR.submit(() -> execute(command, timeOut, TimeUnit.SECONDS));
+        } else {
+            return ToolExecuter.simpleRsp(execute(command, timeOut, TimeUnit.SECONDS));
+        }
     }
 
     /**
@@ -51,13 +54,13 @@ public class AgentCommandTool {
 
         Process process = null;
         CommandAsyncReader commandAsyncReader = null;
-        Future<String> commandFuture;
+        Future<String> commandFuture = null;
 
         try {
             process = pb.start();
 
             // 异步接收返回
-            commandAsyncReader = new CommandAsyncReader(process.getInputStream(), OS_CHARSET);
+            commandAsyncReader = new CommandAsyncReader(process.getInputStream());
             commandFuture = EXECUTOR.submit(commandAsyncReader);
 
             // 尝试等待执行完成
@@ -68,10 +71,10 @@ public class AgentCommandTool {
                 int exitCode = process.exitValue();
                 return String.format(RESULT_FORMAT, exitCode == 0 ? "成功" : "失败", exitCode, commandFuture.get());
             }
-        } catch (UnsupportedEncodingException | ExecutionException | InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
-            return String.format(RESULT_FORMAT, "IO异常", "\\", "");
+            return String.format(RESULT_FORMAT, "无法执行", "\\", e.getMessage());
         } finally {
             destroyProcess(process, commandAsyncReader);
         }

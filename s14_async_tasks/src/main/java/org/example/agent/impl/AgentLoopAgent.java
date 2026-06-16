@@ -95,7 +95,7 @@ public class AgentLoopAgent extends AbstractAgent {
                     // 工具使用前回调
                     callBeforeToolsUse(this);
                     // 依次调用tools
-                    message.getJSONArray("tool_calls").forEach(obj -> toolUseComponent.toolUse((JSONObject) obj));
+                    toolUseComponent.toolUse(message.getJSONArray("tool_calls"));
                     // 工具使用后回调
                     callAfterToolsUse(this);
                     break;

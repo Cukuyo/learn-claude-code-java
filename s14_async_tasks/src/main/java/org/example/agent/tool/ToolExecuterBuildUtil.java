@@ -2,6 +2,7 @@ package org.example.agent.tool;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.concurrent.Future;
 
 /**
  * ToolExecuter构建工具类
@@ -30,16 +31,26 @@ public class ToolExecuterBuildUtil {
                     // 判断必须参数是否赋值
                     ToolParam paramAnno = param.getAnnotation(ToolParam.class);
                     if (paramAnno.required() && value == null) {
-                        return "缺失必选参数：" + paramName;
+                        return ToolExecuter.simpleRsp("缺失必选参数：" + paramName);
                     }
 
                     // 转换为java tool定义的类型
                     invokeArgs[i] = ToolParamConvertUtil.convert(value, param.getType());
                 }
+                Object invokeRsp = method.invoke(invokeObj, invokeArgs);
+                if (invokeRsp.getClass().isPrimitive()) {
+                    return ToolExecuter.simpleRsp(String.valueOf(invokeRsp));
+                }
+                if (invokeRsp.getClass().equals(String.class)) {
+                    return ToolExecuter.simpleRsp((String) invokeRsp);
+                }
+                if (invokeRsp.getClass().equals(Future.class)) {
+                    return (Future<String>) invokeRsp;
+                }
 
-                return (String) method.invoke(invokeObj, invokeArgs);
+                return ToolExecuter.simpleRsp((String.valueOf(invokeRsp)));
             } catch (Exception e) {
-                return "执行失败：" + e.getMessage();
+                return ToolExecuter.simpleRsp("执行失败：" + e.getMessage());
             }
         };
     }

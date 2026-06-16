@@ -8,13 +8,11 @@ import java.util.concurrent.Callable;
  */
 public class CommandAsyncReader implements Callable<String> {
     private final InputStream input;
-    private final String osCharset;
 
     private volatile boolean stopped = false;
 
-    public CommandAsyncReader(InputStream input, String osCharset) {
+    public CommandAsyncReader(InputStream input) {
         this.input = input;
-        this.osCharset = osCharset;
     }
 
     public void stop() {
@@ -24,15 +22,14 @@ public class CommandAsyncReader implements Callable<String> {
     @Override
     public String call() {
         StringBuilder result = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, osCharset))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
             String line;
             while (!stopped && (line = reader.readLine()) != null) {
                 result.append(line).append(System.lineSeparator());
             }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
-            // do noThing
+            result.append("Error happen:").append(System.lineSeparator());
+            result.append(e.getMessage()).append(System.lineSeparator());
         }
         return result.toString();
     }
