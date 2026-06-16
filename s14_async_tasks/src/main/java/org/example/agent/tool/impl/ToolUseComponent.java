@@ -32,6 +32,7 @@ public class ToolUseComponent implements IAgentToolUse {
 
     public void toolUse(JSONArray tools) {
         List<Future<String>> futureList = new ArrayList<>();
+        // 批量执行
         for (int i = 0; i < tools.size(); i++) {
             JSONObject obj = (JSONObject) tools.get(i);
             JSONObject function = obj.getJSONObject("function");
@@ -44,10 +45,9 @@ public class ToolUseComponent implements IAgentToolUse {
             // 工具使用前回调
             agent.callBeforeToolUse(agent, id, name, arguments);
             // 工具使用
-            Future<String> future = getToolRspWithOptionHook(id, name, arguments);
-
-            futureList.add(future);
+            futureList.add(getToolRspWithOptionHook(id, name, arguments));
         }
+        // 批量获取结果
         for (int i = 0; i < tools.size(); i++) {
             JSONObject obj = (JSONObject) tools.get(i);
             JSONObject function = obj.getJSONObject("function");
@@ -67,7 +67,6 @@ public class ToolUseComponent implements IAgentToolUse {
             // 工具使用后回调
             agent.callAfterToolUse(agent, id, name, arguments, toolMessage);
         }
-
     }
 
     protected Future<String> getToolRspWithOptionHook(String id, String name, JSONObject arguments) {

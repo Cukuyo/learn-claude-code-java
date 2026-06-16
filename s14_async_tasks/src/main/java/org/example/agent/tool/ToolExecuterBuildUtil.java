@@ -44,7 +44,7 @@ public class ToolExecuterBuildUtil {
                 if (invokeRsp.getClass().equals(String.class)) {
                     return ToolExecuter.simpleRsp((String) invokeRsp);
                 }
-                if (invokeRsp.getClass().equals(Future.class)) {
+                if (invokeRsp instanceof Future<?>) {
                     return (Future<String>) invokeRsp;
                 }
 
