@@ -23,7 +23,7 @@ public class S15_heart {
 //        IAgent maple = new MyAgent(new DeepseekModel(API_KEY), "枫", "你是一只猫娘，属于美国卷耳猫。熟练掌握架构、编程等计算机知识");
 //        IAgent cinnamon = new MyAgent(new DeepseekModel(API_KEY), "桂", "你是一只猫娘，属于苏格兰折耳猫。熟练掌握架构、编程等计算机知识");
 
-        AgentCompany agentCompany = new AgentCompany();
+        AgentCompany agentCompany = new AgentCompany("猫娘咖啡馆");
         agentCompany.clockIn(chocola);
 
         try (Scanner scanner = new Scanner(System.in)) {

@@ -91,7 +91,7 @@ public abstract class AbstractAgent implements IAgent, IAgentToolUse, IAgentSkil
     }
 
     @Override
-    public String chat(List<String> nameList, List<String> chatContentList) throws IOException, InterruptedException {
+    public synchronized String chat(List<String> nameList, List<String> chatContentList) throws IOException, InterruptedException {
         List<JSONObject> userMessageList = new ArrayList<>();
         for (int i = 0; i < chatContentList.size(); i++) {
             String name = nameList.get(i);
