@@ -29,6 +29,7 @@
         <module>s13_pipeline_interaction</module>
         <module>s14_async_tasks</module>
         <module>s15_heart</module>
+        <module>s16_agent_team</module>
     </modules>
 
     <properties>
