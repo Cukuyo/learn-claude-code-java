@@ -1,17 +1,10 @@
 package org.example.agents_company;
 
 import org.example.agent.IAgent;
-import org.example.agent.tool.ToolMethod;
-import org.example.agent.tool.ToolParam;
-import org.example.agents.MyAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
-import java.io.IOException;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -29,7 +22,7 @@ public class AgentCompany implements Closeable {
     /**
      * 黑心资本家
      */
-    private Future<String> superviseAgent;
+    private final Future<String> superviseAgent;
 
     /**
      * agents工位
@@ -104,14 +97,11 @@ public class AgentCompany implements Closeable {
         for (String agentName : dingDing.keySet()) {
             clockOut(agentName);
         }
-        gracefulClose(agentDesks);
-    }
 
-    private void gracefulClose(ExecutorService executorService) {
         try {
-            boolean allCompleted = executorService.awaitTermination(10, TimeUnit.SECONDS);
+            boolean allCompleted = agentDesks.awaitTermination(30, TimeUnit.SECONDS);
             if (!allCompleted) {
-                executorService.shutdownNow();
+                agentDesks.shutdownNow();
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -137,90 +127,5 @@ public class AgentCompany implements Closeable {
             return "<" + targetAgentName + ">不存在，请检查后重试";
         }
         return dingDing.get(targetAgentName).dingDing(new ChatMessage(ChatMessageType.HEART, senderName, content));
-    }
-
-    /**
-     * 一直工作的员工
-     */
-    static class AgentWorker implements Runnable {
-        private static final ScheduledExecutorService AGENT_SCHEDULE = Executors.newScheduledThreadPool(
-                0, Thread.ofPlatform().name("AgentWorker-Schedule", 0).factory());
-
-        private final IAgent agent;
-        private final PriorityBlockingQueue<ChatMessage> msgQueue = new PriorityBlockingQueue<>(16);
-        private volatile boolean isStop = false;
-
-        /**
-         * 打卡上班
-         */
-        public AgentWorker(IAgent agent) {
-            this.agent = agent;
-            ((MyAgent) this.agent).getAgent().registryTool(this);
-        }
-
-        public String dingDing(ChatMessage chatMessage) {
-            if (chatMessage.content.startsWith("/")) {
-                return agent.command(chatMessage.name, chatMessage.content);
-            }
-            // 有事儿干就不用心跳机制关心了
-            if (chatMessage.chatMessageType == ChatMessageType.HEART && !msgQueue.isEmpty()) {
-                return "消息发送成功";
-            }
-            msgQueue.offer(chatMessage);
-            return "消息发送成功";
-        }
-
-        /**
-         * 打卡下班
-         */
-        public void clockOut() {
-            isStop = true;
-            ((MyAgent) this.agent).getAgent().removeTool(this);
-        }
-
-        @ToolMethod(description = "添加延迟任务/提醒到闹钟")
-        public String cron(@ToolParam(description = "延迟时间，单位为秒") int delay,
-                           @ToolParam(description = "延迟任务/提醒内容") String content) {
-            AGENT_SCHEDULE.schedule(() -> {
-                dingDing(new ChatMessage(ChatMessageType.CRON, agent.getAgentName(), content));
-            }, delay, TimeUnit.SECONDS);
-            LOGGER.info("{} add cron, {} s: {}", agent.getAgentName(), delay, content);
-
-            return "添加成功";
-        }
-
-        @Override
-        public void run() {
-            while (!isStop) {
-                List<ChatMessage> list = new ArrayList<>();
-                msgQueue.drainTo(list);
-                // 没事儿就摸会儿鱼
-                if (list.isEmpty()) {
-                    try {
-                        Thread.sleep(Duration.ofSeconds(1L));
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-
-                    continue;
-                }
-
-                List<String> nameList = new ArrayList<>(list.size());
-                List<String> chatContentList = new ArrayList<>(list.size());
-                for (ChatMessage chatMessage : list) {
-                    nameList.add(chatMessage.name);
-                    chatContentList.add(chatMessage.content);
-                }
-
-                // 工作
-                try {
-                    agent.chat(nameList, chatContentList);
-                } catch (IOException | InterruptedException e) {
-                    LOGGER.error("{} chat 发生错误!", agent.getAgentName(), e);
-                }
-            }
-
-            LOGGER.info("{} clockOut", agent.getAgentName());
-        }
     }
 }
