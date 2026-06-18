@@ -1,6 +1,9 @@
 package org.example.agents_company;
 
 import org.example.agent.IAgent;
+import org.example.agent.tool.ToolMethod;
+import org.example.agent.tool.ToolParam;
+import org.example.agents.MyAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,13 +39,13 @@ public class AgentCompany implements Closeable {
     /**
      * agents钉钉
      */
-    private final Map<String, AgentWorker> agentsDingDing = new ConcurrentHashMap<>();
+    private final Map<String, AgentWorker> dingDing = new ConcurrentHashMap<>();
 
     public AgentCompany(String name) {
         this.agentDesks = Executors.newThreadPerTaskExecutor(Thread.ofPlatform().name(name, 0).factory());
         this.superviseAgent = this.agentDesks.submit(() -> {
             while (true) {
-                for (String agentName : agentsDingDing.keySet()) {
+                for (String agentName : dingDing.keySet()) {
                     String dingDingRsp = dingDingByHeart(agentName, "HEART", """
                             [心跳调度]
                             收到此消息时检查是否有未完成任务、任务进度是否未刷新，若有则按优先级依次执行，若没有则保持休眠。
@@ -73,7 +76,7 @@ public class AgentCompany implements Closeable {
     public void clockIn(IAgent agent) {
         AgentWorker agentWorker = new AgentWorker(agent);
         agentDesks.submit(agentWorker);
-        agentsDingDing.put(agent.getAgentName(), agentWorker);
+        dingDing.put(agent.getAgentName(), agentWorker);
     }
 
     /**
@@ -87,8 +90,8 @@ public class AgentCompany implements Closeable {
      * 打卡下班
      */
     public void clockOut(String agentName) {
-        AgentWorker agentWorker = agentsDingDing.get(agentName);
-        agentsDingDing.remove(agentName);
+        AgentWorker agentWorker = dingDing.get(agentName);
+        dingDing.remove(agentName);
         if (agentWorker != null) {
             agentWorker.clockOut();
         }
@@ -98,57 +101,61 @@ public class AgentCompany implements Closeable {
     public void close() {
         agentDesks.shutdown();
         superviseAgent.cancel(true);
-        for (String agentName : agentsDingDing.keySet()) {
+        for (String agentName : dingDing.keySet()) {
             clockOut(agentName);
         }
+        gracefulClose(agentDesks);
+    }
+
+    private void gracefulClose(ExecutorService executorService) {
         try {
-            boolean allCompleted = agentDesks.awaitTermination(10, TimeUnit.SECONDS);
+            boolean allCompleted = executorService.awaitTermination(10, TimeUnit.SECONDS);
             if (!allCompleted) {
-                agentDesks.shutdownNow();
+                executorService.shutdownNow();
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String dingDingByAdmin(String agentName, String name, String content) {
-        if (!agentsDingDing.containsKey(agentName)) {
-            return "<" + agentName + ">不存在，请检查后重试";
+    public String dingDingByAdmin(String targetAgentName, String senderName, String content) {
+        if (!dingDing.containsKey(targetAgentName)) {
+            return "<" + targetAgentName + ">不存在，请检查后重试";
         }
-        return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.ADMIN, name, content));
+        return dingDing.get(targetAgentName).dingDing(new ChatMessage(ChatMessageType.ADMIN, senderName, content));
     }
 
-    public String dingDingByAgent(String agentName, String name, String content) {
-        if (!agentsDingDing.containsKey(agentName)) {
-            return "<" + agentName + ">不存在，请检查后重试";
+    public String dingDingByAgent(String targetAgentName, String senderName, String content) {
+        if (!dingDing.containsKey(targetAgentName)) {
+            return "<" + targetAgentName + ">不存在，请检查后重试";
         }
-        return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.AGENT, name, content));
+        return dingDing.get(targetAgentName).dingDing(new ChatMessage(ChatMessageType.AGENT, senderName, content));
     }
 
-    public String dingDingByCron(String agentName, String name, String content) {
-        if (!agentsDingDing.containsKey(agentName)) {
-            return "<" + agentName + ">不存在，请检查后重试";
+    public String dingDingByHeart(String targetAgentName, String senderName, String content) {
+        if (!dingDing.containsKey(targetAgentName)) {
+            return "<" + targetAgentName + ">不存在，请检查后重试";
         }
-        return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.CRON, name, content));
-    }
-
-    public String dingDingByHeart(String agentName, String name, String content) {
-        if (!agentsDingDing.containsKey(agentName)) {
-            return "<" + agentName + ">不存在，请检查后重试";
-        }
-        return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.HEART, name, content));
+        return dingDing.get(targetAgentName).dingDing(new ChatMessage(ChatMessageType.HEART, senderName, content));
     }
 
     /**
      * 一直工作的员工
      */
     static class AgentWorker implements Runnable {
+        private static final ScheduledExecutorService AGENT_SCHEDULE = Executors.newScheduledThreadPool(
+                0, Thread.ofPlatform().name("AgentWorker-Schedule", 0).factory());
+
         private final IAgent agent;
         private final PriorityBlockingQueue<ChatMessage> msgQueue = new PriorityBlockingQueue<>(16);
         private volatile boolean isStop = false;
 
+        /**
+         * 打卡上班
+         */
         public AgentWorker(IAgent agent) {
             this.agent = agent;
+            ((MyAgent) this.agent).getAgent().registryTool(this);
         }
 
         public String dingDing(ChatMessage chatMessage) {
@@ -168,6 +175,18 @@ public class AgentCompany implements Closeable {
          */
         public void clockOut() {
             isStop = true;
+            ((MyAgent) this.agent).getAgent().removeTool(this);
+        }
+
+        @ToolMethod(description = "添加延迟任务/提醒到闹钟")
+        public String cron(@ToolParam(description = "延迟时间，单位为秒") int delay,
+                           @ToolParam(description = "延迟任务/提醒内容") String content) {
+            AGENT_SCHEDULE.schedule(() -> {
+                dingDing(new ChatMessage(ChatMessageType.CRON, agent.getAgentName(), content));
+            }, delay, TimeUnit.SECONDS);
+            LOGGER.info("{} add cron, {} s: {}", agent.getAgentName(), delay, content);
+
+            return "添加成功";
         }
 
         @Override
@@ -178,7 +197,7 @@ public class AgentCompany implements Closeable {
                 // 没事儿就摸会儿鱼
                 if (list.isEmpty()) {
                     try {
-                        Thread.sleep(Duration.ofSeconds(5L));
+                        Thread.sleep(Duration.ofSeconds(1L));
                     } catch (InterruptedException e) {
                         break;
                     }

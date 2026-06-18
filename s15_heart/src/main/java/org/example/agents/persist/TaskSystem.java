@@ -32,7 +32,8 @@ public class TaskSystem implements AgentCallback {
         }
 
         List<TaskEntity> taskList = TaskDirUtil.resolveDir(taskDirPath);
-        List<TaskEntity> waitedTaskList = taskList.stream().filter(task -> task.progress < 100).toList();
+        List<TaskEntity> waitedTaskList = taskList.stream().filter(
+                task -> task.agentName.equals(agent.getAgentName()) && task.progress < 100).toList();
 
         renderPrompts(agent, waitedTaskList);
     }

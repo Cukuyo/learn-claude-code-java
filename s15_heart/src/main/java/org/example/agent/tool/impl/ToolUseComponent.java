@@ -11,6 +11,7 @@ import org.example.agent.tool.ToolResolveUtil;
 import org.example.agent.tool.ToolTransformUtil;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -21,7 +22,7 @@ import java.util.concurrent.Future;
 public class ToolUseComponent implements IAgentToolUse {
     protected AbstractAgent agent;
 
-    protected final Map<String, ToolExecuter> toolHandlers = new HashMap<>();
+    protected final Map<String, ToolExecuter> toolHandlers = new ConcurrentHashMap<>();
 
     public ToolUseComponent(AbstractAgent agent) {
         this.agent = agent;

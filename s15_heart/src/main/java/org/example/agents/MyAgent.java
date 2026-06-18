@@ -70,6 +70,10 @@ public final class MyAgent implements IAgent {
         agent.registryCommand(LIST_COMMAND);
     }
 
+    public AbstractAgent getAgent() {
+        return agent;
+    }
+
     @Override
     public AbstractModel getModel() {
         return agent.getModel();

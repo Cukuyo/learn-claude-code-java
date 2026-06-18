@@ -69,7 +69,7 @@ public class OpenAiModel extends AbstractModel {
      * @throws IOException          io异常
      * @throws InterruptedException 线程等待中断
      */
-    private JSONObject chatInline() throws IOException, InterruptedException {
+    private synchronized JSONObject chatInline() throws IOException, InterruptedException {
         JSONObject result = HttpClientUtil.send(getUrl(), getApiKey(), curReq);
 
         JSONObject usage = result.getJSONObject("usage");
@@ -202,7 +202,7 @@ public class OpenAiModel extends AbstractModel {
     }
 
     @Override
-    public void setMaxTokens(int maxTokens) {
+    public synchronized void setMaxTokens(int maxTokens) {
         curReq.put("max_tokens", maxTokens);
     }
 
@@ -212,7 +212,7 @@ public class OpenAiModel extends AbstractModel {
     }
 
     @Override
-    public void setEnabledThink(boolean isEnabledThink) {
+    public synchronized void setEnabledThink(boolean isEnabledThink) {
         if (isEnabledThink) {
             curReq.put("thinking", new JSONObject(Map.of("type", "enabled")));
             setReasoningEffort("high");
@@ -231,7 +231,7 @@ public class OpenAiModel extends AbstractModel {
      * 采样温度，介于 0 和 2 之间。更高的值，如 0.8，会使输出更随机，而更低的值，如 0.2，会使其更加集中和确定。 我们通常建议可以更改这个值或者更改 top_p，但不建议同时对两者进行修改。
      */
     @Override
-    public void setTemperature(double temperature) {
+    public synchronized void setTemperature(double temperature) {
         curReq.put("temperature", temperature);
     }
 
@@ -244,7 +244,7 @@ public class OpenAiModel extends AbstractModel {
      * 作为调节采样温度的替代方案，模型会考虑前 top_p 概率的 token 的结果。所以 0.1 就意味着只有包括在最高 10% 概率中的 token 会被考虑。 我们通常建议修改这个值或者更改 temperature，但不建议同时对两者进行修改。
      */
     @Override
-    public void setTopP(double topP) {
+    public synchronized void setTopP(double topP) {
         curReq.put("top_p", topP);
     }
 
@@ -254,7 +254,7 @@ public class OpenAiModel extends AbstractModel {
     }
 
     @Override
-    public void setResponseFormat(String format) {
+    public synchronized void setResponseFormat(String format) {
         curReq.put("response_format", new JSONObject(Map.of("type", format)));
     }
 
@@ -264,7 +264,7 @@ public class OpenAiModel extends AbstractModel {
     }
 
     @Override
-    public void setReasoningEffort(String effort) {
+    public synchronized void setReasoningEffort(String effort) {
         curReq.put("reasoning_effort", effort);
     }
 
@@ -274,7 +274,7 @@ public class OpenAiModel extends AbstractModel {
     }
 
     @Override
-    public void setTools(JSONArray tools) {
+    public synchronized void setTools(JSONArray tools) {
         curReq.put("tools", tools);
     }
 
@@ -290,7 +290,7 @@ public class OpenAiModel extends AbstractModel {
     }
 
     @Override
-    public void removeTool(String toolName) {
+    public synchronized void removeTool(String toolName) {
         JSONObject tool = getTool(toolName);
         if (tool != null) {
             getTools().remove(tool);
@@ -303,7 +303,7 @@ public class OpenAiModel extends AbstractModel {
     }
 
     @Override
-    public void setMessages(JSONArray messages) {
+    public synchronized void setMessages(JSONArray messages) {
         curReq.put("messages", messages);
     }
 
