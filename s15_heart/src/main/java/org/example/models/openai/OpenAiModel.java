@@ -2,7 +2,9 @@ package org.example.models.openai;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import org.example.models.AbstractModel;
 import org.example.utils.HttpClientUtil;
+import org.example.utils.JsonCloneUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,10 +14,13 @@ import java.util.Map;
 /**
  * OpenAi API格式
  */
-public abstract class AbstractOpenAiModel extends org.example.models.AbstractModel {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOpenAiModel.class);
+public class OpenAiModel extends AbstractModel {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenAiModel.class);
 
-    public AbstractOpenAiModel(String url, String apiKey, String model) {
+    private static final int MAX_INPUT_TOKENS = 100 * 10000;
+    private static final int MAX_OUTPUT_TOKENS = 384 * 1000;
+
+    public OpenAiModel(String url, String apiKey, String model) {
         super(url, apiKey, model);
         setModel(model);
 
@@ -23,7 +28,7 @@ public abstract class AbstractOpenAiModel extends org.example.models.AbstractMod
         setTools(new JSONArray());
 
         // 最大输出tokens
-        setMaxTokens(getMaxInputTokens() / 10);
+        setMaxTokens(getMaxOutTokens() / 10);
         // 思考模式
         setEnabledThink(true);
         // 思考等级
@@ -40,6 +45,16 @@ public abstract class AbstractOpenAiModel extends org.example.models.AbstractMod
     public void setModel(String model) {
         super.setModel(model);
         curReq.put("model", model);
+    }
+
+    @Override
+    public int getMaxInputTokens() {
+        return MAX_INPUT_TOKENS;
+    }
+
+    @Override
+    public int getMaxOutTokens() {
+        return MAX_OUTPUT_TOKENS;
     }
 
     @Override
@@ -271,5 +286,22 @@ public abstract class AbstractOpenAiModel extends org.example.models.AbstractMod
     @Override
     public void setMessages(JSONArray messages) {
         curReq.put("messages", messages);
+    }
+
+    @Override
+    public AbstractModel cloneWithHistory() {
+        OpenAiModel openAiModel = new OpenAiModel(model, url, apiKey);
+        openAiModel.curReq = JsonCloneUtil.deepClone(curReq);
+        openAiModel.getTools().clear();
+        return openAiModel;
+    }
+
+    @Override
+    public AbstractModel cloneWithoutHistory() {
+        OpenAiModel openAiModel = new OpenAiModel(model, url, apiKey);
+        openAiModel.curReq = JsonCloneUtil.deepClone(curReq);
+        openAiModel.getMessages().clear();
+        openAiModel.getTools().clear();
+        return openAiModel;
     }
 }
