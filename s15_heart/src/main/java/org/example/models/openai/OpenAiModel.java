@@ -279,6 +279,25 @@ public class OpenAiModel extends AbstractModel {
     }
 
     @Override
+    public JSONObject getTool(String toolName) {
+        for (Object obj : getTools()) {
+            JSONObject tool = (JSONObject) obj;
+            if (extractToolName(tool).equals(toolName)) {
+                return tool;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void removeTool(String toolName) {
+        JSONObject tool = getTool(toolName);
+        if (tool != null) {
+            getTools().remove(tool);
+        }
+    }
+
+    @Override
     public JSONArray getMessages() {
         return curReq.getJSONArray("messages");
     }

@@ -53,7 +53,7 @@ public final class MyAgent implements IAgent {
         agent.registryTool(AgentCommandTool.class);
         agent.registryTool(AgentFileTool.class);
 
-        agent.registrySkills(System.getProperty("user.dir") + File.separator + "skills");
+        agent.registrySkills(Paths.get(System.getProperty("user.dir") + File.separator + "skills"));
 
         agent.registryAgentCallback(AgentLogPrint.INSTANCE);
         agent.registryAgentCallback(new ToolUseCompact(30, 50));

@@ -19,6 +19,14 @@ public interface AgentCallback {
     }
 
     /**
+     * 初始化操作
+     *
+     * @param agent agent
+     */
+    default void removeSelf(AbstractAgent agent) {
+    }
+
+    /**
      * 添加执行命令前的回调
      *
      * @param agent   agent

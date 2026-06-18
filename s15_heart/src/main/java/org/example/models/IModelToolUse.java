@@ -15,6 +15,10 @@ public interface IModelToolUse {
 
     void addTool(JSONObject tool);
 
+    JSONObject getTool(String toolName);
+
+    void removeTool(String toolName);
+
     String extractToolName(JSONObject tool);
 
     JSONObject buildTool(JSONObject function);

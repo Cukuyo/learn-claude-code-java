@@ -10,4 +10,11 @@ public interface IAgentCommandUse {
      * @param agentCommand agentCommand
      */
     void registryCommand(AgentCommand agentCommand);
+
+    /**
+     * 命令移除
+     *
+     * @param agentCommand agentCommand
+     */
+    void removeCommand(AgentCommand agentCommand);
 }

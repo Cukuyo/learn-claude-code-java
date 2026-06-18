@@ -8,6 +8,7 @@ import org.example.agent.tool.impl.ToolUseComponent;
 import org.example.models.AbstractModel;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * agent核心类:
@@ -136,7 +137,42 @@ public class AgentLoopAgent extends AbstractAgent {
     }
 
     @Override
-    public void registrySkills(String dirPath) {
+    public void removeTool(Object toolObj) {
+        toolUseComponent.removeTool(toolObj);
+    }
+
+    @Override
+    public void removeTool(Class<?> toolObj) {
+        toolUseComponent.removeTool(toolObj);
+    }
+
+    @Override
+    public void removeTool(String toolName) {
+        toolUseComponent.removeTool(toolName);
+    }
+
+    @Override
+    public void registrySkills(Path dirPath) {
         skillUseAgent.registrySkills(dirPath);
+    }
+
+    @Override
+    public void removeSkills(Path dirPath) {
+        skillUseAgent.removeSkills(dirPath);
+    }
+
+    @Override
+    public void registrySkill(Path skillPath) {
+        skillUseAgent.registrySkill(skillPath);
+    }
+
+    @Override
+    public void removeSkill(Path skillPath) {
+        skillUseAgent.removeSkill(skillPath);
+    }
+
+    @Override
+    public void removeSkill(String skillName) {
+        skillUseAgent.removeSkill(skillName);
     }
 }

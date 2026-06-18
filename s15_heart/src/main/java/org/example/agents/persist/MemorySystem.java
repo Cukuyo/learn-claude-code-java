@@ -40,6 +40,11 @@ public class MemorySystem implements AgentCallback, AgentCommand {
         renderPrompts(agent, memoryList);
     }
 
+    @Override
+    public void removeSelf(AbstractAgent agent) {
+        agent.removeTool(this);
+    }
+
     private void renderPrompts(AbstractAgent agent, List<MemoryEntity> memoryList) {
         String content = """
                 [MemorySystem]记忆系统用于对关键信息进行跨会话的保存和加载。

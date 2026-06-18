@@ -3,10 +3,10 @@ package org.example.agent.skill.impl;
 import com.alibaba.fastjson2.JSONObject;
 import org.example.agent.IAgentSkillUse;
 import org.example.agent.impl.AbstractAgent;
-import org.example.agent.skill.SkillDirUtil;
 import org.example.agent.skill.SkillManifest;
+import org.example.agent.skill.SkillUtil;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,11 +34,44 @@ public class SkillUseComponent implements IAgentSkillUse {
      * @param dirPath skill目录
      */
     @Override
-    public void registrySkills(String dirPath) {
-        List<SkillManifest> skillManifests = SkillDirUtil.resolveDir(Paths.get(dirPath));
+    public void registrySkills(Path dirPath) {
+        List<SkillManifest> skillManifests = SkillUtil.resolveDir(dirPath);
         for (SkillManifest skillManifest : skillManifests) {
             skillManifestMap.put(skillManifest.name, skillManifest);
         }
+
+        renderPrompts();
+    }
+
+    @Override
+    public void removeSkills(Path dirPath) {
+        List<SkillManifest> skillManifests = SkillUtil.resolveDir(dirPath);
+        for (SkillManifest skillManifest : skillManifests) {
+            skillManifestMap.remove(skillManifest.name);
+        }
+
+        renderPrompts();
+    }
+
+    @Override
+    public void registrySkill(Path skillPath) {
+        SkillManifest skillManifest = SkillUtil.resolveFile(skillPath);
+        skillManifestMap.put(skillManifest.name, skillManifest);
+
+        renderPrompts();
+    }
+
+    @Override
+    public void removeSkill(Path skillPath) {
+        SkillManifest skillManifest = SkillUtil.resolveFile(skillPath);
+        skillManifestMap.remove(skillManifest.name);
+
+        renderPrompts();
+    }
+
+    @Override
+    public void removeSkill(String skillName) {
+        skillManifestMap.remove(skillName);
 
         renderPrompts();
     }

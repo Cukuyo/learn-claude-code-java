@@ -151,13 +151,29 @@ public abstract class AbstractAgent implements IAgent, IAgentToolUse, IAgentSkil
     }
 
     @Override
+    public void removeAgentCallback(AgentCallback agentCallback) {
+        agentCallbacks.remove(agentCallback);
+        agentCallback.initSelf(this);
+    }
+
+    @Override
     public void registryHook(AgentHook agentHook) {
         agentHooks.add(agentHook);
     }
 
     @Override
+    public void removeHook(AgentHook agentHook) {
+        agentHooks.remove(agentHook);
+    }
+
+    @Override
     public void registryCommand(AgentCommand agentCommand) {
         agentCommands.add(agentCommand);
+    }
+
+    @Override
+    public void removeCommand(AgentCommand agentCommand) {
+        agentCommands.remove(agentCommand);
     }
 
     public void callBeforeCommand(AbstractAgent agent, String content) {

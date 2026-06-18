@@ -30,6 +30,11 @@ public class ToolUseComponent implements IAgentToolUse {
         this.agent.getModel().addSystemMessages("[ToolUse]你可以使用各种tools完成复杂工作，但注意高危命令的使用和多步骤的规划！");
     }
 
+    /**
+     * 工具使用
+     *
+     * @param tools tools
+     */
     public void toolUse(JSONArray tools) {
         List<Future<String>> futureList = new ArrayList<>();
         // 批量执行
@@ -101,6 +106,28 @@ public class ToolUseComponent implements IAgentToolUse {
     @Override
     public void registryTool(Class<?> toolObj) {
         registryTool(ToolResolveUtil.resolve(toolObj));
+    }
+
+    @Override
+    public void removeTool(Object toolObj) {
+        removeTool(ToolResolveUtil.resolve(toolObj));
+    }
+
+    @Override
+    public void removeTool(Class<?> toolObj) {
+        removeTool(ToolResolveUtil.resolve(toolObj));
+    }
+
+    @Override
+    public void removeTool(String toolName) {
+        agent.getModel().removeTool(toolName);
+    }
+
+    private void removeTool(List<ToolResolveUtil.ToolResolveResult> toolResolveResults) {
+        for (ToolResolveUtil.ToolResolveResult toolResolveResult : toolResolveResults) {
+            toolHandlers.remove(toolResolveResult.name());
+            agent.getModel().removeTool(toolResolveResult.name());
+        }
     }
 
     private void registryTool(List<ToolResolveUtil.ToolResolveResult> toolResolveResults) {

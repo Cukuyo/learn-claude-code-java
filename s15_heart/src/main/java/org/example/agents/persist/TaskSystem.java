@@ -37,6 +37,11 @@ public class TaskSystem implements AgentCallback {
         renderPrompts(agent, waitedTaskList);
     }
 
+    @Override
+    public void removeSelf(AbstractAgent agent) {
+        agent.removeTool(this);
+    }
+
     private void renderPrompts(AbstractAgent agent, List<TaskEntity> taskList) {
         agent.getModel().addUserMessage("""
                 [TaskSystem]任务系统用于对任务进行跨会话的保存和加载。

@@ -10,4 +10,11 @@ public interface IAgentCallbackUse {
      * @param agentCallback agent回调
      */
     void registryAgentCallback(AgentCallback agentCallback);
+
+    /**
+     * 移除回调
+     *
+     * @param agentCallback agent回调
+     */
+    void removeAgentCallback(AgentCallback agentCallback);
 }

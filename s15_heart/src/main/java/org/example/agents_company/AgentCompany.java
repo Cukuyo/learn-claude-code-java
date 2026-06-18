@@ -4,6 +4,7 @@ import org.example.agent.IAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.concurrent.*;
 /**
  * 公司，agents打卡上下班的地方
  */
-public class AgentCompany {
+public class AgentCompany implements Closeable {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentCompany.class);
     private static final ThreadFactory THREAD_FACTORY = Thread.ofPlatform().name("AgentCompany", 0).factory();
 
@@ -35,16 +36,6 @@ public class AgentCompany {
         AgentWorker agentWorker = new AgentWorker(agent);
         agentsDingDing.put(agent.getAgentName(), agentWorker);
         agentDesks.submit(agentWorker);
-    }
-
-    /**
-     * 打卡下班
-     */
-    public void clockOut() {
-        for (AgentWorker agentWorker : agentsDingDing.values()) {
-            agentWorker.clockOut();
-        }
-        agentsDingDing.clear();
     }
 
     public String dingDingByAdmin(String agentName, String name, String content) {
@@ -80,6 +71,14 @@ public class AgentCompany {
             return "<" + agentName + ">不存在，请检查后重试";
         }
         return agentsDingDing.get(agentName).dingDing(new ChatMessage(ChatMessageType.HEART, name, content));
+    }
+
+    @Override
+    public void close() {
+        for (AgentWorker agentWorker : agentsDingDing.values()) {
+            agentWorker.clockOut();
+        }
+        agentsDingDing.clear();
     }
 
     /**

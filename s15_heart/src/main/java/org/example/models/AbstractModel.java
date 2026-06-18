@@ -9,18 +9,20 @@ import java.util.Set;
  * model抽象父类，提供openAi、anthropic的抽象公共部分
  */
 public abstract class AbstractModel implements IModel, IModelSetting, IModelToolUse, IModelClone<AbstractModel>, IModelMonitor {
-    public JSONObject curReq = new JSONObject();
+    protected JSONObject curReq = new JSONObject();
     protected Set<String> toolsSet = new HashSet<>();
 
     protected String url;
-    protected String apiKey;
-    protected String model;
 
+    protected String apiKey;
+
+    protected String model;
     protected long lastPromptTokens = 0;
+
     protected long lastCompletionTokens = 0;
     protected long lastTotalTokens = 0;
-
     protected long promptTokensSum = 0;
+
     protected long completionTokensSum = 0;
     protected long totalTokensSum = 0;
 
@@ -28,6 +30,14 @@ public abstract class AbstractModel implements IModel, IModelSetting, IModelTool
         this.url = url;
         this.apiKey = apiKey;
         this.model = model;
+    }
+
+    public JSONObject getCurReq() {
+        return curReq;
+    }
+
+    public void setCurReq(JSONObject curReq) {
+        this.curReq = curReq;
     }
 
     @Override
@@ -59,7 +69,7 @@ public abstract class AbstractModel implements IModel, IModelSetting, IModelTool
     public void setModel(String model) {
         this.model = model;
     }
-   
+
     @Override
     public long getLastChatTotalTokens() {
         return lastTotalTokens;

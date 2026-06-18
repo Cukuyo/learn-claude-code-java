@@ -10,4 +10,11 @@ public interface IAgentHookUse {
      * @param agentHook agentHook
      */
     void registryHook(AgentHook agentHook);
+
+    /**
+     * hook移除
+     *
+     * @param agentHook agentHook
+     */
+    void removeHook(AgentHook agentHook);
 }
