@@ -5,6 +5,8 @@ import org.example.agent.impl.AbstractAgent;
 import org.example.agent.tool.ToolMethod;
 import org.example.agent.tool.ToolParam;
 import org.example.agents.MyAgent;
+import org.example.agents_company.worker.AgentWorker;
+import org.example.agents_company.worker.IAgentWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,12 +23,12 @@ public class AgentCompany implements Closeable {
     /**
      * 公司名称
      */
-    private String companyName;
+    private final String companyName;
 
     /**
      * 公司目标
      */
-    private String companyRole;
+    private final String companyRole;
 
     /**
      * 最长摸鱼时间
@@ -46,7 +48,7 @@ public class AgentCompany implements Closeable {
     /**
      * agents钉钉
      */
-    private final Map<String, AgentWorker> dingDing = new ConcurrentHashMap<>();
+    private final Map<String, IAgentWorker> dingDing = new ConcurrentHashMap<>();
 
     public AgentCompany(String companyName, String companyRole) {
         this.companyName = companyName;
@@ -59,7 +61,7 @@ public class AgentCompany implements Closeable {
                             [心跳调度]
                             收到此消息时检查是否有未完成任务、任务进度是否未刷新，若有则按优先级依次执行，若没有则保持休眠。
                             """));
-                    LOGGER.info("{} -> {} : {}", "HEART", agentName, dingDingRsp);
+                    LOGGER.info("{} -> {} : {} : {}", "HEART", agentName, "[心跳调度]", dingDingRsp);
                 }
                 try {
                     TimeUnit.SECONDS.sleep(getMaxIdleSeconds());
@@ -90,7 +92,7 @@ public class AgentCompany implements Closeable {
             renderPrompt(myAgent.getAgent());
         }
 
-        AgentWorker agentWorker = new AgentWorker(agent, agentJobPosition, agentDuties);
+        IAgentWorker agentWorker = new AgentWorker(agent, agentJobPosition, agentDuties);
         agentDesks.submit(agentWorker);
         dingDing.put(agent.getAgentName(), agentWorker);
     }
@@ -98,7 +100,7 @@ public class AgentCompany implements Closeable {
     private void renderPrompt(AbstractAgent abstractAgent) {
         abstractAgent.registryTool(this);
         abstractAgent.getModel().addSystemMessages(String.format("[AgentCompany]你已加入<%s>，这是一家<%s>的公司，" +
-                        "可以使用<listWorkmates>获取同事列表，可以使用<dingDingByAgent>进行任务分派和聊天",
+                        "可以使用<listWorkmates>获取同事列表，可以使用<dingDingByAgent>进行任务分派、协作、汇报、信息同步等",
                 companyName, companyRole));
     }
 
@@ -113,7 +115,7 @@ public class AgentCompany implements Closeable {
      * 打卡下班
      */
     public void clockOut(String agentName) {
-        AgentWorker agentWorker = dingDing.get(agentName);
+        IAgentWorker agentWorker = dingDing.get(agentName);
         dingDing.remove(agentName);
         if (agentWorker == null) {
             return;
@@ -147,13 +149,6 @@ public class AgentCompany implements Closeable {
         }
     }
 
-    public String dingDingByAdmin(String targetAgentName, String senderName, String content) {
-        if (!dingDing.containsKey(targetAgentName)) {
-            return "<" + targetAgentName + ">不存在，请检查后重试";
-        }
-        return dingDing.get(targetAgentName).dingDing(new ChatMessage(ChatMessageType.ADMIN, senderName, content));
-    }
-
     @ToolMethod(description = "获取同事列表")
     public String listWorkmates() {
         StringBuilder builder = new StringBuilder(dingDing.size() * 128);
@@ -161,18 +156,21 @@ public class AgentCompany implements Closeable {
         return builder.toString();
     }
 
-    @ToolMethod(description = "向同事发送异步消息")
+    @ToolMethod(description = "向同事发送消息，进行任务分派、协作、汇报、信息同步等")
     public String dingDingByAgent(
             @ToolParam(description = "目标同事名字") String targetAgentName,
             @ToolParam(description = "你的名字") String senderName,
             @ToolParam(description = "消息内容") String content) {
-        if (targetAgentName.trim().equals(System.getProperty("user.name"))) {
-            LOGGER.info("{} -> {} : {}", senderName, targetAgentName, content);
-            return "消息发送成功";
-        }
         if (!dingDing.containsKey(targetAgentName)) {
             return "<" + targetAgentName + ">不存在，请检查后重试";
         }
         return dingDing.get(targetAgentName).dingDing(new ChatMessage(ChatMessageType.AGENT, senderName, content));
+    }
+
+    public String dingDingByAdmin(String targetAgentName, String senderName, String content) {
+        if (!dingDing.containsKey(targetAgentName)) {
+            return "<" + targetAgentName + ">不存在，请检查后重试";
+        }
+        return dingDing.get(targetAgentName).dingDing(new ChatMessage(ChatMessageType.ADMIN, senderName, content));
     }
 }

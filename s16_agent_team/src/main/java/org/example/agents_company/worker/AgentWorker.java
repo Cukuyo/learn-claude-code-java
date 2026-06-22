@@ -1,10 +1,12 @@
-package org.example.agents_company;
+package org.example.agents_company.worker;
 
 import org.example.agent.IAgent;
 import org.example.agent.impl.AbstractAgent;
 import org.example.agent.tool.ToolMethod;
 import org.example.agent.tool.ToolParam;
 import org.example.agents.MyAgent;
+import org.example.agents_company.ChatMessage;
+import org.example.agents_company.ChatMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 一直工作的员工
  */
-class AgentWorker implements Runnable {
+public class AgentWorker implements IAgentWorker {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentWorker.class);
     private static final ScheduledExecutorService AGENT_SCHEDULE = Executors.newScheduledThreadPool(
             0, Thread.ofPlatform().name("AgentWorker-Schedule", 0).factory());
@@ -60,6 +62,7 @@ class AgentWorker implements Runnable {
      *
      * @return Prompt
      */
+    @Override
     public String toPrompt() {
         return "- {" + agent.getAgentName() + ":" + agentJobPosition + ":" + agentDuties + "}";
     }
@@ -67,9 +70,10 @@ class AgentWorker implements Runnable {
     /**
      * 工作
      */
+    @Override
     public String dingDing(ChatMessage chatMessage) {
         if (isStop) {
-            return "当前agent已停止接收消息";
+            return agent.getAgentName() + "已离职！";
         }
 
         if (chatMessage.content.startsWith("/")) {
@@ -88,24 +92,28 @@ class AgentWorker implements Runnable {
     /**
      * 打卡下班
      */
+    @Override
     public void clockOut() {
         isStop = true;
-        if (agent instanceof AbstractAgent) {
-            ((AbstractAgent) agent).removeTool(this);
+        if (agent instanceof AbstractAgent abstractAgent) {
+            abstractAgent.removeTool(this);
         }
-        if (agent instanceof MyAgent) {
-            ((MyAgent) agent).getAgent().removeTool(this);
+        if (agent instanceof MyAgent myAgent) {
+            myAgent.getAgent().removeTool(this);
         }
     }
 
+    @Override
     public IAgent getAgent() {
         return agent;
     }
 
+    @Override
     public String getAgentJobPosition() {
         return agentJobPosition;
     }
 
+    @Override
     public String getAgentDuties() {
         return agentDuties;
     }
@@ -126,6 +134,7 @@ class AgentWorker implements Runnable {
         while (!isStop) {
             List<ChatMessage> list = new ArrayList<>();
             msgQueue.drainTo(list);
+
             // 没事儿就摸会儿鱼
             if (list.isEmpty()) {
                 try {
@@ -137,21 +146,20 @@ class AgentWorker implements Runnable {
                 continue;
             }
 
+            // 工作
             List<String> nameList = new ArrayList<>(list.size());
             List<String> chatContentList = new ArrayList<>(list.size());
             for (ChatMessage chatMessage : list) {
                 nameList.add(chatMessage.name);
                 chatContentList.add(chatMessage.content);
             }
-
-            // 工作
             try {
                 agent.chat(nameList, chatContentList);
             } catch (IOException | InterruptedException e) {
-                LOGGER.error("{} chat 发生错误!", agent.getAgentName(), e);
+                AgentWorker.LOGGER.error("{} chat 发生错误!", agent.getAgentName(), e);
             }
         }
 
-        LOGGER.info("{} clockOut", agent.getAgentName());
+        AgentWorker.LOGGER.info("{} clockOut", agent.getAgentName());
     }
 }

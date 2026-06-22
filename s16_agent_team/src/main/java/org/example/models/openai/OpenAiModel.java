@@ -76,7 +76,7 @@ public class OpenAiModel extends AbstractModel {
         completionTokensSum += (lastCompletionTokens = usage.getInteger("completion_tokens"));
         totalTokensSum += (lastTotalTokens = usage.getInteger("total_tokens"));
 
-        LOGGER.info("请求url: {}, 模型: {}, 提示词token数: {}, 补全token数: {}, 总token数: {}",
+        LOGGER.debug("请求url: {}, 模型: {}, 提示词token数: {}, 补全token数: {}, 总token数: {}",
                 getUrl(), getModel(), lastPromptTokens, lastCompletionTokens, lastTotalTokens);
 
         return result;

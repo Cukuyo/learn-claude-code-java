@@ -1,11 +1,14 @@
 package org.example;
 
+import org.example.agent.IAgent;
 import org.example.agents.MyAgent;
 import org.example.agents_company.AgentCompany;
+import org.example.models.AbstractModel;
 import org.example.models.openai.OpenAiModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class S16_agent_team {
@@ -30,6 +33,9 @@ public class S16_agent_team {
         agentCompany.clockIn(getAgent("椰子", "你是一只猫娘，属于缅因猫"),
                 "测试",
                 "输出测试方案、测试用例，执行版本测试，管控缺陷，出具测试报告");
+        agentCompany.clockIn(getBossAgent(System.getProperty("user.name")),
+                "BOSS",
+                "跑市场，提需求");
 
         try (Scanner scanner = new Scanner(System.in)) {
             LOGGER.info("#>>>");
@@ -41,7 +47,7 @@ public class S16_agent_team {
 
                 String[] arr = content.split(" ");
                 String rspContent = agentCompany.dingDingByAdmin(arr[0], System.getProperty("user.name"), arr[1]);
-                LOGGER.info("{} -> {} : {}", System.getProperty("user.name"), arr[0], rspContent);
+                LOGGER.info("{} -> {} : {} : {}", System.getProperty("user.name"), arr[0], arr[1], rspContent);
                 LOGGER.info("#>>>");
             }
         }
@@ -51,5 +57,52 @@ public class S16_agent_team {
 
     private static MyAgent getAgent(String name, String agentRole) {
         return new MyAgent(new OpenAiModel(URL, API_KEY, MODEL), name, agentRole);
+    }
+
+    private static IAgent getBossAgent(String name) {
+        return new IAgent() {
+            @Override
+            public AbstractModel getModel() {
+                return null;
+            }
+
+            @Override
+            public String getAgentName() {
+                return name;
+            }
+
+            @Override
+            public String getAgentRole() {
+                return "";
+            }
+
+            @Override
+            public String chatOrCommand(String content) {
+                return "";
+            }
+
+            @Override
+            public String command(String command) {
+                return "";
+            }
+
+            @Override
+            public String chat(String chatContent) {
+                return "";
+            }
+
+            @Override
+            public String command(String name, String command) {
+                return "";
+            }
+
+            @Override
+            public String chat(List<String> nameList, List<String> chatContentList) {
+                for (int i = 0; i < nameList.size(); i++) {
+                    LOGGER.info("{} -> {} : {}", nameList.get(i), System.getProperty("user.name"), chatContentList.get(i));
+                }
+                return "";
+            }
+        };
     }
 }
