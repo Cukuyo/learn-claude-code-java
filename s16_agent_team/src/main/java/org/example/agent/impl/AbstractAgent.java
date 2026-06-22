@@ -26,9 +26,9 @@ import java.util.Optional;
  * 提供hook机制
  */
 public abstract class AbstractAgent implements IAgent, IAgentToolUse, IAgentSkillUse, IAgentCallbackUse, IAgentHookUse, IAgentCommandUse {
-    public final AbstractModel model;
-    public final String agentName;
-    public final String agentRole;
+    protected final AbstractModel model;
+    protected final String agentName;
+    protected final String agentRole;
 
     public final List<AgentCallback> agentCallbacks = new ArrayList<>();
     public final List<AgentCommand> agentCommands = new ArrayList<>();
@@ -39,8 +39,8 @@ public abstract class AbstractAgent implements IAgent, IAgentToolUse, IAgentSkil
         this.agentName = agentName;
         this.agentRole = agentRole;
 
-        model.addSystemMessages("你的名字是" + agentName);
-        model.addSystemMessages(agentRole);
+        model.addSystemMessages("你的名字是: " + agentName);
+        model.addSystemMessages("你被赋予的角色是: " + agentRole);
     }
 
     @Override

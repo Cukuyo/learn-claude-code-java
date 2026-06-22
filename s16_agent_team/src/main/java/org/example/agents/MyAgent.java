@@ -29,10 +29,12 @@ public final class MyAgent implements IAgent {
     private static final ThreadFactory THREAD_FACTORY = Thread.ofVirtual().name("MyAgent", 0).factory();
     private static final ExecutorService EXECUTOR = Executors.newThreadPerTaskExecutor(THREAD_FACTORY);
 
+    // agent共享
     private static final PermissionSystem PERMISSION_SYSTEM;
     private static final MemorySystem MEMORY_SYSTEM;
-    private static final TaskSystem TASK_SYSTEM;
     private static final ListCommand LIST_COMMAND = new ListCommand();
+    // agent独有
+    private static final TaskSystem TASK_SYSTEM;
 
     static {
         try {
@@ -138,9 +140,10 @@ public final class MyAgent implements IAgent {
             return "分身不能使用！";
         }
         try {
-            String agentName = agent.getAgentName() + "-subagent" + jutsuName;
             AbstractModel model = agent.getModel().cloneNewModel();
-            return new MyAgent(model, agentName, agent.getAgentRole()).chatOrCommand(content);
+            String agentName = agent.getAgentName() + "-subagent-" + jutsuName;
+            String agentRole = agent.getAgentRole() + ";" + "你是" + agent.getAgentName() + "的分身，用于帮助宿主执行一个复杂多步骤长下文但只需要一个结果的任务时，减少上下文消耗";
+            return new MyAgent(model, agentName, agentRole).chatOrCommand(content);
         } catch (IOException | InterruptedException e) {
             return "Error: " + e.getMessage();
         }

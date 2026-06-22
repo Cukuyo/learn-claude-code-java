@@ -82,7 +82,7 @@ public class PermissionSystem implements AgentHook, AgentCommand {
 
     private String ask(AbstractAgent agent, String toolName, String command, PermissionRule denyRule) {
         String title = "危险操作确认";
-        String desc = String.format("%s正在执行危险操作：%s : %s，请确认是否允许", agent.agentName, toolName, command);
+        String desc = String.format("%s正在执行危险操作：%s : %s，请确认是否允许", agent.getAgentName(), toolName, command);
         Object selectValue = DialogUtil.showDangerConfirmDialog(PermissionAskBehavior.values(), title, desc, PermissionAskBehavior.NO);
         PermissionAskBehavior userRsp = PermissionAskBehavior.valueOf(selectValue.toString());
         switch (userRsp) {
