@@ -4,7 +4,6 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.example.models.AbstractModel;
 import org.example.utils.HttpClientUtil;
-import org.example.utils.JsonCloneUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -308,19 +307,20 @@ public class OpenAiModel extends AbstractModel {
     }
 
     @Override
-    public AbstractModel cloneWithHistory() {
-        OpenAiModel openAiModel = new OpenAiModel(model, url, apiKey);
-        openAiModel.curReq = JsonCloneUtil.deepClone(curReq);
-        openAiModel.getTools().clear();
-        return openAiModel;
-    }
-
-    @Override
-    public AbstractModel cloneWithoutHistory() {
-        OpenAiModel openAiModel = new OpenAiModel(model, url, apiKey);
-        openAiModel.curReq = JsonCloneUtil.deepClone(curReq);
-        openAiModel.getMessages().clear();
-        openAiModel.getTools().clear();
-        return openAiModel;
+    public AbstractModel cloneNewModel() {
+        OpenAiModel cloneModel = new OpenAiModel(model, url, apiKey);
+        // 最大输出tokens
+        cloneModel.setMaxTokens(getMaxTokens());
+        // 思考模式
+        cloneModel.setEnabledThink(isEnabledThink());
+        // 思考等级
+        cloneModel.setReasoningEffort(getReasoningEffort());
+        // 返回响应格式
+        cloneModel.setResponseFormat(getResponseFormat());
+        // 推理温度
+        cloneModel.setTemperature(getTemperature());
+        // 推理topP
+        cloneModel.setTopP(getTopP());
+        return cloneModel;
     }
 }

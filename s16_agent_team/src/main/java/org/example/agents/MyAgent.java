@@ -139,7 +139,7 @@ public final class MyAgent implements IAgent {
         }
         try {
             String agentName = agent.getAgentName() + "-subagent" + jutsuName;
-            AbstractModel model = agent.getModel().cloneWithoutHistory();
+            AbstractModel model = agent.getModel().cloneNewModel();
             return new MyAgent(model, agentName, agent.getAgentRole()).chatOrCommand(content);
         } catch (IOException | InterruptedException e) {
             return "Error: " + e.getMessage();

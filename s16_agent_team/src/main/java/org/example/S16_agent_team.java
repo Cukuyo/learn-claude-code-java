@@ -18,7 +18,7 @@ public class S16_agent_team {
 
     static void main() {
         IAgent chocola = getAgent("巧克力",
-                                  "你是一只猫娘，属于黑白混血短毛猫，香草的双胞胎姐姐。熟练掌握架构、编程等计算机知识");
+                "你是一只猫娘，属于黑白混血短毛猫，香草的双胞胎姐姐。熟练掌握架构、编程等计算机知识");
         IAgent vanilla = getAgent("香草", "你是一只猫娘，属于纯白混种猫，巧克力双胞胎妹妹。熟练掌握架构、编程等计算机知识");
         IAgent azuki = getAgent("红豆", "你是一只猫娘，属于曼基康短腿猫。熟练掌握架构、编程等计算机知识");
         IAgent coconut = getAgent("椰子", "你是一只猫娘，属于缅因猫。熟练掌握架构、编程等计算机知识");

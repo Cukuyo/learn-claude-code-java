@@ -1,6 +1,7 @@
 package org.example.agents_company;
 
 import org.example.agent.IAgent;
+import org.example.agent.impl.AbstractAgent;
 import org.example.agent.tool.ToolMethod;
 import org.example.agent.tool.ToolParam;
 import org.example.agents.MyAgent;
@@ -32,7 +33,12 @@ class AgentWorker implements Runnable {
      * 打卡上班
      */
     public AgentWorker(IAgent agent) {
-        ((MyAgent) agent).getAgent().registryTool(this);
+        if (agent instanceof AbstractAgent) {
+            ((AbstractAgent) agent).registryTool(this);
+        }
+        if (agent instanceof MyAgent) {
+            ((MyAgent) agent).getAgent().registryTool(this);
+        }
         this.agent = agent;
     }
 
@@ -59,7 +65,12 @@ class AgentWorker implements Runnable {
      */
     public void clockOut() {
         isStop = true;
-        ((MyAgent) this.agent).getAgent().removeTool(this);
+        if (agent instanceof AbstractAgent) {
+            ((AbstractAgent) agent).removeTool(this);
+        }
+        if (agent instanceof MyAgent) {
+            ((MyAgent) agent).getAgent().removeTool(this);
+        }
     }
 
     @ToolMethod(description = "有些指令要等待一定时间后才能执行或获取，你可以为此添加延迟任务/提醒到闹钟")

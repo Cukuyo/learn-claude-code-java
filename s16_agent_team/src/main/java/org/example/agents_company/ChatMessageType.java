@@ -13,17 +13,13 @@ public enum ChatMessageType {
      */
     AGENT(2),
     /*
-     * 异步工具次之
-     */
-    ASYNC_TOOL(3),
-    /*
      * 定时器次之
      */
-    CRON(4),
+    CRON(3),
     /*
      * 心跳最后
      */
-    HEART(5),
+    HEART(4),
     ;
     public final int priority;
 

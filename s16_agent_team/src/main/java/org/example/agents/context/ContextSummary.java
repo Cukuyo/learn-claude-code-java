@@ -110,7 +110,7 @@ public class ContextSummary implements AgentCallback {
                     对话如下：
                     %s
                 """, content);
-        AbstractModel model = agent.getModel().cloneWithoutHistory();
+        AbstractModel model = agent.getModel().cloneNewModel();
         model.addUserMessage(prompt);
         return model.chat().getJSONObject("message").getString("content");
     }

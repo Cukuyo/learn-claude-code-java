@@ -5,12 +5,7 @@ package org.example.models;
  */
 public interface IModelClone<T> {
     /**
-     * 带全部历史信息的克隆
+     * 克隆新模型
      */
-    T cloneWithHistory();
-
-    /**
-     * 不带全部历史信息的克隆
-     */
-    T cloneWithoutHistory();
+    T cloneNewModel();
 }
