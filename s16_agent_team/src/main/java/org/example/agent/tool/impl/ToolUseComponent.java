@@ -134,7 +134,7 @@ public class ToolUseComponent implements IAgentToolUse {
     private void registryTool(List<ToolResolveUtil.ToolResolveResult> toolResolveResults) {
         for (ToolResolveUtil.ToolResolveResult toolResolveResult : toolResolveResults) {
             toolHandlers.put(toolResolveResult.name(), toolResolveResult.toolHandler());
-            agent.getModel().addTool(ToolTransformUtil.transform(toolResolveResult, agent.model));
+            agent.getModel().addTool(ToolTransformUtil.transform(toolResolveResult, agent.getModel()));
         }
     }
 }

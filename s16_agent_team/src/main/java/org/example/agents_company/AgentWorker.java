@@ -26,22 +26,47 @@ class AgentWorker implements Runnable {
             0, Thread.ofPlatform().name("AgentWorker-Schedule", 0).factory());
 
     private final IAgent agent;
+    private final String agentJobPosition;
+    private final String agentDuties;
     private final PriorityBlockingQueue<ChatMessage> msgQueue = new PriorityBlockingQueue<>(16);
     private volatile boolean isStop = false;
 
     /**
      * 打卡上班
+     *
+     * @param agent            打工人
+     * @param agentJobPosition 岗位
+     * @param agentDuties      职责
      */
-    public AgentWorker(IAgent agent) {
-        if (agent instanceof AbstractAgent) {
-            ((AbstractAgent) agent).registryTool(this);
-        }
-        if (agent instanceof MyAgent) {
-            ((MyAgent) agent).getAgent().registryTool(this);
-        }
+    public AgentWorker(IAgent agent, String agentJobPosition, String agentDuties) {
         this.agent = agent;
+        this.agentJobPosition = agentJobPosition;
+        this.agentDuties = agentDuties;
+        if (agent instanceof AbstractAgent abstractAgent) {
+            renderPrompt(agentJobPosition, agentDuties, abstractAgent);
+        }
+        if (agent instanceof MyAgent myAgent) {
+            renderPrompt(agentJobPosition, agentDuties, myAgent.getAgent());
+        }
     }
 
+    private void renderPrompt(String agentJobPosition, String agentDuties, AbstractAgent abstractAgent) {
+        abstractAgent.registryTool(this);
+        abstractAgent.getModel().addSystemMessages(String.format("你的岗位是：%s，职责是：%s", agentJobPosition, agentDuties));
+    }
+
+    /**
+     * toPrompt
+     *
+     * @return Prompt
+     */
+    public String toPrompt() {
+        return "- {" + agent.getAgentName() + ":" + agentJobPosition + ":" + agentDuties + "}";
+    }
+
+    /**
+     * 工作
+     */
     public String dingDing(ChatMessage chatMessage) {
         if (isStop) {
             return "当前agent已停止接收消息";
@@ -73,6 +98,18 @@ class AgentWorker implements Runnable {
         }
     }
 
+    public IAgent getAgent() {
+        return agent;
+    }
+
+    public String getAgentJobPosition() {
+        return agentJobPosition;
+    }
+
+    public String getAgentDuties() {
+        return agentDuties;
+    }
+
     @ToolMethod(description = "有些指令要等待一定时间后才能执行或获取，你可以为此添加延迟任务/提醒到闹钟")
     public String cron(@ToolParam(description = "延迟时间，单位为秒") int delay,
                        @ToolParam(description = "延迟任务/提醒内容") String content) {
@@ -92,7 +129,7 @@ class AgentWorker implements Runnable {
             // 没事儿就摸会儿鱼
             if (list.isEmpty()) {
                 try {
-                    Thread.sleep(Duration.ofSeconds(1L));
+                    Thread.sleep(Duration.ofSeconds(3L));
                 } catch (InterruptedException e) {
                     break;
                 }

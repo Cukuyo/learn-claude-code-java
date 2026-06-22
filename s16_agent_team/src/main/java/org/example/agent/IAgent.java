@@ -15,8 +15,6 @@ public interface IAgent {
 
     String getAgentRole();
 
-    void addAgentRole();
-
     /**
      * 简单接口，聊天或者下命令
      *
