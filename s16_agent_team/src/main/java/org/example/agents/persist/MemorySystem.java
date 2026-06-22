@@ -43,6 +43,7 @@ public class MemorySystem implements AgentCallback, AgentCommand {
     @Override
     public void removeSelf(AbstractAgent agent) {
         agent.removeTool(this);
+        agent.getModel().addSystemMessages("[MemorySystem]已下线");
     }
 
     private void renderPrompts(AbstractAgent agent, List<MemoryEntity> memoryList) {

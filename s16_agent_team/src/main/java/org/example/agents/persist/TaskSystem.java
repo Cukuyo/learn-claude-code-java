@@ -32,8 +32,10 @@ public class TaskSystem implements AgentCallback {
         }
 
         List<TaskEntity> taskList = TaskDirUtil.resolveDir(taskDirPath);
-        List<TaskEntity> waitedTaskList = taskList.stream().filter(
-                task -> task.agentName.equals(agent.getAgentName()) && task.progress < 100).toList();
+        List<TaskEntity> waitedTaskList = taskList.stream()
+                .filter(task -> task.agentName.equals(agent.getAgentName()))
+                .filter(task -> task.progress < 100)
+                .toList();
 
         renderPrompts(agent, waitedTaskList);
     }
@@ -41,6 +43,7 @@ public class TaskSystem implements AgentCallback {
     @Override
     public void removeSelf(AbstractAgent agent) {
         agent.removeTool(this);
+        agent.getModel().addSystemMessages("[TaskSystem]已下线");
     }
 
     private void renderPrompts(AbstractAgent agent, List<TaskEntity> taskList) {
@@ -49,7 +52,7 @@ public class TaskSystem implements AgentCallback {
                 需注意：
                 1、进行多步骤任务时必须使用TaskSystem进行保存，防止遗忘
                 2、必须使用Mermaid格式进行保存，任务间显示声明依赖关系和完成情况
-                当前已加载的未完成历史任务如下，可使用<updateTasks>对任务进行新保存或覆盖：
+                当前已加载的未完成历史任务如下，可使用<listTasks>查看历史任务，可使用<updateTasks>对任务进行新保存或覆盖：
                 """ + buildTasks(taskList));
     }
 
@@ -63,6 +66,18 @@ public class TaskSystem implements AgentCallback {
         taskList.forEach(taskEntity -> builder.append(taskEntity.toPrompt()).append(System.lineSeparator()));
 
         return builder.toString();
+    }
+
+    @ToolMethod(description = "查看历史任务，支持查看已完成和未完成的任务")
+    public String listTasks(
+            @ToolParam(description = "agent名字，也就是你的名字") String agentName,
+            @ToolParam(description = "true：查看已完成的任务，false：查看未完成的任务") boolean isCompleted) {
+        List<TaskEntity> taskList = TaskDirUtil.resolveDir(taskDirPath);
+        List<TaskEntity> waitedTaskList = taskList.stream()
+                .filter(task -> task.agentName.equals(agentName))
+                .filter(task -> isCompleted ? task.progress == 100 : task.progress < 100)
+                .toList();
+        return buildTasks(waitedTaskList);
     }
 
     @ToolMethod(description = "对任务进行新保存或覆盖")
