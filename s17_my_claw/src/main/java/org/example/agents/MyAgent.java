@@ -5,6 +5,7 @@ import org.example.agent.impl.AbstractAgent;
 import org.example.agent.impl.AgentLoopAgent;
 import org.example.agents.context.ContextSummary;
 import org.example.agents.context.ToolUseCompact;
+import org.example.agents.cron.CronSchedule;
 import org.example.agents.log.AgentLogPrint;
 import org.example.agents.persist.MemorySystem;
 import org.example.agents.persist.PermissionSystem;
@@ -64,6 +65,7 @@ public final class MyAgent implements IAgent {
         agent.registryAgentCallback(TASK_SYSTEM);
 
         agent.registryAgentCallback(new CloneJutsu());
+        agent.registryAgentCallback(new CronSchedule());
 
         agent.registryCommand(LIST_COMMAND);
     }
