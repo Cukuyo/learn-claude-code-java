@@ -1,18 +1,16 @@
 package org.example.agents;
 
-import org.example.agent.tool.ToolExecuter;
+import org.example.agent.IAgent;
+import org.example.agent.impl.AbstractAgent;
+import org.example.agent.impl.AgentLoopAgent;
 import org.example.agents.context.ContextSummary;
 import org.example.agents.context.ToolUseCompact;
 import org.example.agents.log.AgentLogPrint;
 import org.example.agents.persist.MemorySystem;
 import org.example.agents.persist.PermissionSystem;
 import org.example.agents.persist.TaskSystem;
-import org.example.agent.IAgent;
-import org.example.agent.impl.AbstractAgent;
-import org.example.agent.impl.AgentLoopAgent;
+import org.example.agents.sub_agent.CloneJutsu;
 import org.example.models.AbstractModel;
-import org.example.agent.tool.ToolMethod;
-import org.example.agent.tool.ToolParam;
 import org.example.utils.cmd.AgentCommandTool;
 import org.example.utils.file.AgentFileTool;
 
@@ -20,15 +18,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.*;
 
 /**
  * 子agent，添加默认能力
  */
 public final class MyAgent implements IAgent {
-    private static final ThreadFactory THREAD_FACTORY = Thread.ofVirtual().name("MyAgent", 0).factory();
-    private static final ExecutorService EXECUTOR = Executors.newThreadPerTaskExecutor(THREAD_FACTORY);
-
     // agent共享
     private static final PermissionSystem PERMISSION_SYSTEM;
     private static final MemorySystem MEMORY_SYSTEM;
@@ -68,6 +62,8 @@ public final class MyAgent implements IAgent {
         agent.registryCommand(MEMORY_SYSTEM);
 
         agent.registryAgentCallback(TASK_SYSTEM);
+
+        agent.registryAgentCallback(new CloneJutsu());
 
         agent.registryCommand(LIST_COMMAND);
     }
@@ -114,38 +110,5 @@ public final class MyAgent implements IAgent {
     @Override
     public String chat(List<String> nameList, List<String> chatContentList) throws IOException, InterruptedException {
         return agent.chat(nameList, chatContentList);
-    }
-
-    /**
-     * 分身术
-     *
-     * @param jutsuName jutsuName
-     * @param content   content
-     * @return 执行结果
-     */
-    @ToolMethod(description = "[分身术]用于执行一个复杂多步骤长下文但只需要一个结果的任务时，为减少上下文消耗，使用此工具生成不含历史记忆的分身执行子任务，")
-    public Future<String> cloneJutsu(
-            @ToolParam(description = "子任务名称，驼峰加下划线的形式") String jutsuName,
-            @ToolParam(description = "子任务描述，包含必要上下文、任务描述、完成验证标准") String content,
-            @ToolParam(description = "是否要异步执行，对于耗时较长的命令可以多个命令异步执行以提高效率") boolean isAsync) {
-        if (isAsync) {
-            return EXECUTOR.submit(() -> cloneJutsuSync(jutsuName, content));
-        } else {
-            return ToolExecuter.simpleRsp(cloneJutsuSync(jutsuName, content));
-        }
-    }
-
-    private String cloneJutsuSync(String jutsuName, String content) {
-        if (agent.getAgentName().contains("-subagent")) {
-            return "分身不能使用！";
-        }
-        try {
-            AbstractModel model = agent.getModel().cloneNewModel();
-            String agentName = agent.getAgentName() + "-subagent-" + jutsuName;
-            String agentRole = agent.getAgentRole() + ";" + "你是" + agent.getAgentName() + "的分身，用于帮助宿主执行一个复杂多步骤长下文但只需要一个结果的任务时，减少上下文消耗";
-            return new MyAgent(model, agentName, agentRole).chatOrCommand(content);
-        } catch (IOException | InterruptedException e) {
-            return "Error: " + e.getMessage();
-        }
     }
 }
