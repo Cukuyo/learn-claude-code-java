@@ -23,12 +23,12 @@ public class ContextSummary implements AgentCallback {
 
     private final double contextRemainRatio;
 
-    private final FixedSizeConversationQueue recentConversations;
+    private final FixedSizeConversationQueue<JSONObject> recentConversations;
     private final List<JSONObject> olderThanRecentConversations = new LinkedList<>();
 
     public ContextSummary(double contextRemainRatio, int recentConversations) {
         this.contextRemainRatio = contextRemainRatio;
-        this.recentConversations = new FixedSizeConversationQueue(recentConversations);
+        this.recentConversations = new FixedSizeConversationQueue<>(recentConversations);
     }
 
     @Override

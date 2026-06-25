@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * agent抽象父类:
@@ -30,9 +31,9 @@ public abstract class AbstractAgent implements IAgent, IAgentToolUse, IAgentSkil
     protected final String agentName;
     protected final String agentRole;
 
-    public final List<AgentCallback> agentCallbacks = new ArrayList<>();
-    public final List<AgentCommand> agentCommands = new ArrayList<>();
-    public final List<AgentHook> agentHooks = new ArrayList<>();
+    public final List<AgentCallback> agentCallbacks = new CopyOnWriteArrayList<>();
+    public final List<AgentCommand> agentCommands = new CopyOnWriteArrayList<>();
+    public final List<AgentHook> agentHooks = new CopyOnWriteArrayList<>();
 
     public AbstractAgent(AbstractModel model, String agentName, String agentRole) {
         this.model = model;

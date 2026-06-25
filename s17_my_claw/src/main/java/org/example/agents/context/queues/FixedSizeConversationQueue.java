@@ -1,7 +1,5 @@
 package org.example.agents.context.queues;
 
-import com.alibaba.fastjson2.JSONObject;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,10 +10,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 1. 长度<=fixedSize：正常入队
  * 2. 长度>fixedSize：加入新元素，自动弹出队首会话
  */
-public class FixedSizeConversationQueue {
+public class FixedSizeConversationQueue<T> {
     private final int fixedSize;
     private int curSize = 0;
-    private final List<List<JSONObject>> conversationQueue = new ArrayList<>();
+    private final List<List<T>> conversationQueue = new ArrayList<>();
 
     public FixedSizeConversationQueue(int fixedSize) {
         if (fixedSize <= 0) {
@@ -28,7 +26,7 @@ public class FixedSizeConversationQueue {
     /**
      * 添加元素
      */
-    public List<JSONObject> add(JSONObject message, boolean finished) {
+    public List<T> add(T message, boolean finished) {
         conversationQueue.getLast().add(message);
 
         if (finished) {
@@ -57,8 +55,8 @@ public class FixedSizeConversationQueue {
     /**
      * 汇总元素
      */
-    public List<JSONObject> collect() {
-        List<JSONObject> list = new LinkedList<>();
+    public List<T> collect() {
+        List<T> list = new LinkedList<>();
         conversationQueue.forEach(list::addAll);
         return list;
     }
